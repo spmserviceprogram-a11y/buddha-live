@@ -191,58 +191,35 @@ app.get(['/background_video.mp4', '/bg-video.mp4'], (req, res) => {
 });
 
 // ---------------------------------------------------------------------
-// 100% Original 432Hz Zen Buddhist Meditation Soundscape
-// Replaces commercial copyrighted audio to eliminate TikTok Audio Content ID flags
+// Authentic Da Bei Zhou Sacred Chanting Soundtrack (Original MP3)
 // ---------------------------------------------------------------------
-const zenBgmGenerator = require('./generate-bgm.js');
+const bgmPublicDir = path.join(__dirname, 'public');
+const bgmTargetPath = path.join(bgmPublicDir, 'bgm.mp3');
+const bgmBackupPath = path.join(bgmPublicDir, 'bgm_backup_commercial.mp3');
+
 try {
-  zenBgmGenerator.deployOriginalZenSoundtrack();
+  // Ensure the authentic Da Bei Zhou sacred chanting audio is restored and preserved
+  if (fs.existsSync(bgmBackupPath)) {
+    if (!fs.existsSync(bgmTargetPath) || fs.statSync(bgmBackupPath).size !== fs.statSync(bgmTargetPath).size) {
+      fs.copyFileSync(bgmBackupPath, bgmTargetPath);
+      console.log('[BGM Audio] Restored authentic Da Bei Zhou sacred chanting audio to public/bgm.mp3');
+    }
+  }
 } catch (e) {
-  console.warn('[Zen Audio] Deployment notice:', e.message);
+  console.warn('[BGM Restore Error]:', e.message);
 }
 
-app.get('/api/regenerate-zen-bgm', (req, res) => {
-  const ok = zenBgmGenerator.deployOriginalZenSoundtrack();
-  res.json({ success: ok, message: 'Original Zen Soundtrack regenerated successfully' });
-});
-
 app.get(['/bgm.mp3', '/bgm.wav', '/bgm_zen_original.wav'], (req, res) => {
-  const publicDir = path.join(__dirname, 'public');
-  const targetBgm = path.join(publicDir, 'bgm.mp3');
-  const backupBgm = path.join(publicDir, 'bgm_backup_commercial.mp3');
-  const targetWav = path.join(publicDir, 'bgm_zen_original.wav');
+  const fileToServe = fs.existsSync(bgmTargetPath) ? bgmTargetPath : (fs.existsSync(bgmBackupPath) ? bgmBackupPath : null);
 
-  try {
-    // If original Zen soundscape hasn't replaced commercial BGM yet, deploy now
-    if (!fs.existsSync(backupBgm) || !fs.existsSync(targetWav)) {
-      zenBgmGenerator.deployOriginalZenSoundtrack();
-    }
-  } catch (err) {
-    console.warn('[Zen Audio Route] On-demand deployment note:', err.message);
-  }
-
-  if (fs.existsSync(targetWav)) {
-    res.set('Content-Type', 'audio/wav');
+  if (fileToServe) {
+    res.set('Content-Type', 'audio/mpeg');
     res.set('Accept-Ranges', 'bytes');
     res.set('Cache-Control', 'no-cache');
-    return res.sendFile(targetWav);
-  }
-  if (fs.existsSync(targetBgm)) {
-    res.set('Content-Type', 'audio/wav');
-    res.set('Accept-Ranges', 'bytes');
-    res.set('Cache-Control', 'no-cache');
-    return res.sendFile(targetBgm);
+    return res.sendFile(fileToServe);
   }
 
-  // Real-time on-the-fly synthesis fallback if disk file is missing
-  try {
-    const freshZenBuf = zenBgmGenerator.generateZenOriginalSoundscape(120);
-    res.set('Content-Type', 'audio/wav');
-    res.set('Cache-Control', 'no-cache');
-    return res.send(freshZenBuf);
-  } catch (synthErr) {
-    res.status(500).send('Audio generation failed: ' + synthErr.message);
-  }
+  res.status(404).send('BGM track not found');
 });
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
