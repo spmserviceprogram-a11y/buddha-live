@@ -168,14 +168,42 @@ app.get('/api/regenerate-zen-bgm', (req, res) => {
 });
 
 app.get(['/bgm.mp3', '/bgm.wav', '/bgm_zen_original.wav'], (req, res) => {
-  const targetBgm = path.join(__dirname, 'public', 'bgm.mp3');
+  const publicDir = path.join(__dirname, 'public');
+  const targetBgm = path.join(publicDir, 'bgm.mp3');
+  const backupBgm = path.join(publicDir, 'bgm_backup_commercial.mp3');
+  const targetWav = path.join(publicDir, 'bgm_zen_original.wav');
+
+  try {
+    // If original Zen soundscape hasn't replaced commercial BGM yet, deploy now
+    if (!fs.existsSync(backupBgm) || !fs.existsSync(targetWav)) {
+      zenBgmGenerator.deployOriginalZenSoundtrack();
+    }
+  } catch (err) {
+    console.warn('[Zen Audio Route] On-demand deployment note:', err.message);
+  }
+
+  if (fs.existsSync(targetWav)) {
+    res.set('Content-Type', 'audio/wav');
+    res.set('Accept-Ranges', 'bytes');
+    res.set('Cache-Control', 'no-cache');
+    return res.sendFile(targetWav);
+  }
   if (fs.existsSync(targetBgm)) {
     res.set('Content-Type', 'audio/wav');
     res.set('Accept-Ranges', 'bytes');
     res.set('Cache-Control', 'no-cache');
     return res.sendFile(targetBgm);
   }
-  res.status(404).send('BGM not found');
+
+  // Real-time on-the-fly synthesis fallback if disk file is missing
+  try {
+    const freshZenBuf = zenBgmGenerator.generateZenOriginalSoundscape(120);
+    res.set('Content-Type', 'audio/wav');
+    res.set('Cache-Control', 'no-cache');
+    return res.send(freshZenBuf);
+  } catch (synthErr) {
+    res.status(500).send('Audio generation failed: ' + synthErr.message);
+  }
 });
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
