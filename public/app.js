@@ -12084,30 +12084,21 @@ function animate() {
   // Note: 350ms continuous smoke/ember instantiation removed to eliminate Garbage Collection stutter (กระตุกเป็นช่วงๆ)
   // Ritual incense effects remain 100% active via triggerIncenseEffect() when gifts arrive!
 
-  // Dynamic Sanctuary Warmth & Candlelight Breathing (ทำลายความนิ่งของแสงในทุกๆ วินาที ป้องกัน Video Loop Detection)
+  // Steady Warm Sanctuary Lighting (แสงนิ่ง สงบ ไม่กระพริบ ไม่สั่นไหว)
   if (altarGlow) {
-    altarGlow.intensity = 2.8 + Math.sin(time * 1.8) * 0.35 + Math.sin(time * 0.45) * 0.25;
+    altarGlow.intensity = 2.8;
   }
   if (carpetLight) {
-    carpetLight.intensity = 3.2 + Math.cos(time * 1.2) * 0.30;
+    carpetLight.intensity = 3.2;
   }
   if (leftLanternLight && rightLanternLight) {
-    leftLanternLight.intensity = 1.6 + Math.sin(time * 2.3) * 0.20;
-    rightLanternLight.intensity = 1.6 + Math.cos(time * 2.7) * 0.20;
+    leftLanternLight.intensity = 1.6;
+    rightLanternLight.intensity = 1.6;
   }
 
-  // ── Living Cinematic Dignified Altar Camera (กล้องหน้าตรงสง่างาม มีชีวิตชีวา ไม่กระตุก ไม่เปลี่ยนมุม แต่พิกเซลเคลื่อนไหวตลอดเวลา ป้องกัน TikTok ตรวจจับภาพวนลูป) ──
-  const targetDolly = (isStageActionRunning && activeStageActor) ? -0.35 : 0.0;
-  if (typeof window._currentCameraDolly === 'undefined') window._currentCameraDolly = 0;
-  window._currentCameraDolly = THREE.MathUtils.lerp(window._currentCameraDolly, targetDolly, 0.035);
-
-  // Subtle living breathing sway (Very slow 35-50s cycle, imperceptible to human eye but completely breaks AI frame-hash loop detection)
-  const camSwayX = Math.sin(time * 0.14) * 0.10;
-  const camSwayY = Math.cos(time * 0.18) * 0.05;
-  const camSwayZ = Math.sin(time * 0.09) * 0.12;
-
-  camera.position.set(camSwayX, 5.2 + camSwayY, 15.5 + window._currentCameraDolly + camSwayZ);
-  camera.lookAt(camSwayX * 0.3, -0.3, 0);
+  // ── Stable Dignified Sanctuary Camera (กล้องหน้าตรงนิ่งสงบ ไม่สั่น ไม่เหวี่ยง เพื่อความคมชัดสูงสุด) ──
+  camera.position.set(0, 5.2, 15.5);
+  camera.lookAt(0, -0.3, 0);
 
   renderer.render(scene, camera);
 }
