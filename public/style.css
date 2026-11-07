@@ -355,26 +355,25 @@ body {
   margin-right: -4px;
 }
 
-/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - Perfect Single Frame) */
+/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - Celestial White Jade & Gold) */
 .live-clock-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   height: 26px;
-  background: linear-gradient(180deg, rgba(42, 12, 7, 0.92) 0%, rgba(16, 5, 3, 0.96) 100%);
-  backdrop-filter: blur(6px);
-  border: 1.5px solid rgba(255, 215, 0, 0.78);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(254, 243, 199, 0.94) 100%);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid #ffd700;
   border-radius: 7px;
   padding: 0 8px;
   font-size: 9.5px;
   font-weight: 700;
-  color: #ffffff;
+  color: #0f172a;
   font-family: 'Kanit', sans-serif;
   letter-spacing: 0.1px;
   box-sizing: border-box;
   white-space: nowrap;
-  text-shadow: 0 1px 2px #000;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 235, 140, 0.30);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), 0 0 10px rgba(255, 215, 0, 0.35);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
@@ -382,8 +381,8 @@ body {
 }
 
 .live-clock-pill:hover {
-  border-color: #ffd700;
-  box-shadow: 0 4px 22px rgba(255, 215, 0, 0.35), inset 0 1px 1px rgba(255, 235, 140, 0.45);
+  border-color: #f59e0b;
+  box-shadow: 0 4px 22px rgba(255, 215, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.9);
 }
 
 .live-clock-pill:active {
@@ -436,10 +435,10 @@ body {
 }
 
 .live-clock-pill .live-date {
-  color: #ffe066;
+  color: #b45309;
   font-weight: 700;
   font-size: 9px;
-  border-right: 1px solid rgba(255, 215, 0, 0.35);
+  border-right: 1px solid rgba(180, 83, 9, 0.35);
   padding-right: 4.5px;
   margin-right: 1px;
   line-height: 1;
@@ -448,12 +447,12 @@ body {
 
 #live-clock-time {
   font-size: 9.5px;
-  font-weight: 700;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   letter-spacing: 0.3px;
-  color: #ffffff;
-  text-shadow: 0 1px 2px #000, 0 0 1px #000;
+  color: #0f172a;
+  text-shadow: none;
   white-space: nowrap;
 }
 
