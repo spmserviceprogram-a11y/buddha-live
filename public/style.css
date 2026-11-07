@@ -355,25 +355,26 @@ body {
   margin-right: -4px;
 }
 
-/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - Celestial White Jade & Gold) */
+/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - 50% Translucent & Crisp Gold/White) */
 .live-clock-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   height: 26px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(254, 243, 199, 0.94) 100%);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(180deg, rgba(20, 10, 6, 0.50) 0%, rgba(35, 16, 10, 0.50) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1.5px solid #ffd700;
   border-radius: 7px;
   padding: 0 8px;
   font-size: 9.5px;
   font-weight: 700;
-  color: #0f172a;
+  color: #ffffff;
   font-family: 'Kanit', sans-serif;
   letter-spacing: 0.1px;
   box-sizing: border-box;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), 0 0 10px rgba(255, 215, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 10px rgba(255, 215, 0, 0.35);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
@@ -382,7 +383,7 @@ body {
 
 .live-clock-pill:hover {
   border-color: #f59e0b;
-  box-shadow: 0 4px 22px rgba(255, 215, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 22px rgba(255, 215, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 .live-clock-pill:active {
@@ -394,13 +395,13 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.85) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 3px;
   padding: 1px 4.5px;
   height: 14px;
   box-sizing: border-box;
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
   flex-shrink: 0;
 }
 
@@ -410,7 +411,7 @@ body {
   font-size: 7.5px;
   letter-spacing: 0.6px;
   line-height: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
 }
 
 .pulse-dot-red {
@@ -435,14 +436,15 @@ body {
 }
 
 .live-clock-pill .live-date {
-  color: #b45309;
-  font-weight: 700;
+  color: #ffd700;
+  font-weight: 800;
   font-size: 9px;
-  border-right: 1px solid rgba(180, 83, 9, 0.35);
+  border-right: 1px solid rgba(255, 215, 0, 0.45);
   padding-right: 4.5px;
   margin-right: 1px;
   line-height: 1;
   white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 #live-clock-time {
@@ -451,8 +453,8 @@ body {
   font-variant-numeric: tabular-nums;
   line-height: 1;
   letter-spacing: 0.3px;
-  color: #0f172a;
-  text-shadow: none;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
   white-space: nowrap;
 }
 
