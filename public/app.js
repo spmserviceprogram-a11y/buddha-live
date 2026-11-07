@@ -381,6 +381,9 @@ class TempleAudio {
             const sacredFreqs = [432, 513.6, 528, 639, 741, 852];
             const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
             try { this.playBell(chosenF, 4.5); } catch (_) {}
+            if (Math.random() < 0.60) {
+              setTimeout(() => { try { this.playWoodblock(); } catch (_) {} }, 1400);
+            }
             // Dynamic micro-pitch & tempo modulation (1.035 - 1.050) so audio spectral hash never matches static Content ID
             const rateJitter = 1.042 + (Math.random() - 0.5) * 0.015;
             try {
@@ -388,7 +391,7 @@ class TempleAudio {
               if (this.bgmBufferSource) this.bgmBufferSource.playbackRate.value = rateJitter;
             } catch (_) {}
           }
-        }, 14000);
+        }, 13000);
       }
     };
 
