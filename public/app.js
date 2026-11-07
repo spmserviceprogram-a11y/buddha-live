@@ -5530,30 +5530,89 @@ function spawnSeamSiCardSparkles() {
   const layer = document.getElementById('seamsi-sparkle-layer');
   if (!layer) return;
   layer.innerHTML = '';
-  const count = 24;
+  const count = 28;
+  const symbols = ['✦', '✨', '🪷', '🌟', '🎋', '💛'];
   for (let i = 0; i < count; i++) {
     const sp = document.createElement('span');
-    sp.className = 'seamsi-sparkle-dot';
-    const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
-    const dist = 70 + Math.random() * 145;
-    const tx = Math.cos(angle) * dist;
-    const ty = Math.sin(angle) * (dist * 0.85);
-    const size = 4 + Math.random() * 6;
-    const dur = 0.9 + Math.random() * 0.9;
-    const delay = Math.random() * 0.35;
-    sp.style.left = `${30 + Math.random() * 40}%`;
-    sp.style.top = `${25 + Math.random() * 50}%`;
-    sp.style.width = `${size}px`;
-    sp.style.height = `${size}px`;
-    sp.style.setProperty('--sx', `${tx.toFixed(1)}px`);
-    sp.style.setProperty('--sy', `${ty.toFixed(1)}px`);
-    sp.style.setProperty('--sdur', `${dur.toFixed(2)}s`);
-    sp.style.setProperty('--sdelay', `${delay.toFixed(2)}s`);
+    if (i % 3 === 0) {
+      sp.className = 'banner-sparkle-particle';
+      sp.textContent = symbols[i % symbols.length];
+      const angle = (Math.PI * 2 * i) / count;
+      const dist = 65 + Math.random() * 95;
+      const tx = Math.round(Math.cos(angle) * dist);
+      const ty = Math.round(Math.sin(angle) * (dist * 0.85));
+      sp.style.setProperty('--sx', '50%');
+      sp.style.setProperty('--sy', '50%');
+      sp.style.setProperty('--tx', `${tx}px`);
+      sp.style.setProperty('--ty', `${ty}px`);
+      sp.style.setProperty('--size', `${10 + Math.floor(Math.random() * 6)}px`);
+      sp.style.setProperty('--dur', `${(1.1 + Math.random() * 0.6).toFixed(2)}s`);
+      sp.style.setProperty('--delay', `${(Math.random() * 0.25).toFixed(2)}s`);
+      sp.style.setProperty('--rot', `${Math.round((Math.random() - 0.5) * 180)}deg`);
+      sp.style.setProperty('--sc', '1.2');
+    } else {
+      sp.className = 'seamsi-sparkle-dot';
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.35;
+      const dist = 70 + Math.random() * 155;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * (dist * 0.85);
+      const size = 5 + Math.random() * 7;
+      const dur = 0.95 + Math.random() * 0.95;
+      const delay = Math.random() * 0.35;
+      sp.style.left = `${30 + Math.random() * 40}%`;
+      sp.style.top = `${25 + Math.random() * 50}%`;
+      sp.style.width = `${size}px`;
+      sp.style.height = `${size}px`;
+      sp.style.setProperty('--sx', `${tx.toFixed(1)}px`);
+      sp.style.setProperty('--sy', `${ty.toFixed(1)}px`);
+      sp.style.setProperty('--sdur', `${dur.toFixed(2)}s`);
+      sp.style.setProperty('--sdelay', `${delay.toFixed(2)}s`);
+    }
     layer.appendChild(sp);
   }
 }
 
-// ── Phase 2 Modal: Royal 3-Digit Lucky Numbers (ตรงตามแบบรูปที่ 3 พร้อมอนิเมชันสุ่มตัวเลข) ──
+function spawnLuckySparkles() {
+  const layer = document.getElementById('seamsi-lucky-sparkles');
+  if (!layer) return;
+  layer.innerHTML = '';
+  const count = 24;
+  const symbols = ['✦', '✨', '🪷', '💰', '🌟', '💛'];
+  for (let i = 0; i < count; i++) {
+    const sp = document.createElement('span');
+    if (i % 2 === 0) {
+      sp.className = 'banner-sparkle-particle';
+      sp.textContent = symbols[i % symbols.length];
+      const angle = (Math.PI * 2 * i) / count;
+      const dist = 60 + Math.random() * 95;
+      sp.style.setProperty('--sx', '50%');
+      sp.style.setProperty('--sy', '50%');
+      sp.style.setProperty('--tx', `${Math.round(Math.cos(angle) * dist)}px`);
+      sp.style.setProperty('--ty', `${Math.round(Math.sin(angle) * dist)}px`);
+      sp.style.setProperty('--size', `${10 + Math.floor(Math.random() * 6)}px`);
+      sp.style.setProperty('--dur', `${(1.1 + Math.random() * 0.5).toFixed(2)}s`);
+      sp.style.setProperty('--delay', `${(Math.random() * 0.2).toFixed(2)}s`);
+      sp.style.setProperty('--rot', `${Math.round((Math.random() - 0.5) * 160)}deg`);
+      sp.style.setProperty('--sc', '1.15');
+    } else {
+      sp.className = 'seamsi-sparkle-dot';
+      const angle = (Math.PI * 2 * i) / count;
+      const dist = 65 + Math.random() * 125;
+      sp.style.left = '50%';
+      sp.style.top = '50%';
+      const sz = 5 + Math.random() * 6;
+      sp.style.width = `${sz}px`;
+      sp.style.height = `${sz}px`;
+      sp.style.setProperty('--sx', `${(Math.cos(angle) * dist).toFixed(1)}px`);
+      sp.style.setProperty('--sy', `${(Math.sin(angle) * dist).toFixed(1)}px`);
+      sp.style.setProperty('--sdur', `${(0.9 + Math.random() * 0.8).toFixed(2)}s`);
+      sp.style.setProperty('--sdelay', `${(Math.random() * 0.3).toFixed(2)}s`);
+    }
+    layer.appendChild(sp);
+  }
+}
+
+// ── Phase 2 Modal: Royal 3-Digit Lucky Numbers (ตำหนักขุมทรัพย์สวรรค์ - รหัสมงคลประจำวัน) ──
 function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัทธา', fortune = null) {
   const luckyCard = document.getElementById('seamsi-lucky-card');
   if (!luckyCard) return;
@@ -5591,6 +5650,7 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
   luckyCard.classList.remove('active');
   void luckyCard.offsetWidth;
   luckyCard.classList.add('active');
+  spawnLuckySparkles();
 
   const hideLucky = () => {
     if (luckyNumbersHideTimer) {
@@ -5629,11 +5689,16 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
     return setTimeout(() => {
       el.textContent = finalDigit;
       el.style.opacity = '1';
-      el.parentElement?.classList.add('digit-locked');
+      if (el.parentElement) {
+        el.parentElement.classList.remove('digit-locked');
+        void el.parentElement.offsetWidth;
+        el.parentElement.classList.add('digit-locked');
+      }
       if (typeof templeAudio !== 'undefined') {
         if (isLast) {
           templeAudio.playBell(1027, 4.0);
           spawnBannerSparkleBurst('tier-dragon');
+          spawnLuckySparkles();
         } else {
           templeAudio.playWoodblock();
         }
