@@ -62,6 +62,14 @@ const customGiftsToSync = [
   {
     source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg',
     dest: path.join(__dirname, 'public', 'heavenly_paradise.jpg')
+  },
+  {
+    source: 'C:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
+    dest: path.join(__dirname, 'public', 'background_video.mp4')
+  },
+  {
+    source: 'C:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
+    dest: path.join(__dirname, 'public', 'bg-video.mp4')
   }
 ];
 
