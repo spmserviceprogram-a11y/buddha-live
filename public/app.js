@@ -3669,17 +3669,17 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.fillRect(0, 0, W, H);
   ctx.restore();
 
-  // 2. Imperial Ruby & Obsidian Glassmorphic Pill Body (พื้นหลังกระจกทับทิมหรูหรา 3 มิติ พร้อมเงาลอยตัว)
+  // 2. 50% Translucent Imperial Ruby & Obsidian Glassmorphic Pill Body
   const bx = 14, by = 12, bw = 382, bh = 90, br = 45;
   ctx.save();
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.88)';
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
   ctx.shadowBlur = 14;
   ctx.shadowOffsetY = 4;
   const bodyGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
-  bodyGrad.addColorStop(0.0, 'rgba(68, 12, 28, 0.96)');   // Luminous Imperial Ruby
-  bodyGrad.addColorStop(0.38, 'rgba(38, 8, 20, 0.94)');   // Royal Velvet Burgundy
-  bodyGrad.addColorStop(0.75, 'rgba(20, 5, 12, 0.96)');   // Deep Plum
-  bodyGrad.addColorStop(1.0, 'rgba(10, 2, 6, 0.98)');     // Obsidian Lacquer
+  bodyGrad.addColorStop(0.0, 'rgba(68, 12, 28, 0.50)');   // 50% Translucent Imperial Ruby
+  bodyGrad.addColorStop(0.38, 'rgba(38, 8, 20, 0.50)');   // 50% Translucent Velvet Burgundy
+  bodyGrad.addColorStop(0.75, 'rgba(20, 5, 12, 0.50)');   // 50% Translucent Deep Plum
+  bodyGrad.addColorStop(1.0, 'rgba(10, 2, 6, 0.50)');     // 50% Translucent Obsidian Lacquer
   ctx.fillStyle = bodyGrad;
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
