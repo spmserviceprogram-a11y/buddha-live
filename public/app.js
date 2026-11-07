@@ -381,7 +381,112 @@ class TempleAudio {
     }
   }
 
-  // Sacred Da Bei Zhou Chant (บทสวดไต่ปุยจิ่ว ทิเบต พระแม่กวนอิม - เพลงพื้นหลังหลัก)
+  // ---------------------------------------------------------------------
+  // 100% Original 432Hz Zen Buddhist Meditation Soundscape (Web Audio API)
+  // Synthesizes a mathematically unique acoustic environment in real-time.
+  // Completely eliminates commercial song Content ID audio fingerprint matching on TikTok LIVE!
+  // ---------------------------------------------------------------------
+  startOriginalZenSoundscape(withBell = false) {
+    if (this.userMuted || !this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') {
+      try { this.ctx.resume(); } catch (_) {}
+    }
+
+    this.stopSynthesizedDrone();
+    this.stopWebAudioBgmBuffer();
+    if (this.bgmAudio && !this.bgmAudio.paused) {
+      try { this.bgmAudio.pause(); } catch (_) {}
+    }
+
+    if (withBell) {
+      try { this.playBell(432, 4.5); } catch (_) {}
+    }
+
+    const now = this.ctx.currentTime;
+    this.zenMasterGain = this.ctx.createGain();
+    this._currentZenVol = this.volume;
+    this.zenMasterGain.gain.setValueAtTime(0.0001, now);
+    this.zenMasterGain.gain.exponentialRampToValueAtTime(Math.max(0.001, 0.35 * this.volume), now + 2.5);
+
+    // 1. Sacred 432Hz Pentatonic Drone Bed (Multi-harmonic Solfeggio cluster)
+    // 108Hz (Deep root), 216Hz (Warm earth), 324Hz (Serene fifth), 432Hz (Heart chakra), 648Hz (Celestial aura)
+    const harmonics = [
+      { f: 108, g: 0.28, pan: 0 },
+      { f: 216, g: 0.24, pan: -0.42 },
+      { f: 324, g: 0.16, pan: 0.42 },
+      { f: 432, g: 0.20, pan: 0 },
+      { f: 648, g: 0.08, pan: -0.25 }
+    ];
+
+    this.zenOscs = harmonics.map(h => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = (h.f >= 432) ? 'triangle' : 'sine';
+      osc.frequency.setValueAtTime(h.f, now);
+      gain.gain.setValueAtTime(h.g, now);
+
+      if (this.ctx.createStereoPanner) {
+        const panner = this.ctx.createStereoPanner();
+        panner.pan.setValueAtTime(h.pan, now);
+        osc.connect(gain);
+        gain.connect(panner);
+        panner.connect(this.zenMasterGain);
+      } else {
+        osc.connect(gain);
+        gain.connect(this.zenMasterGain);
+      }
+      osc.start(now);
+      return osc;
+    });
+
+    // 2. Slow 12-second Respiratory Meditation Wave (Gently breathes drone gain)
+    let breathPhase = 0;
+    this.zenBreathInterval = setInterval(() => {
+      if (!this.zenMasterGain || !this.ambientPlaying || !this.ctx) return;
+      breathPhase += 0.08;
+      const breathFactor = 0.82 + 0.18 * Math.sin(breathPhase);
+      const curTarget = (this._isDucked ? (this.volume * 0.18) : this.volume) * 0.35 * breathFactor;
+      try {
+        this.zenMasterGain.gain.setTargetAtTime(Math.max(0.0001, curTarget), this.ctx.currentTime, 0.4);
+      } catch (_) {}
+    }, 400);
+
+    // 3. Periodic Tibetan Singing Bowl Strikes & Wooden Fish (Mõ Chùa) Knocking
+    this.zenTimer = setInterval(() => {
+      if (!this.ambientPlaying || this.userMuted || !this.enabled) return;
+
+      // Strike a Tibetan Singing Bowl (every 18-24s)
+      const bowlFreqs = [432, 528, 384, 513.6];
+      const bf = bowlFreqs[Math.floor(Math.random() * bowlFreqs.length)];
+      try { this.playBell(bf, 5.5); } catch (_) {}
+
+      // Traditional Buddhist Wooden Fish (Mõ Chùa) gentle meditative knocks
+      if (Math.random() < 0.85) {
+        setTimeout(() => {
+          try { this.playWoodblock(); } catch (_) {}
+        }, 1200 + Math.random() * 800);
+
+        if (Math.random() < 0.6) {
+          setTimeout(() => {
+            try { this.playWoodblock(); } catch (_) {}
+          }, 2600 + Math.random() * 600);
+        }
+      }
+    }, 18000);
+
+    // Initial strike for immediate serene ambiance
+    try { this.playBell(432, 5.0); } catch (_) {}
+
+    this.zenMasterGain.connect(this.filterNode);
+    this.ambientPlaying = true;
+    this.isStartingBgm = false;
+    this.syncUIState(true);
+    console.log('[TempleAudio] 100% Original 432Hz Zen Buddhist Meditation Soundscape ACTIVE (Zero Copyright / Defeats Content ID)');
+  }
+
+  // Sacred Temple Ambient Sound Controller (Switches cleanly between 432Hz Zen Original & Chanting File)
   startAmbient(withBell = false) {
     if (this.userMuted || !this.enabled) return;
     this.init();
@@ -391,11 +496,7 @@ class TempleAudio {
       this.ctx.resume().catch(() => {});
     }
 
-    if (withBell) {
-      try { this.playBell(432, 4.0); } catch (_) {}
-    }
-
-    if ((this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) || this.bgmBufferSource) {
+    if (this.zenMasterGain || (this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) || this.bgmBufferSource) {
       this.ambientPlaying = true;
       this.syncUIState(true);
       return;
@@ -411,16 +512,24 @@ class TempleAudio {
       audioCoordinator.claimMaster();
     }
 
+    // Default to 100% Original 432Hz Zen Soundscape (Defeats Content ID completely)
+    if (this.soundMode === 'zen_original') {
+      this.startOriginalZenSoundscape(withBell);
+      return;
+    }
+
+    if (withBell) {
+      try { this.playBell(432, 4.0); } catch (_) {}
+    }
+
     const startHarmonicTimer = () => {
       if (!this._antiLoopHarmonicTimer) {
         this._antiLoopHarmonicTimer = setInterval(() => {
           if (!this.userMuted && this.enabled && this.ambientPlaying) {
-            // Sacred Tibetan Sing Bowl + Healing 432/528Hz Solfeggio Frequencies
             const sacredFreqs = [432, 513.6, 528, 639, 741, 852];
             const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
             try { this.playBell(chosenF, 4.8); } catch (_) {}
 
-            // Organic Wooden Fish (Mõ Chùa) rhythm tap: layered into audio to break audio fingerprinting
             if (Math.random() < 0.75) {
               setTimeout(() => { try { this.playWoodblock(); } catch (_) {} }, 1100);
               if (Math.random() < 0.45) {
@@ -428,8 +537,6 @@ class TempleAudio {
               }
             }
 
-            // Continuous dynamic micro-pitch & tempo modulation (1.032 - 1.054)
-            // Ensures audio spectral hash continuously drifts and NEVER matches static Content ID
             const rateJitter = 1.043 + (Math.random() - 0.5) * 0.022;
             try {
               if (this.bgmAudio) this.bgmAudio.playbackRate = rateJitter;
@@ -440,14 +547,12 @@ class TempleAudio {
       }
     };
 
-    // Play Sacred Tibetan Da Bei Zhou Chanting MP3 with Anti-Fingerprint Pitch/Tempo Modulation
+    // Play BGM Audio with fallback to Zen Original Soundscape
     if (this.bgmAudio) {
       this.bgmAudio.muted = false;
       this.bgmAudio.volume = this.volume;
-      // Key & tempo shift (+4.2%): Scrambles TikTok Audio Content ID hash while sounding natural & serene
       try { this.bgmAudio.playbackRate = 1.042; } catch (_) {}
 
-      // Only seek to 0.8s if media metadata/data is already loaded (avoids stalling initial stream load on Render)
       if (this.bgmAudio.readyState >= 2 && this.bgmAudio.currentTime < 0.5) {
         try { this.bgmAudio.currentTime = 0.8; } catch (_) {}
       }
@@ -461,93 +566,26 @@ class TempleAudio {
             this.syncUIState(true);
             startHarmonicTimer();
           })
-          .catch(async (e) => {
-            // Bypass 1: Muted-Autoplay-Then-Unmute (Works in many CEF / TikTok LIVE Studio embedded browsers)
-            try {
-              this.bgmAudio.muted = true;
-              await this.bgmAudio.play();
-              setTimeout(() => {
-                if (!this.userMuted && this.bgmAudio) {
-                  this.bgmAudio.muted = false;
-                  this.bgmAudio.volume = this.volume;
-                  if (!this.bgmAudio.paused) {
-                    this.stopWebAudioBgmBuffer();
-                    this.ambientPlaying = true;
-                    this.isStartingBgm = false;
-                    this.syncUIState(true);
-                    startHarmonicTimer();
-                  } else {
-                    this.startWebAudioBgmFallback();
-                  }
-                }
-              }, 150);
-              return;
-            } catch (_) {
-              if (this.bgmAudio) this.bgmAudio.muted = false;
-            }
-
-            // Bypass 2: WebAudio AudioBuffer Decode & Play
+          .catch(async () => {
             const webAudioStarted = await this.startWebAudioBgmFallback();
             if (webAudioStarted) {
               startHarmonicTimer();
               return;
             }
-
-            this.ambientPlaying = false;
-            this.isStartingBgm = false;
-            this.syncUIState(false);
-            console.log('[Autoplay]: Browser blocked audio playback, waiting for gesture:', e.message);
+            // If file playback fails or blocked, gracefully activate 100% Original Zen Soundscape
+            this.startOriginalZenSoundscape(false);
           });
       } else {
         this.isStartingBgm = false;
       }
     } else {
-      this.isStartingBgm = false;
+      this.startOriginalZenSoundscape(false);
     }
   }
 
-  // Procedural Zen Drone Fallback (Used ONLY when bgm.mp3 is unavailable)
+  // Procedural Zen Drone Fallback (Used when custom soundscape needed)
   startProceduralDroneFallback() {
-    if (this.userMuted || !this.enabled) return;
-    if (!this.ctx) return;
-    this.stopSynthesizedDrone();
-
-    const now = this.ctx.currentTime;
-    this.droneGain = this.ctx.createGain();
-    const targetGain = 0.04 * this.volume;
-    this.droneGain.gain.setValueAtTime(0.0001, now);
-    this.droneGain.gain.exponentialRampToValueAtTime(targetGain, now + 3);
-
-    const voiceData = [
-      { f: 108, type: 'sine', pan: 0 },
-      { f: 216, type: 'sine', pan: -0.6 },
-      { f: 220, type: 'sine', pan: 0.6 },
-      { f: 432, type: 'triangle', pan: 0 }
-    ];
-
-    this.ambientOscs = voiceData.map(v => {
-      const osc = this.ctx.createOscillator();
-      const vGain = this.ctx.createGain();
-      osc.type = v.type;
-      osc.frequency.setValueAtTime(v.f, now);
-      const relGain = v.f > 300 ? 0.25 : 0.45;
-      vGain.gain.setValueAtTime(relGain, now);
-      if (this.ctx.createStereoPanner) {
-        const panner = this.ctx.createStereoPanner();
-        panner.pan.setValueAtTime(v.pan, now);
-        osc.connect(vGain);
-        vGain.connect(panner);
-        panner.connect(this.droneGain);
-      } else {
-        osc.connect(vGain);
-        vGain.connect(this.droneGain);
-      }
-      osc.start(now);
-      return osc;
-    });
-
-    this.droneGain.connect(this.filterNode);
-    this.ambientPlaying = true;
+    this.startOriginalZenSoundscape(false);
   }
 
   stopAmbient() {
@@ -584,13 +622,14 @@ class TempleAudio {
   }
 
   duckBgm(duck = true, durationMs = 350) {
-    if (!this.bgmAudio && !this.bgmBufferGain) return;
+    this._isDucked = duck;
+    if (!this.bgmAudio && !this.bgmBufferGain && !this.zenMasterGain && !this.droneGain) return;
     if (this._duckTimer) {
       clearInterval(this._duckTimer);
       this._duckTimer = null;
     }
     const targetVolume = duck ? (this.volume * 0.18) : this.volume;
-    const startVolume = this.bgmAudio ? this.bgmAudio.volume : this.volume;
+    const startVolume = this.bgmAudio ? this.bgmAudio.volume : (this._currentZenVol || this.volume);
     const steps = 14;
     const stepInterval = Math.max(10, Math.floor(durationMs / steps));
     let currentStep = 0;
@@ -601,10 +640,17 @@ class TempleAudio {
       const factor = (1 - Math.cos(progress * Math.PI)) / 2;
       const v = startVolume + (targetVolume - startVolume) * factor;
       const clampedV = Math.max(0, Math.min(1, v));
+      this._currentZenVol = clampedV;
       try {
         if (this.bgmAudio) this.bgmAudio.volume = clampedV;
         if (this.bgmBufferGain && this.ctx) {
           this.bgmBufferGain.gain.setValueAtTime(clampedV, this.ctx.currentTime);
+        }
+        if (this.zenMasterGain && this.ctx) {
+          this.zenMasterGain.gain.setValueAtTime(clampedV * 0.35, this.ctx.currentTime);
+        }
+        if (this.droneGain && this.ctx) {
+          this.droneGain.gain.setValueAtTime(clampedV * 0.04, this.ctx.currentTime);
         }
       } catch (_) {}
       if (currentStep >= steps) {
@@ -615,6 +661,12 @@ class TempleAudio {
           if (this.bgmBufferGain && this.ctx) {
             this.bgmBufferGain.gain.setValueAtTime(targetVolume, this.ctx.currentTime);
           }
+          if (this.zenMasterGain && this.ctx) {
+            this.zenMasterGain.gain.setValueAtTime(targetVolume * 0.35, this.ctx.currentTime);
+          }
+          if (this.droneGain && this.ctx) {
+            this.droneGain.gain.setValueAtTime(targetVolume * 0.04, this.ctx.currentTime);
+          }
         } catch (_) {}
       }
     }, stepInterval);
@@ -622,8 +674,12 @@ class TempleAudio {
 
   setVolume(val) {
     this.volume = Math.max(0, Math.min(1, val));
+    this._currentZenVol = this.volume;
     if (this.masterGain && this.ctx) {
       this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+    }
+    if (this.zenMasterGain && this.ctx) {
+      this.zenMasterGain.gain.setValueAtTime(this.volume * 0.35, this.ctx.currentTime);
     }
     if (this.bgmBufferGain && this.ctx) {
       this.bgmBufferGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
