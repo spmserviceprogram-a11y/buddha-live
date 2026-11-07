@@ -2494,6 +2494,7 @@ const mandorlaInnerMat = new THREE.MeshBasicMaterial({
 const mandorlaInner = new THREE.Mesh(new THREE.PlaneGeometry(3.3, 3.3), mandorlaInnerMat);
 mandorlaGroup.add(mandorlaInner);
 
+mandorlaGroup.visible = false; // Disabled to let background video's authentic halo shine cleanly without moire
 scene.add(mandorlaGroup);
 
 // 2. Celestial God Rays (ลำแสงสวรรค์สีทองสาดส่อง)
