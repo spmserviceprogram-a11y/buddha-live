@@ -37,6 +37,12 @@ class TempleAudio {
     if (unlockPill) {
       unlockPill.style.display = (isPlaying || this.userMuted) ? 'none' : 'flex';
     }
+    const btnToggleBgm = document.getElementById('btn-toggle-chrome-bgm');
+    if (btnToggleBgm) {
+      btnToggleBgm.textContent = isPlaying ? '🔇 ปิดเสียงเพลงในหน้านี้ (กันเสียงซ้อนเมื่อเปิดคู่กับ TikTok)' : '🎵 เปิดเสียงเพลงในหน้านี้';
+      btnToggleBgm.style.background = isPlaying ? '#b26a00' : '#1b5e20';
+      btnToggleBgm.style.borderColor = isPlaying ? '#ffcc00' : '#4caf50';
+    }
   }
 
   init() {
