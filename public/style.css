@@ -1367,19 +1367,21 @@ body {
   border-left: 2px solid #ffd700;
 }
 
-/* Panel Right: กระดานทองบุญ */
+/* Panel Right: กระดานทองบุญ (Celestial White Jade & Gold) */
 
 .queue-empty,
 .wish-empty,
-.merit-empty {
-  font-size: 9.5px;
-  color: #fff8dc;
+.merit-empty,
+.sadhu-empty {
+  font-size: 9px;
+  color: #78350f;
   font-weight: 600;
   text-align: center;
   padding: 5px 3px;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(254, 252, 232, 0.94);
+  border: 1px dashed rgba(217, 119, 6, 0.45);
   border-radius: 4px;
-  text-shadow: 0 1px 2px #000;
+  text-shadow: none;
 }
 
 .hidden {
@@ -1440,10 +1442,11 @@ body {
   padding: 1.5px 3px;
   min-height: 19px;
   border-radius: 4px;
-  background: rgba(16, 5, 3, 0.62);
-  border: 1px solid rgba(255, 215, 0, 0.30);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(217, 119, 6, 0.35);
   box-sizing: border-box;
   gap: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .merit-row-left {
@@ -1484,9 +1487,9 @@ body {
 }
 
 .rank-badge-circle.regular {
-  background: rgba(85, 38, 20, 0.90);
-  color: #ffd700;
-  border: 1px solid rgba(255, 215, 0, 0.50);
+  background: rgba(241, 245, 249, 0.92);
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.40);
 }
 
 .merit-avatar {
@@ -1499,7 +1502,7 @@ body {
   align-items: center;
   justify-content: center;
   background: rgba(255, 215, 0, 0.25);
-  border: 1px solid rgba(255, 215, 0, 0.55);
+  border: 1px solid #f59e0b;
   font-size: 8px;
   flex-shrink: 0;
 }
@@ -1513,12 +1516,13 @@ body {
 }
 
 .merit-row.rank-1 {
-  background: linear-gradient(90deg, rgba(98, 24, 15, 0.72), rgba(48, 12, 8, 0.60));
-  border-color: rgba(255, 215, 0, 0.72);
+  background: linear-gradient(90deg, rgba(254, 243, 199, 0.96), rgba(253, 230, 138, 0.96));
+  border-color: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.35);
 }
 
 .merit-row.rank-1 .merit-name {
-  color: #ffd700;
+  color: #92400e;
   font-weight: 800;
 }
 
@@ -1535,12 +1539,12 @@ body {
   white-space: nowrap;
   font-weight: 700;
   font-size: 8.8px;
-  color: #ffffff;
-  text-shadow: 0 1px 3px #000, 0 0 2px #000;
+  color: #0f172a;
+  text-shadow: none;
 }
 
 .merit-pts {
-  color: #ffd700;
+  color: #b45309;
   font-weight: 800;
   font-size: 8px;
   white-space: nowrap;
@@ -1548,7 +1552,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 1.5px;
-  text-shadow: 0 1px 3px #000, 0 0 2px #000;
+  text-shadow: none;
 }
 
 /* Panel: TOP 3 กล่าวสาธุ (+1 แต้มเมื่อพิมพ์สาธุ) */
@@ -1562,13 +1566,12 @@ body {
   margin-left: auto;
   font-size: 7.5px;
   font-weight: 700;
-  color: #ffd700;
-  background: rgba(255, 215, 0, 0.18);
-  border: 1px solid rgba(255, 215, 0, 0.55);
+  color: #9d174d;
+  background: rgba(254, 242, 242, 0.92);
+  border: 1px solid rgba(219, 39, 119, 0.45);
   padding: 0.5px 3.5px;
   border-radius: 8px;
   white-space: nowrap;
-  text-shadow: 0 1px 2px #000;
 }
 
 /* Permanent Fixed Instruction Callout: Always visible to live viewers */
@@ -1577,37 +1580,36 @@ body {
   align-items: center;
   justify-content: center;
   gap: 2.5px;
-  background: linear-gradient(90deg, rgba(145, 28, 18, 0.88), rgba(72, 16, 9, 0.88));
-  border-bottom: 1px solid rgba(255, 215, 0, 0.55);
+  background: linear-gradient(90deg, #fdf2f8, #fef3c7);
+  border-bottom: 1px solid rgba(217, 119, 6, 0.45);
   padding: 2px 3.5px;
   font-size: 8px;
-  color: #ffffff;
-  text-shadow: 0 1px 2px #000;
+  color: #9d174d;
   box-sizing: border-box;
   white-space: nowrap;
 }
 
 .sadhu-permanent-notice .notice-tag {
-  color: #ffffff;
+  color: #9d174d;
   font-weight: 700;
   font-size: 8px;
   letter-spacing: 0.1px;
 }
 
 .sadhu-permanent-notice .highlight-sadhu {
-  color: #ffe600;
+  color: #ffffff;
   font-weight: 800;
   font-size: 8.5px;
-  background: rgba(0, 0, 0, 0.65);
-  border: 1px solid rgba(255, 215, 0, 0.85);
+  background: linear-gradient(90deg, #db2777, #be185d);
+  border: 1px solid #ffd700;
   border-radius: 3.5px;
   padding: 0.5px 3.5px;
-  box-shadow: 0 0 5px rgba(255, 215, 0, 0.50);
+  box-shadow: 0 0 5px rgba(219, 39, 119, 0.35);
   letter-spacing: 0.15px;
 }
 
 .sadhu-permanent-notice .notice-desc {
-  color: #fff8dc;
+  color: #b45309;
   font-weight: 700;
   font-size: 8px;
 }
@@ -1617,8 +1619,8 @@ body {
   display: flex;
   align-items: center;
   gap: 3px;
-  background: rgba(35, 12, 8, 0.75);
-  border: 1px dashed rgba(255, 215, 0, 0.45);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px dashed rgba(217, 119, 6, 0.45);
   border-radius: 3.5px;
   padding: 1.5px 4.5px;
   margin: 1px 3px 2px 3px;
