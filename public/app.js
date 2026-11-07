@@ -12616,7 +12616,7 @@ setInterval(() => {
 // ---------------------------------------------------------------------
 const bgVideoEl = document.getElementById('bg-video');
 const bgParadiseImgEl = document.getElementById('bg-paradise-img');
-if (bgVideoEl) {
+if (bgVideoEl && bgVideoEl.style.display !== 'none' && bgVideoEl.querySelector('source')) {
   bgVideoEl.playbackRate = 1.0;
   const tryPlayBgVideo = () => {
     if (bgVideoEl.paused) {
@@ -12638,6 +12638,10 @@ if (bgVideoEl) {
   });
   window.addEventListener('click', tryPlayBgVideo, { once: true });
   window.addEventListener('touchstart', tryPlayBgVideo, { once: true });
+} else {
+  // If video is not active or has no source, ensure the Heavenly Paradise image is proudly displayed
+  if (bgParadiseImgEl) bgParadiseImgEl.style.display = 'block';
+  if (bgVideoEl) bgVideoEl.style.display = 'none';
 }
 
 // ---------------------------------------------------------------------
