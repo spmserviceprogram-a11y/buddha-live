@@ -8898,6 +8898,22 @@ function triggerFireworksEffect() {
         s.material.opacity = Math.max(0, s.material.opacity - 0.009);
       });
 
+      // Animate 4 Sparkling Ruby Crystal Hearts
+      crystalHearts.forEach(ch => {
+        const hProg = Math.min(1.0, fwt * 1.8);
+        const easeScale = 0.95 + Math.sin(fwt * 5.0 + ch.phase) * 0.18;
+        ch.group.scale.set(hProg * easeScale, hProg * easeScale, hProg * easeScale);
+        ch.group.rotation.y += 0.024;
+        ch.sprite.rotation += 0.035;
+      });
+
+      // Animate 16 Ascending Sky Lanterns
+      skyLanterns.forEach(sl => {
+        sl.position.y += sl.userData.vy;
+        sl.position.x = sl.userData.baseX + Math.sin(fwt * sl.userData.wobbleSpeed + sl.userData.wobblePhase) * 0.15;
+        sl.rotation.y += 0.015;
+      });
+
       // Animate Royal White Elephant Walking, Ear Flapping & Halo Rotation
       elephantGroup.position.y = 4.35 + Math.sin(fwt * 2.8) * 0.14;
       eleHalo.rotation.z += 0.022;
