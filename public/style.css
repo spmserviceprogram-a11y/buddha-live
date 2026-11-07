@@ -600,21 +600,23 @@ body {
    Authentic Reference Live Stream Overlay Styles (ตามแบบภาพตัวอย่าง)
    ===================================================================== */
 
-/* Top Follower Blessing Banner (Celestial White Jade & Gold Pill) */
+/* Top Follower Blessing Banner (50% Translucent & Crisp Gold/White Pill) */
 .follower-banner {
   position: absolute;
   top: 56px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, rgba(254, 243, 199, 0.96) 100%);
+  background: linear-gradient(135deg, rgba(28, 12, 8, 0.50) 0%, rgba(18, 6, 4, 0.50) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1.5px solid #ffd700;
-  box-shadow: 0 0 16px rgba(255, 215, 0, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45), inset 0 0 8px rgba(255, 255, 255, 0.25);
   border-radius: 20px;
   padding: 4px 16px;
   font-size: 11.5px;
   font-weight: 700;
-  color: #0f172a;
-  text-shadow: none;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
   white-space: nowrap;
   z-index: 28;
   display: flex;
@@ -636,34 +638,35 @@ body {
 }
 
 .follower-highlight {
-  color: #be185d;
+  color: #ffd700;
   font-weight: 800;
-  text-shadow: none;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8), 0 1px 3px #000;
 }
 
-/* Shared Panel Card (Celestial White Jade & 24K Gold Filigree Theme) */
+/* Shared Panel Card (50% Translucent Glassmorphism with 24K Gold Filigree) */
 .panel-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(246, 249, 255, 0.96) 100%);
-  backdrop-filter: blur(8px);
+  background: linear-gradient(180deg, rgba(20, 10, 7, 0.50) 0%, rgba(12, 6, 4, 0.50) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1.5px solid #ffd700;
   border-radius: 8px;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), 0 0 12px rgba(255, 215, 0, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55), 0 0 12px rgba(255, 215, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.3);
   z-index: 22;
   overflow: hidden;
 }
 
 .panel-header-gold {
-  background: linear-gradient(90deg, #9d174d 0%, #db2777 45%, #b45309 100%);
+  background: linear-gradient(90deg, rgba(157, 23, 77, 0.50) 0%, rgba(219, 39, 119, 0.50) 45%, rgba(180, 83, 9, 0.50) 100%);
   padding: 4px 7px;
   font-size: 11.5px;
   font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-weight: 700;
-  color: #fffaf0;
+  font-weight: 800;
+  color: #ffffff;
   display: flex;
   align-items: center;
   gap: 4px;
   border-bottom: 1.5px solid #ffd700;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
   letter-spacing: 0.2px;
 }
 
