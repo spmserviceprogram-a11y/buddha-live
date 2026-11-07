@@ -280,6 +280,24 @@ class TempleAudio {
 
   // Helper to cleanly stop synthesized drone oscillators and interval timers
   stopSynthesizedDrone() {
+    if (this.zenOscs && this.zenOscs.length > 0) {
+      this.zenOscs.forEach(o => {
+        try { o.stop(); o.disconnect(); } catch (_) {}
+      });
+      this.zenOscs = [];
+    }
+    if (this.zenBreathInterval) {
+      clearInterval(this.zenBreathInterval);
+      this.zenBreathInterval = null;
+    }
+    if (this.zenTimer) {
+      clearInterval(this.zenTimer);
+      this.zenTimer = null;
+    }
+    if (this.zenMasterGain) {
+      try { this.zenMasterGain.disconnect(); } catch (_) {}
+      this.zenMasterGain = null;
+    }
     if (this.ambientOscs && this.ambientOscs.length > 0) {
       this.ambientOscs.forEach(o => {
         try { o.stop(); o.disconnect(); } catch (_) {}
