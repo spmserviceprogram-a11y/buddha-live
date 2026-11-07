@@ -91,9 +91,9 @@ function syncCustomGifts() {
   customGiftsToSync.forEach(g => {
     try {
       if (fs.existsSync(g.source)) {
-        if (!fs.existsSync(g.dest) || fs.statSync(g.source).mtimeMs > fs.statSync(g.dest).mtimeMs) {
+        if (!fs.existsSync(g.dest) || fs.statSync(g.source).size !== fs.statSync(g.dest).size || fs.statSync(g.source).mtimeMs > fs.statSync(g.dest).mtimeMs) {
           fs.copyFileSync(g.source, g.dest);
-          console.log(`[Auto-Sync] คัดลอกภาพของขวัญ ${path.basename(g.dest)} สำเร็จ`);
+          console.log(`[Auto-Sync] คัดลอกภาพของขวัญ ${path.basename(g.dest)} สำเร็จ (${fs.statSync(g.source).size} bytes)`);
         }
       }
     } catch (e) {
