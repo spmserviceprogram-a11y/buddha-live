@@ -6543,7 +6543,7 @@ function triggerIncenseEffect() {
 
     const emberHalo = new THREE.Mesh(
       new THREE.SphereGeometry(0.038, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xff9900, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ color: 0xff9900, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending, depthWrite: false })
     );
     emberHalo.position.y = 0.55;
     stickGroup.add(emberHalo);
@@ -6552,17 +6552,38 @@ function triggerIncenseEffect() {
     censer.add(stickGroup);
   }
 
-  // Floating Sacred Golden Omamori / Blessing Talisman hovering above Censer
+  // Floating Sacred Golden Omamori / Blessing Talisman hovering above Censer (ไร้ขอบดำและขอบกล่องทึบ 100%)
   const omamoriGroup = new THREE.Group();
   omamoriGroup.position.set(0, 1.05, -0.08);
+
+  // Luminous Golden Aura Halo behind Omamori Plaque (ประกายรัศมีมงคลฉัพพรรณรังสี)
+  const omamoriHalo = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.44, 0.60),
+    new THREE.MeshBasicMaterial({
+      map: getCrystalSparkTexture(),
+      color: 0xffd700,
+      transparent: true,
+      opacity: 0.65,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    })
+  );
+  omamoriHalo.position.z = -0.005;
+  omamoriGroup.add(omamoriHalo);
+
+  // Omamori Plaque Plane with Crystal-Clear Transparency (ลบขอบดำทึบและมุมกล่องออก 100%)
   const omamoriPlaque = new THREE.Mesh(
-    new THREE.BoxGeometry(0.32, 0.48, 0.028),
-    new THREE.MeshBasicMaterial({ map: getOmamoriPlaqueTexture() })
+    new THREE.PlaneGeometry(0.32, 0.48),
+    new THREE.MeshBasicMaterial({
+      map: getOmamoriPlaqueTexture(),
+      transparent: true,
+      alphaTest: 0.05,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    })
   );
   omamoriGroup.add(omamoriPlaque);
-
-  const omamoriFrame = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.50, 0.022), bronzeGoldMat);
-  omamoriGroup.add(omamoriFrame);
 
   // Golden Tassel hanging under the Omamori Plaque
   const tasselCord = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.018, 0.16, 8), rubyLacquerMat);
