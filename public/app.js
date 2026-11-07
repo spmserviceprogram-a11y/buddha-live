@@ -14154,3 +14154,53 @@ triggerFireworksEffect      = withHeavenlyFX(triggerFireworksEffect, 'fireworks'
 triggerHeavenlyPortalEffect = withHeavenlyFX(triggerHeavenlyPortalEffect, 'castle');
 triggerDragonDescentEffect  = withHeavenlyFX(triggerDragonDescentEffect, 'dragon');
 triggerSeamSiEffect         = withHeavenlyFX(triggerSeamSiEffect, 'seamsi');
+
+// Universal Test Harness for Live Stream Gifts (ทดสอบเอฟเฟกต์ของขวัญทั้ง 10 ระดับ)
+window.testGiftEffect = function(tier) {
+  const map = {
+    1: 'kowtow', 'kowtow': 'kowtow',
+    1.5: 'seamsi', 'seamsi': 'seamsi',
+    2: 'incense', 'incense': 'incense',
+    3: 'lotus', 'lotus': 'lotus',
+    4: 'flowers', 'flowers': 'flowers',
+    5: 'golden_bell', 'golden_bell': 'golden_bell', 'bell': 'golden_bell',
+    6: 'crystal_fountain', 'crystal_fountain': 'crystal_fountain', 'fountain': 'crystal_fountain',
+    7: 'royal_carriage', 'royal_carriage': 'royal_carriage', 'carriage': 'royal_carriage',
+    8: 'fireworks', 'fireworks': 'fireworks',
+    9: 'castle', 'castle': 'castle', 'portal': 'castle',
+    10: 'dragon', 'dragon': 'dragon'
+  };
+  const target = map[tier] || tier;
+  console.log(`[TestGiftEffect] Testing celestial gift effect: ${target}`);
+
+  if (target === 'kowtow') {
+    createCarpetRipple(0, 0.05, 5.0, 0xffd700);
+    createLotusBloomDecal(0, 0.05, 5.0, 0xffd700);
+    spawnBlessingSparks(0, 0.3, 5.0, 24, 0xffea70);
+    templeAudio.playWoodblock();
+    templeAudio.playBell(432, 4.0);
+    if (window.heavenlyFX) window.heavenlyFX.play('seamsi');
+  } else if (target === 'seamsi') {
+    triggerSeamSiEffect('ผู้มีจิตศรัทธา');
+  } else if (target === 'incense') {
+    triggerIncenseEffect();
+  } else if (target === 'lotus') {
+    triggerLotusBloomEffect();
+  } else if (target === 'flowers') {
+    triggerLotusRainEffect();
+  } else if (target === 'golden_bell') {
+    triggerGoldenBellEffect();
+  } else if (target === 'crystal_fountain') {
+    triggerCrystalFountainEffect();
+  } else if (target === 'royal_carriage') {
+    triggerRoyalCarriageEffect();
+  } else if (target === 'fireworks') {
+    triggerFireworksEffect();
+  } else if (target === 'castle') {
+    triggerHeavenlyPortalEffect();
+  } else if (target === 'dragon') {
+    triggerDragonDescentEffect();
+  } else {
+    console.warn(`[TestGiftEffect] Unknown tier: ${tier}`);
+  }
+};
