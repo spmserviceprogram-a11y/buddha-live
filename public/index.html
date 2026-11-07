@@ -285,6 +285,7 @@
       <!-- Active Big Gift Effect Banner (ป้ายอวยพรของขวัญมงคลระดับจักรพรรดิ ขอบบน ไม่บังพระพักตร์) -->
       <div id="effect-banner" class="effect-banner tier-standard hidden" style="display:none;">
         <div class="effect-aura-backdrop"></div>
+        <div class="effect-halo-rays"></div>
         <div class="effect-shimmer-sweep"></div>
         <div class="effect-crown-ornament">☸️</div>
         <div class="effect-wing effect-wing-left"></div>
@@ -307,13 +308,28 @@
 
       <!-- Royal Imperial Seam-Si Fortune Modal (เซียมซีมหาโชค - ตรงตามแบบฉบับพัดชำระรูปที่ 2) -->
       <div id="seamsi-fortune-card" class="seamsi-fortune-card hidden" style="display:none;">
+        <div class="seamsi-backdrop-glow"></div>
         <div class="seamsi-sparkle-layer" id="seamsi-sparkle-layer"></div>
+
+        <!-- Imperial Golden Scroll Rods (หัวเพลาคัมภีร์ทองคำ) -->
+        <div class="seamsi-scroll-rod rod-top">
+          <span class="rod-finial finial-left"></span>
+          <span class="rod-body"></span>
+          <span class="rod-finial finial-right"></span>
+        </div>
 
         <div class="seamsi-parchment-frame">
           <!-- Top Header Plaque docked on Frame Top Rail (พัดชำระ) -->
-          <div class="seamsi-top-pill">พัดชำระ</div>
+          <div class="seamsi-top-pill">
+            <span class="pill-spark">✨</span>
+            <span class="pill-text">ใบเซียมซีสวรรค์ประทานพร</span>
+            <span class="pill-spark">✨</span>
+          </div>
 
           <div class="seamsi-parchment-sheet">
+            <!-- Background Lotus Dharma Seal Watermark -->
+            <div class="seamsi-watermark-lotus"></div>
+
             <!-- Delicate Double Inner Border & Corner Filigrees -->
             <div class="seamsi-inner-border"></div>
             <div class="seamsi-sheet-corner corner-tl"></div>
@@ -324,8 +340,8 @@
             <!-- Soft Luminous Moon Halo behind Title -->
             <div class="seamsi-title-halo"></div>
 
-            <!-- Main Title & Stick Number (เซียมซี / เลขที่ 8) -->
-            <h2 class="seamsi-main-title">เซียมซี</h2>
+            <!-- Main Title & Stick Number (เซียมซีมหาโชค / เลขที่ 8) -->
+            <h2 class="seamsi-main-title">เซียมซีมหาโชค</h2>
             <div class="seamsi-stick-title" id="seamsi-stick-number">เลขที่ 8</div>
 
             <!-- Ornamental Botanical Scroll Divider (ลวดลายเถาไม้ขาวนวลตามต้นฉบับ) -->
@@ -384,34 +400,52 @@
 
           <!-- Action Dismiss Button docked on Frame Bottom Rail (ปิดคำทำนาย) -->
           <button class="btn-seamsi-dismiss" id="btn-seamsi-close" type="button">
-            ปิดคำทำนาย
+            <span class="btn-sparkle">✨</span> ปิดคำทำนาย (ดูรหัสมงคล) <span class="btn-sparkle">✨</span>
           </button>
+        </div>
+
+        <div class="seamsi-scroll-rod rod-bottom">
+          <span class="rod-finial finial-left"></span>
+          <span class="rod-body"></span>
+          <span class="rod-finial finial-right"></span>
         </div>
       </div>
 
       <!-- Royal 3-Digit Auspicious Code Modal (รหัสมงคลประจำวัน 3 ตัว - ปลอดภัยจาก AI OCR TikTok) -->
       <div id="seamsi-lucky-card" class="seamsi-lucky-card hidden" style="display:none;">
+        <div class="seamsi-lucky-aura"></div>
         <div class="seamsi-lucky-sparkles" id="seamsi-lucky-sparkles"></div>
         <div class="seamsi-lucky-body">
+          <div class="seamsi-lucky-shimmer"></div>
+          <div class="seamsi-lucky-crest">
+            <span class="lucky-crest-icon">🪷</span>
+          </div>
           <div class="seamsi-lucky-header">รหัสมงคลประจำวัน</div>
           <div class="seamsi-lucky-donor" id="seamsi-lucky-donor-name">🌿 คุณผู้มีจิตศรัทธา 🌿</div>
 
           <!-- 3 Golden 3D Blocks [ 1 ] [ 7 ] [ 2 ] -->
           <div class="seamsi-lucky-cards-row">
             <div class="lucky-digit-card">
+              <div class="digit-shine"></div>
               <span class="lucky-digit-val" id="lucky-d1">1</span>
             </div>
             <div class="lucky-digit-card">
+              <div class="digit-shine"></div>
               <span class="lucky-digit-val" id="lucky-d2">7</span>
             </div>
             <div class="lucky-digit-card">
+              <div class="digit-shine"></div>
               <span class="lucky-digit-val" id="lucky-d3">2</span>
             </div>
           </div>
 
+          <div class="seamsi-lucky-blessing-note">
+            ✨ บารมีพระแม่กวนอิมประทานโชคลาภ ร่ำรวยมหาศาล ✨
+          </div>
+
           <!-- Action Dismiss Button (ปิดคำทำนาย) -->
           <button class="btn-lucky-dismiss" id="btn-lucky-close" type="button">
-            ปิดคำทำนาย
+            <span class="btn-sparkle">🙏</span> รับพรมงคล <span class="btn-sparkle">🙏</span>
           </button>
         </div>
       </div>
