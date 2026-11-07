@@ -57,6 +57,14 @@ class TempleAudio {
   }
 
   init() {
+    // Request server to ensure Original Zen Soundscape is generated and ready on disk
+    try {
+      if (!this._bgmRegenRequested) {
+        this._bgmRegenRequested = true;
+        fetch('/api/regenerate-zen-bgm').catch(() => {});
+      }
+    } catch (_) {}
+
     if (!this.bgmAudio) {
       this.bgmAudio = document.getElementById('bgm-audio');
       if (!this.bgmAudio) {
