@@ -2060,7 +2060,18 @@ io.on('connection', socket => {
   });
 
   socket.on('mic_router_sync', data => {
-    socket.broadcast.emit('mic_router_sync', data || {});
+    if (data && typeof data === 'object') {
+      if (data.mode && ['stereo_mix', 'voice_split', 'all_to_mic'].includes(data.mode)) {
+        state.micRouterConfig.mode = data.mode;
+      }
+      if (typeof data.sinkId === 'string') state.micRouterConfig.sinkId = data.sinkId;
+      if (typeof data.deviceName === 'string') state.micRouterConfig.deviceName = data.deviceName;
+      if (typeof data.acousticsEnabled === 'boolean') state.micRouterConfig.acousticsEnabled = data.acousticsEnabled;
+      if (typeof data.keepAliveEnabled === 'boolean') state.micRouterConfig.keepAliveEnabled = data.keepAliveEnabled;
+      if (typeof data.dualMonitorEnabled === 'boolean') state.micRouterConfig.dualMonitorEnabled = data.dualMonitorEnabled;
+      state.micRouterConfig.updatedAt = Date.now();
+    }
+    socket.broadcast.emit('mic_router_sync', state.micRouterConfig);
   });
 
   socket.on('mic_router_test', data => {
