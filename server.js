@@ -2021,8 +2021,6 @@ io.on('connection', socket => {
     micRouterConfig: state.micRouterConfig
   });
 
-  socket.emit('mic_router_sync', state.micRouterConfig);
-
   socket.on('connect-tiktok', data => {
     const username = data?.uniqueId || data?.username;
     if (username) {
