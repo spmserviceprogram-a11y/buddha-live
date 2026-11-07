@@ -1964,6 +1964,20 @@ class SmartLiveMicRouter {
       });
     }
 
+    const toggleChromeBgmBtn = document.getElementById('btn-toggle-chrome-bgm');
+    if (toggleChromeBgmBtn) {
+      toggleChromeBgmBtn.addEventListener('click', () => {
+        const isPlaying = this.templeAudio.toggleAmbient();
+        if (typeof showToast === 'function') {
+          if (!isPlaying) {
+            showToast('ปิดเพลงในหน้านี้แล้ว 🔇', 'ระบบจะส่งเฉพาะเสียงพูด AI เข้าสายไมค์ TikTok โดยไม่มีเสียงเพลงซ้อน 100%');
+          } else {
+            showToast('เปิดเพลงสวดมนต์แล้ว 🎵', 'เปิดเสียงบทสวดมนต์ในหน้านี้เรียบร้อย');
+          }
+        }
+      });
+    }
+
     this.updateStatusText();
   }
 }
