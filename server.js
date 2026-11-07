@@ -409,6 +409,15 @@ const state = {
     health: 0,
     study: 0
   },
+  micRouterConfig: {
+    mode: 'voice_split', // Default: auto-route voice into virtual mic cable
+    sinkId: 'default',
+    deviceName: 'cable', // Preferred device label keyword (CABLE Input / VB-Audio / Virtual)
+    acousticsEnabled: true,
+    keepAliveEnabled: true,
+    dualMonitorEnabled: true,
+    updatedAt: Date.now()
+  },
   historyEvents: []
 };
 
