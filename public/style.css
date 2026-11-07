@@ -596,7 +596,7 @@ body {
   margin-top: 6px;
   margin-bottom: 1px;
   border-radius: 10px;
-  background: linear-gradient(135deg, rgba(150, 14, 30, 0.95) 0%, rgba(88, 8, 20, 0.96) 52%, rgba(128, 26, 12, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(62, 10, 16, 0.95) 0%, rgba(30, 5, 8, 0.96) 52%, rgba(54, 12, 8, 0.95) 100%);
   border: 1.5px solid #ffd700;
   box-shadow:
     0 5px 14px rgba(0, 0, 0, 0.65),
@@ -880,17 +880,14 @@ body {
 }
 
 .seamsi-popup-title {
-  font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-size: 9.2px;
-  font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.2px;
-  line-height: 1.15;
+  font-family: 'Sarabun', 'Kanit', sans-serif;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #ffe866;
+  letter-spacing: 0px;
+  line-height: 1.2;
   white-space: nowrap;
-  text-shadow:
-    0 0 7px rgba(255, 215, 0, 0.90),
-    0 1px 3px #000,
-    0 0 2px #000;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
 }
 
 .seamsi-popup-sub {
@@ -900,18 +897,17 @@ body {
 
 .seamsi-popup-sub .sub-pill {
   display: inline-block;
-  font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-size: 7.4px;
-  font-weight: 700;
-  color: #ffe875;
-  background: rgba(18, 4, 3, 0.82);
-  border: 1px solid rgba(255, 215, 0, 0.68);
+  font-family: 'Sarabun', 'Kanit', sans-serif;
+  font-size: 7.5px;
+  font-weight: 500;
+  color: #ffffff;
+  background: rgba(14, 4, 3, 0.85);
+  border: 1px solid rgba(255, 215, 0, 0.55);
   border-radius: 999px;
   padding: 1px 4.5px;
-  letter-spacing: -0.15px;
+  letter-spacing: 0px;
   white-space: nowrap;
-  box-shadow: inset 0 0 4px rgba(255, 215, 0, 0.22);
-  text-shadow: 0 1px 2px #000;
+  text-shadow: none;
 }
 
 .vip-guide-item {
