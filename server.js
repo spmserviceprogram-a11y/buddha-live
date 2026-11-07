@@ -164,30 +164,97 @@ app.get(['/background.jpg', '/heavenly_paradise.jpg'], (req, res) => {
 });
 
 // ---------------------------------------------------------------------
-// Background Video Route (gemini_generated_video_e3c530b7.mp4)
+// Background Video Route (พื้นหลังใหม่.mp4 / background_video.mp4)
 // High-efficiency range streaming for TikTok Live & OBS Studio
 // ---------------------------------------------------------------------
-const BG_VIDEO_SOURCE = 'C:/Users/BINARY/Desktop/gemini_generated_video_e3c530b7.mp4';
+const BG_VIDEO_SOURCE_CANDIDATES = [
+  'C:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
+  'c:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
+  path.join(process.env.USERPROFILE || 'C:/Users/BINARY', 'Desktop', 'พื้นหลังใหม่.mp4'),
+  'C:/Users/BINARY/Desktop/gemini_generated_video_e3c530b7.mp4'
+];
 const BG_VIDEO_DEST = path.join(__dirname, 'public', 'background_video.mp4');
+const BG_VIDEO_ALT_DEST = path.join(__dirname, 'public', 'bg-video.mp4');
 
-try {
-  if (fs.existsSync(BG_VIDEO_SOURCE) && !fs.existsSync(BG_VIDEO_DEST)) {
-    fs.copyFileSync(BG_VIDEO_SOURCE, BG_VIDEO_DEST);
-    console.log('[Video] Background video copied to public/background_video.mp4');
+function getActiveBgVideoSource() {
+  for (const src of BG_VIDEO_SOURCE_CANDIDATES) {
+    try {
+      if (fs.existsSync(src)) return src;
+    } catch (_) {}
   }
-} catch (e) {
-  console.warn('[Video] Copy notice:', e.message);
+  return null;
 }
 
-app.get(['/background_video.mp4', '/bg-video.mp4'], (req, res) => {
-  try {
-    if (fs.existsSync(BG_VIDEO_SOURCE) && !fs.existsSync(BG_VIDEO_DEST)) {
-      fs.copyFileSync(BG_VIDEO_SOURCE, BG_VIDEO_DEST);
+function syncBgVideo() {
+  const src = getActiveBgVideoSource();
+  if (src && fs.existsSync(src)) {
+    try {
+      const srcStat = fs.statSync(src);
+      const destExists = fs.existsSync(BG_VIDEO_DEST);
+      const destStat = destExists ? fs.statSync(BG_VIDEO_DEST) : null;
+      if (!destExists || srcStat.size !== destStat.size || srcStat.mtimeMs > destStat.mtimeMs) {
+        fs.copyFileSync(src, BG_VIDEO_DEST);
+        try { fs.copyFileSync(src, BG_VIDEO_ALT_DEST); } catch (_) {}
+        console.log(`[Video] Synced new background video from ${src} to ${BG_VIDEO_DEST} (${srcStat.size} bytes)`);
+      }
+    } catch (e) {
+      console.warn('[Video] Copy notice:', e.message);
     }
+  }
+}
+syncBgVideo();
+
+app.get('/api/sync-bg-video', (req, res) => {
+  syncBgVideo();
+  const activeSrc = getActiveBgVideoSource();
+  const exists = fs.existsSync(BG_VIDEO_DEST);
+  const size = exists ? fs.statSync(BG_VIDEO_DEST).size : 0;
+  res.json({ success: true, activeSrc, exists, size });
+});
+
+app.get(['/background_video.mp4', '/bg-video.mp4', '/video.mp4'], (req, res) => {
+  try {
+    syncBgVideo();
   } catch (_) { }
-  if (fs.existsSync(BG_VIDEO_DEST)) return res.sendFile(BG_VIDEO_DEST);
-  if (fs.existsSync(BG_VIDEO_SOURCE)) return res.sendFile(BG_VIDEO_SOURCE);
-  res.status(404).send('Background video not found');
+
+  const videoPath = fs.existsSync(BG_VIDEO_DEST) ? BG_VIDEO_DEST : getActiveBgVideoSource();
+  if (!videoPath || !fs.existsSync(videoPath)) {
+    return res.status(404).send('Background video not found');
+  }
+
+  try {
+    const stat = fs.statSync(videoPath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunksize = (end - start) + 1;
+      const file = fs.createReadStream(videoPath, { start, end });
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': 'video/mp4'
+      };
+      res.writeHead(206, head);
+      file.pipe(res);
+    } else {
+      const head = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': 'no-cache'
+      };
+      res.writeHead(200, head);
+      fs.createReadStream(videoPath).pipe(res);
+    }
+  } catch (err) {
+    console.warn('[Video Stream Error]:', err.message);
+    res.status(500).send('Error streaming video');
+  }
 });
 
 // ---------------------------------------------------------------------
