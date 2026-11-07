@@ -8601,6 +8601,29 @@ function getAncientGoldCoinTexture() {
   return cachedAncientCoinTex;
 }
 
+function disposeFireworksGroup(group) {
+  if (!group) return;
+  try {
+    scene.remove(group);
+    group.traverse(obj => {
+      if (obj.geometry) {
+        try { obj.geometry.dispose(); } catch (e) {}
+      }
+      if (obj.material) {
+        try {
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach(m => m.dispose());
+          } else {
+            obj.material.dispose();
+          }
+        } catch (e) {}
+      }
+    });
+  } catch (err) {
+    console.warn('[Fireworks Disposal]', err);
+  }
+}
+
 function triggerFireworksEffect() {
   templeAudio.playBell(216, 6.0);
   templeAudio.playBell(432, 6.0);
@@ -8608,7 +8631,7 @@ function triggerFireworksEffect() {
   templeAudio.playBell(1296, 3.5);
 
   if (activeFireworks) {
-    scene.remove(activeFireworks);
+    disposeFireworksGroup(activeFireworks);
     activeFireworks = null;
   }
 
