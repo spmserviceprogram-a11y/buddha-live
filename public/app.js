@@ -4559,11 +4559,11 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
   luckyRollIntervals[1] = rollDigit(d2El, digits[1], 1150, false);
   luckyRollIntervals[2] = rollDigit(d3El, digits[2], 1650, true);
 
-  // Auto-hide after 6.5s
-  luckyNumbersHideTimer = setTimeout(hideLucky, 6500);
+  // Auto-hide after 5.5s
+  luckyNumbersHideTimer = setTimeout(hideLucky, 5500);
 }
 
-// ── Phase 1 Modal: Royal Seam-Si Fortune Scroll (ตรงตามแบบรูปที่ 2) ──
+// ── Phase 1 Modal: Royal Seam-Si Fortune Scroll (ตรงตามแบบรูปที่ 2 — ผู้เล่นอ่านกลอนคำทำนายด้วยตัวเอง) ──
 function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรัทธา', fortune = null) {
   const card = document.getElementById('seamsi-fortune-card');
   if (!card) return;
@@ -4624,31 +4624,15 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
   card.classList.add('active');
   spawnSeamSiCardSparkles();
 
-  // Auspicious bell sound
-  if (typeof templeAudio !== 'undefined' && templeAudio.playBell) {
-    templeAudio.playBell(513.6, 3.0);
+  // Auspicious temple chime & bell when fortune scroll unfolds (no duplicate AI voice reading)
+  if (typeof templeAudio !== 'undefined') {
+    if (templeAudio.playBell) templeAudio.playBell(513.6, 3.2);
+    if (templeAudio.playLotusChime) templeAudio.playLotusChime();
   }
 
-  // Voice speaks concise fortune blessing
-  const showToken = ++seamSiScrollToken;
-  const voiceOn = typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.enabled;
-  if (voiceOn) {
-    guanYinVoice.speakSeamSiFortune(cleanDonor, f, {
-      onStart: () => {
-        if (showToken !== seamSiScrollToken) return;
-        if (seamSiScrollHideTimer) clearTimeout(seamSiScrollHideTimer);
-        seamSiScrollHideTimer = setTimeout(transitionToLucky, 14000); // Safety ceiling
-      },
-      onDone: () => {
-        if (showToken !== seamSiScrollToken) return;
-        if (seamSiScrollHideTimer) clearTimeout(seamSiScrollHideTimer);
-        seamSiScrollHideTimer = setTimeout(transitionToLucky, 1200); // linger 1.2s after speech
-      }
-    });
-    seamSiScrollHideTimer = setTimeout(transitionToLucky, 16000);
-  } else {
-    seamSiScrollHideTimer = setTimeout(transitionToLucky, 6000);
-  }
+  // Keep fortune scroll open for 5.5s so viewer can read the 6-line poem & screenshot before lucky numbers roll
+  ++seamSiScrollToken;
+  seamSiScrollHideTimer = setTimeout(transitionToLucky, 5500);
 }
 
 let activeSeamSiGroup = null;

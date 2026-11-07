@@ -1566,23 +1566,35 @@ app.post('/api/gemini/bless', async (req, res) => {
   if (!blessing) {
     if (isGiftAction) {
       const specificEffect = spokenEffectName || 'กราบเบญจางคประดิษฐ์';
-      const giftBlessingTemplates = [
-        `ขอบคุณคุณ ${spokenName} ที่ร่วมบุญ${specificEffect} ขอให้ร่ำรวยมีความสุขมากๆ นะคะ`,
-        `อนุโมทนาคุณ ${spokenName} ที่ร่วมบุญ${specificEffect} ขอให้เงินทองไหลมาเทมานะคะ`,
-        `ขอบคุณคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้สุขภาพแข็งแรงและโชคดีนะคะ`,
-        `ขอขอบใจคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้สมปรารถนาดั่งใจหวังนะคะ`,
-        `อนุโมทนาบุญคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้ชีวิตรุ่งเรืองและราบรื่นนะคะ`,
-        `ชื่นใจในบุญของคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้มีแต่โชคลาภเงินทองนะคะ`,
-        `อนุโมทนาสาธุคุณ ${spokenName} ขอให้บุญ${specificEffect} หนุนนำให้พบคู่บารมีและกัลยาณมิตรนะคะ`,
-        `บารมีคุ้มครองคุณ ${spokenName} ที่ร่วมบุญ${specificEffect} ขอให้เปิดคลังทรัพย์รับโชคใหญ่นะคะ`,
-        `ขอบคุณคุณ ${spokenName} ยิ่งนัก ขอให้บุญรักษา เทวดาคุ้มครอง และแคล้วคลาดปลอดภัยนะคะ`,
-        `ขออวยพรให้คุณ ${spokenName} ที่ร่วมบุญ${specificEffect} การงานก้าวหน้า ค้าขายร่ำรวยนะคะ`,
-        `อนุโมทนาบุญกุศลอันบริสุทธิ์คุณ ${spokenName} ขอให้ชีวิตสดใส ไร้โรคภัยเบียดเบียนนะคะ`,
-        `ขอบคุณคุณ ${spokenName} ที่นำจิตศรัทธามาร่วมบุญ${specificEffect} ขอให้มีกินมีใช้ไม่ขาดมือนนะคะ`,
-        `สาธุอนุโมทนาคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้คำอธิษฐานสัมฤทธิผลทันใจนะคะ`,
-        `ขอให้คุณ ${spokenName} รับพรมงคลร้อยแปดประการ ร่ำรวยมั่งคั่งและร่มเย็นเป็นสุขนะคะ`
-      ];
-      blessing = giftBlessingTemplates[Math.floor(Math.random() * giftBlessingTemplates.length)];
+      if (specificEffect.includes('เซียมซี') || cleanEffectType === 'seamsi') {
+        const seamsiBlessingTemplates = [
+          `อนุโมทนาคุณ ${spokenName} ร่วมเสี่ยงเซียมซีมหาโชค ขอให้ได้ใบมงคลและรับโชคใหญ่นะคะ`,
+          `ขอบคุณคุณ ${spokenName} ที่ร่วมเสี่ยงเซียมซีมหาโชค ขอให้คำทำนายนำพาความร่ำรวยมาให้นะคะ`,
+          `สาธุอนุโมทนาคุณ ${spokenName} เสี่ยงเซียมซีมหาโชค ขอให้เปิดดวงรับทรัพย์ก้อนโตนะคะ`,
+          `บารมีพระแม่คุ้มครองคุณ ${spokenName} ที่ร่วมเสี่ยงเซียมซี ขอให้สมหวังดั่งใจปรารถนานะคะ`,
+          `ชื่นใจในศรัทธาของคุณ ${spokenName} ร่วมเสี่ยงเซียมซีมหาโชค ขอให้เฮงๆ ปังๆ นะคะ`,
+          `ขออวยพรให้คุณ ${spokenName} ที่เสี่ยงเซียมซีมหาโชค ได้รับข่าวมงคลและโชคลาภลอยนะคะ`
+        ];
+        blessing = seamsiBlessingTemplates[Math.floor(Math.random() * seamsiBlessingTemplates.length)];
+      } else {
+        const giftBlessingTemplates = [
+          `ขอบคุณคุณ ${spokenName} ที่ร่วมบุญ${specificEffect} ขอให้ร่ำรวยมีความสุขมากๆ นะคะ`,
+          `อนุโมทนาคุณ ${spokenName} ที่ร่วมบุญ${specificEffect} ขอให้เงินทองไหลมาเทมานะคะ`,
+          `ขอบคุณคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้สุขภาพแข็งแรงและโชคดีนะคะ`,
+          `ขอขอบใจคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้สมปรารถนาดั่งใจหวังนะคะ`,
+          `อนุโมทนาบุญคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้ชีวิตรุ่งเรืองและราบรื่นนะคะ`,
+          `ชื่นใจในบุญของคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้มีแต่โชคลาภเงินทองนะคะ`,
+          `อนุโมทนาสาธุคุณ ${spokenName} ขอให้บุญ${specificEffect} หนุนนำให้พบคู่บารมีและกัลยาณมิตรนะคะ`,
+          `บารมีคุ้มครองคุณ ${spokenName} ที่ร่วมบุญ${specificEffect} ขอให้เปิดคลังทรัพย์รับโชคใหญ่นะคะ`,
+          `ขอบคุณคุณ ${spokenName} ยิ่งนัก ขอให้บุญรักษา เทวดาคุ้มครอง และแคล้วคลาดปลอดภัยนะคะ`,
+          `ขออวยพรให้คุณ ${spokenName} ที่ร่วมบุญ${specificEffect} การงานก้าวหน้า ค้าขายร่ำรวยนะคะ`,
+          `อนุโมทนาบุญกุศลอันบริสุทธิ์คุณ ${spokenName} ขอให้ชีวิตสดใส ไร้โรคภัยเบียดเบียนนะคะ`,
+          `ขอบคุณคุณ ${spokenName} ที่นำจิตศรัทธามาร่วมบุญ${specificEffect} ขอให้มีกินมีใช้ไม่ขาดมือนนะคะ`,
+          `สาธุอนุโมทนาคุณ ${spokenName} ร่วมบุญ${specificEffect} ขอให้คำอธิษฐานสัมฤทธิผลทันใจนะคะ`,
+          `ขอให้คุณ ${spokenName} รับพรมงคลร้อยแปดประการ ร่ำรวยมั่งคั่งและร่มเย็นเป็นสุขนะคะ`
+        ];
+        blessing = giftBlessingTemplates[Math.floor(Math.random() * giftBlessingTemplates.length)];
+      }
     } else if (isGreetingChat) {
       const greetingChatTemplates = [
         `เจริญพรสวัสดีคุณ ${spokenName} ขอให้มีความสุขกายสบายใจในวันนี้นะคะ`,
