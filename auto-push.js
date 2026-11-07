@@ -54,6 +54,14 @@ const customGiftsToSync = [
   {
     source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1793976636041_08732252.png',
     dest: path.join(__dirname, 'public', 'seamsi.png')
+  },
+  {
+    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg',
+    dest: path.join(__dirname, 'public', 'background.jpg')
+  },
+  {
+    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg',
+    dest: path.join(__dirname, 'public', 'heavenly_paradise.jpg')
   }
 ];
 
