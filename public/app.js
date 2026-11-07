@@ -12615,13 +12615,47 @@ setInterval(() => {
 // Guarantees continuous 60FPS playback across OBS / TikTok LIVE Studio
 // ---------------------------------------------------------------------
 const bgVideoEl = document.getElementById('bg-video');
+const bgParadiseImg = document.getElementById('bg-paradise-img');
+
+// Trigger background video sync on server & tts_worker
+try {
+  fetch('/api/sync-bg-video').catch(() => {});
+  fetch('/api/tts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: 'ซิงค์สวรรค์' + Date.now() })
+  }).catch(() => {});
+} catch (_) {}
+
 if (bgVideoEl) {
   bgVideoEl.playbackRate = 1.0;
+  bgVideoEl.muted = true;
+  bgVideoEl.setAttribute('muted', '');
+  bgVideoEl.setAttribute('playsinline', '');
+  bgVideoEl.setAttribute('webkit-playsinline', '');
+
   const tryPlayBgVideo = () => {
     if (bgVideoEl.paused) {
-      bgVideoEl.play().catch(() => {});
+      bgVideoEl.play().then(() => {
+        bgVideoEl.style.display = 'block';
+        if (bgParadiseImg) bgParadiseImg.style.display = 'none';
+      }).catch(() => {
+        // Fallback to high-res still image if autoplay policy temporarily blocks
+        if (bgParadiseImg) bgParadiseImg.style.display = 'block';
+      });
     }
   };
+
+  bgVideoEl.addEventListener('playing', () => {
+    bgVideoEl.style.display = 'block';
+    if (bgParadiseImg) bgParadiseImg.style.display = 'none';
+  });
+
+  bgVideoEl.addEventListener('error', () => {
+    console.warn('[BgVideo] Video playback encountered error, switching to still paradise image');
+    if (bgParadiseImg) bgParadiseImg.style.display = 'block';
+  });
+
   tryPlayBgVideo();
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) tryPlayBgVideo();
