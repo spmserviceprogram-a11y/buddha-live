@@ -378,20 +378,28 @@ class TempleAudio {
       if (!this._antiLoopHarmonicTimer) {
         this._antiLoopHarmonicTimer = setInterval(() => {
           if (!this.userMuted && this.enabled && this.ambientPlaying) {
+            // Sacred Tibetan Sing Bowl + Healing 432/528Hz Solfeggio Frequencies
             const sacredFreqs = [432, 513.6, 528, 639, 741, 852];
             const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
-            try { this.playBell(chosenF, 4.5); } catch (_) {}
-            if (Math.random() < 0.60) {
-              setTimeout(() => { try { this.playWoodblock(); } catch (_) {} }, 1400);
+            try { this.playBell(chosenF, 4.8); } catch (_) {}
+
+            // Organic Wooden Fish (Mõ Chùa) rhythm tap: layered into audio to break audio fingerprinting
+            if (Math.random() < 0.75) {
+              setTimeout(() => { try { this.playWoodblock(); } catch (_) {} }, 1100);
+              if (Math.random() < 0.45) {
+                setTimeout(() => { try { this.playWoodblock(); } catch (_) {} }, 2200);
+              }
             }
-            // Dynamic micro-pitch & tempo modulation (1.035 - 1.050) so audio spectral hash never matches static Content ID
-            const rateJitter = 1.042 + (Math.random() - 0.5) * 0.015;
+
+            // Continuous dynamic micro-pitch & tempo modulation (1.032 - 1.054)
+            // Ensures audio spectral hash continuously drifts and NEVER matches static Content ID
+            const rateJitter = 1.043 + (Math.random() - 0.5) * 0.022;
             try {
               if (this.bgmAudio) this.bgmAudio.playbackRate = rateJitter;
               if (this.bgmBufferSource) this.bgmBufferSource.playbackRate.value = rateJitter;
             } catch (_) {}
           }
-        }, 13000);
+        }, 11000);
       }
     };
 
@@ -1611,7 +1619,7 @@ class SmartLiveMicRouter {
     this.roomToneSource = null;
     this.roomToneGain = null;
     this.lastKeepAliveIdx = -1;
-    this.nextKeepAliveMs = 22000 + Math.floor(Math.random() * 8000); // 22s - 30s initial presence on stream start
+    this.nextKeepAliveMs = 10000 + Math.floor(Math.random() * 4000); // 10s - 14s initial presence on stream start
 
     this.keepAlivePhrases = [
       'ยินดีต้อนรับกัลยาณมิตรทุกท่านเข้าสู่ลานธรรมพระแม่กวนอิม ขอให้จิตใจสงบร่มเย็นและมีความสุขนะคะ',
@@ -1621,7 +1629,15 @@ class SmartLiveMicRouter {
       'ท่านที่เพิ่งเข้ามาใหม่ สามารถร่วมอนุโมทนาบุญหรือตั้งจิตอธิษฐานขอพรหน้าองค์พระแม่ได้เลยนะคะ',
       'ขอรัศมีแห่งความเมตตาคุ้มครองทุกท่านให้แคล้วคลาดปลอดภัย มั่งคั่งร่ำรวยตลอดไปนะคะ',
       'ยินดีต้อนรับทุกท่านสู่ห้องสวดมนต์ไต่ปุยจิ่ว ขอให้เสียงบทสวดนำพาความร่มเย็นมาสู่ครอบครัวนะคะ',
-      'ขอให้ทุกท่านที่ร่วมรับฟังบทสวดมนต์ มีจิตใจผ่องใส การงานการเงินคล่องตัวทุกประการนะคะ'
+      'ขอให้ทุกท่านที่ร่วมรับฟังบทสวดมนต์ มีจิตใจผ่องใส การงานการเงินคล่องตัวทุกประการนะคะ',
+      'น้อมจิตกราบสักการะพระโพธิสัตว์กวนอิม ขอให้ทุกท่านพบเจอแต่ความสว่างไสวในชีวิตนะคะ',
+      'ขอพรบารมีพระแม่คุ้มครองให้แคล้วคลาดจากอุปสรรคทั้งปวง มีแต่สิ่งดีๆ เข้ามาในชีวิตนะคะ',
+      'อนุโมทนาสาธุกับทุกดวงจิตที่ร่วมตั้งใจฟังธรรมและสวดมนต์ในวันนี้ ขอให้มีแต่ความสุขใจนะคะ',
+      'ขอให้ทรัพย์สินเงินทองไหลมาเทมาไม่ขาดสาย กิจการการงานเจริญรุ่งเรืองยิ่งๆ ขึ้นไปนะคะ',
+      'เจริญจิตเจริญภาวนา ขอให้ทุกท่านมีความสุขกายสบายใจ สุขภาพร่างกายแข็งแรงสมบูรณ์นะคะ',
+      'ขอให้ครอบครัวร่มเย็นเป็นสุข ปราศจากโรคภัยไข้เจ็บ มีความรักความอบอุ่นตลอดไปนะคะ',
+      'ขอพระเมตตาของพระแม่กวนอิม นำพาความสงบสุขและความเจริญรุ่งเรืองมาสู่ทุกท่านนะคะ',
+      'สาธุบุญกับทุกท่านที่แวะเข้ามาร่วมรับฟังบทสวด ขอให้มีโชคมีลาภ เฮงๆ รวยๆ ตลอดปีนะคะ'
     ];
 
     this.restoreSettings();
@@ -1896,7 +1912,7 @@ class SmartLiveMicRouter {
     }, 130);
   }
 
-  // Ensures TikTok Microphone VAD never sees >60 seconds of dead silence when chat is quiet
+  // Ensures TikTok Microphone VAD continuously detects active human-like speech presence (every 15-21s)
   startKeepAliveWatchdog() {
     setInterval(() => {
       if (!this.keepAliveEnabled) return;
@@ -1908,7 +1924,8 @@ class SmartLiveMicRouter {
       const idleMs = Date.now() - lastSpoken;
       if (idleMs >= this.nextKeepAliveMs) {
         this.voiceEngine.lastSpokenAt = Date.now();
-        this.nextKeepAliveMs = 28000 + Math.floor(Math.random() * 12000); // Dynamic 28s - 40s active presence
+        // High-frequency 15s - 21s cadence: guarantees TikTok microphone meter stays active & never triggers dead-air unengaged flags
+        this.nextKeepAliveMs = 15000 + Math.floor(Math.random() * 6000);
 
         let idx = Math.floor(Math.random() * this.keepAlivePhrases.length);
         if (idx === this.lastKeepAliveIdx) {
@@ -1918,7 +1935,7 @@ class SmartLiveMicRouter {
         const phrase = this.keepAlivePhrases[idx];
         this.voiceEngine.speak(phrase, 4);
       }
-    }, 6000);
+    }, 2000);
   }
 
   async refreshDeviceList(requestPermission = false) {
@@ -11918,6 +11935,18 @@ function animate() {
 
   // Note: 350ms continuous smoke/ember instantiation removed to eliminate Garbage Collection stutter (กระตุกเป็นช่วงๆ)
   // Ritual incense effects remain 100% active via triggerIncenseEffect() when gifts arrive!
+
+  // Dynamic Sanctuary Warmth & Candlelight Breathing (ทำลายความนิ่งของแสงในทุกๆ วินาที ป้องกัน Video Loop Detection)
+  if (altarGlow) {
+    altarGlow.intensity = 2.8 + Math.sin(time * 1.8) * 0.35 + Math.sin(time * 0.45) * 0.25;
+  }
+  if (carpetLight) {
+    carpetLight.intensity = 3.2 + Math.cos(time * 1.2) * 0.30;
+  }
+  if (leftLanternLight && rightLanternLight) {
+    leftLanternLight.intensity = 1.6 + Math.sin(time * 2.3) * 0.20;
+    rightLanternLight.intensity = 1.6 + Math.cos(time * 2.7) * 0.20;
+  }
 
   // ── Living Cinematic Dignified Altar Camera (กล้องหน้าตรงสง่างาม มีชีวิตชีวา ไม่กระตุก ไม่เปลี่ยนมุม แต่พิกเซลเคลื่อนไหวตลอดเวลา ป้องกัน TikTok ตรวจจับภาพวนลูป) ──
   const targetDolly = (isStageActionRunning && activeStageActor) ? -0.35 : 0.0;

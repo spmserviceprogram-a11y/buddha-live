@@ -35,7 +35,7 @@ body {
   background-size: cover;
 }
 
-/* Looping Sanctuary Background Video (Hardware-Accelerated with Organic Ken-Burns Breathing) */
+/* Looping Sanctuary Background Video (Hardware-Accelerated with Infinite Color & Lighting Drift to Break Loop Detection) */
 .bg-video {
   position: absolute;
   top: 0;
@@ -45,21 +45,34 @@ body {
   object-fit: cover;
   z-index: 0;
   pointer-events: none;
-  animation: bgSanctuaryBreathing 75s infinite ease-in-out alternate;
-  will-change: transform;
+  animation: bgSanctuaryBreathing 80s infinite ease-in-out alternate;
+  will-change: transform, filter;
 }
 
 @keyframes bgSanctuaryBreathing {
   0% {
     transform: scale(1.0) translate(0%, 0%);
+    filter: brightness(1.0) contrast(1.0) saturate(1.0) hue-rotate(0deg);
+  }
+
+  25% {
+    transform: scale(1.018) translate(0.25%, -0.18%);
+    filter: brightness(1.035) contrast(1.02) saturate(1.04) hue-rotate(3.5deg);
   }
 
   50% {
-    transform: scale(1.025) translate(0.35%, -0.25%);
+    transform: scale(1.028) translate(0.35%, -0.25%);
+    filter: brightness(0.975) contrast(1.01) saturate(0.98) hue-rotate(-2.5deg);
+  }
+
+  75% {
+    transform: scale(1.014) translate(-0.20%, 0.15%);
+    filter: brightness(1.025) contrast(1.03) saturate(1.05) hue-rotate(4deg);
   }
 
   100% {
-    transform: scale(1.018) translate(-0.30%, 0.20%);
+    transform: scale(1.020) translate(-0.30%, 0.20%);
+    filter: brightness(1.0) contrast(1.0) saturate(1.0) hue-rotate(0deg);
   }
 }
 
