@@ -14356,7 +14356,12 @@ window.heavenlyFX = heavenlyFX; // ทดสอบ: heavenlyFX.play('dragon')
 
 function withHeavenlyFX(original, tier) {
   return function (...args) {
-    const result = original.apply(this, args);
+    let result;
+    try {
+      result = original.apply(this, args);
+    } catch (err) {
+      console.error(`[GiftEffect Error: ${tier}]`, err);
+    }
     try { heavenlyFX.play(tier); } catch (err) { console.warn('[HeavenlyFX]', tier, err); }
     return result;
   };
