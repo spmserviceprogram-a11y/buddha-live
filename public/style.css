@@ -554,47 +554,187 @@ body {
    Authentic Reference Live Stream Overlay Styles (ตามแบบภาพตัวอย่าง)
    ===================================================================== */
 
-/* Top Follower Blessing Banner (50% Translucent & Crisp Gold/White Pill) */
+/* =====================================================================
+   Top Follower Blessing Banner (ป้ายประกาศกัลยาณมิตรสวรรค์ สวยงาม อลังการ)
+   ===================================================================== */
 .follower-banner {
   position: absolute;
   top: 56px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, rgba(28, 12, 8, 0.50) 0%, rgba(18, 6, 4, 0.50) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1.5px solid #ffd700;
-  box-shadow: 0 0 16px rgba(255, 215, 0, 0.45), inset 0 0 8px rgba(255, 255, 255, 0.25);
-  border-radius: 20px;
-  padding: 4px 16px;
-  font-size: 11.5px;
+  background: linear-gradient(135deg, rgba(168, 28, 20, 0.78) 0%, rgba(98, 14, 10, 0.78) 55%, rgba(46, 8, 5, 0.82) 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.8px solid #ffd700;
+  box-shadow:
+    0 0 24px rgba(255, 215, 0, 0.65),
+    0 0 45px rgba(255, 140, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.65),
+    inset 0 0 12px rgba(255, 215, 0, 0.40),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.85);
+  border-radius: 26px;
+  padding: 5px 18px 5px 14px;
+  font-size: 12px;
   font-weight: 700;
   color: #ffffff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
   white-space: nowrap;
-  z-index: 28;
+  z-index: 30;
   display: flex;
   align-items: center;
-  gap: 6px;
-  animation: bannerGlow 2.5s infinite ease-in-out;
+  gap: 7px;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: visible;
 }
 
-@keyframes bannerGlow {
+.follower-banner.hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-14px) scale(0.82);
+  pointer-events: none;
+}
 
-  0%,
+.follower-banner.pulse {
+  animation:
+    followerBannerEntrance 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+    followerBannerBreath 2.8s ease-in-out 0.45s infinite;
+}
+
+@keyframes followerBannerEntrance {
+  0% {
+    transform: translateX(-50%) translateY(-22px) scale(0.70);
+    opacity: 0;
+    filter: brightness(2) blur(3px);
+  }
+  65% {
+    transform: translateX(-50%) translateY(2px) scale(1.06);
+    opacity: 1;
+    filter: brightness(1.2) blur(0);
+  }
+  85% {
+    transform: translateX(-50%) translateY(-1px) scale(0.985);
+  }
   100% {
-    border-color: rgba(255, 215, 0, 0.70);
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    filter: brightness(1);
   }
+}
 
-  50% {
-    border-color: rgba(255, 245, 160, 0.95);
+@keyframes followerBannerBreath {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    box-shadow:
+      0 0 22px rgba(255, 215, 0, 0.60),
+      0 0 40px rgba(255, 140, 0, 0.30),
+      0 8px 24px rgba(0, 0, 0, 0.65),
+      inset 0 0 10px rgba(255, 215, 0, 0.35);
   }
+  50% {
+    transform: translateX(-50%) translateY(-2px) scale(1.02);
+    box-shadow:
+      0 0 32px rgba(255, 230, 90, 0.85),
+      0 0 55px rgba(255, 160, 20, 0.50),
+      0 12px 28px rgba(0, 0, 0, 0.75),
+      inset 0 0 16px rgba(255, 230, 90, 0.55);
+  }
+}
+
+/* Pulsing Golden Aura behind Follower Banner */
+.follower-aura-backdrop {
+  position: absolute;
+  inset: -10px -22px;
+  border-radius: 36px;
+  background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.45) 0%, rgba(255, 130, 0, 0.20) 50%, transparent 75%);
+  filter: blur(8px);
+  z-index: -1;
+  pointer-events: none;
+  animation: auraBackdropPulse 2.4s ease-in-out infinite;
+}
+
+/* Sweeping Light Sheen across Follower Banner */
+.follower-shimmer-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.follower-shimmer-sweep::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -120%;
+  width: 70%;
+  height: 160%;
+  background: linear-gradient(115deg,
+    transparent 15%,
+    rgba(255, 255, 255, 0.25) 45%,
+    rgba(255, 248, 200, 0.65) 55%,
+    transparent 85%
+  );
+  transform: skewX(-22deg);
+  animation: bannerShimmerSweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.follower-crest {
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.95));
+  animation: spinSacredHalo 14s linear infinite;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 3;
+}
+
+.follower-banner .banner-pray {
+  font-size: 13px;
+  line-height: 1;
+  position: relative;
+  z-index: 3;
+}
+
+.follower-prefix,
+.follower-suffix {
+  position: relative;
+  z-index: 3;
+  color: #fff9e6;
+  font-family: 'Kanit', 'Sarabun', sans-serif;
+  letter-spacing: 0.2px;
 }
 
 .follower-highlight {
-  color: #ffd700;
+  position: relative;
+  z-index: 3;
+  color: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #fff299 50%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-weight: 800;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.8), 0 1px 3px #000;
+  font-size: 13px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.85));
+}
+
+.follower-star {
+  font-size: 12px;
+  line-height: 1;
+  color: #fff490;
+  filter: drop-shadow(0 0 6px #ffd700);
+  animation: seamsiSparkTwinkle 1.6s ease-in-out infinite alternate;
+  position: relative;
+  z-index: 3;
+}
+
+.follower-sparkle-layer {
+  position: absolute;
+  inset: -14px;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 8;
 }
 
 /* Shared Panel Card (50% Translucent Glassmorphism with 24K Gold Filigree) */
