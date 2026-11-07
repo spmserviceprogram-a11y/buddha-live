@@ -47,7 +47,8 @@ body {
   pointer-events: none;
 }
 
-.bg-video {
+.bg-video,
+.bg-paradise-img {
   position: absolute;
   top: 0;
   left: 0;
@@ -58,75 +59,15 @@ body {
   pointer-events: none;
   z-index: 0;
   display: block;
+  transform: none !important;
+  animation: none !important;
+  filter: none !important;
 }
 
-.bg-paradise-img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: bgParadiseBreathing 60s infinite ease-in-out alternate;
-  will-change: transform, filter;
-}
-
-@keyframes bgParadiseBreathing {
-  0% {
-    transform: scale(1.0) translate(0%, 0%);
-    filter: brightness(1.0) contrast(1.0) saturate(1.0);
-  }
-  30% {
-    transform: scale(1.018) translate(0.18%, -0.15%);
-    filter: brightness(1.03) contrast(1.02) saturate(1.05);
-  }
-  65% {
-    transform: scale(1.026) translate(-0.16%, 0.12%);
-    filter: brightness(1.01) contrast(1.01) saturate(1.02);
-  }
-  100% {
-    transform: scale(1.012) translate(0.12%, 0.10%);
-    filter: brightness(1.04) contrast(1.03) saturate(1.06);
-  }
-}
-
-/* Shimmering Golden Sunbeam God-Rays from the Celestial Heavens */
-.celestial-godrays {
-  position: absolute;
-  top: 0;
-  left: -20%;
-  width: 140%;
-  height: 65%;
-  background: repeating-linear-gradient(
-    -28deg,
-    rgba(255, 240, 160, 0.18) 0px,
-    rgba(255, 215, 60, 0.08) 32px,
-    transparent 65px,
-    rgba(255, 248, 190, 0.20) 110px,
-    transparent 165px
-  );
-  mask-image: radial-gradient(ellipse at 50% 15%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 55%, transparent 85%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 15%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.5) 55%, transparent 85%);
-  animation: celestialGodrayShimmer 14s ease-in-out infinite alternate;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  z-index: 1;
-}
-
-@keyframes celestialGodrayShimmer {
-  0% { opacity: 0.55; transform: scaleY(1.0) rotate(0deg); }
-  50% { opacity: 0.88; transform: scaleY(1.05) rotate(0.8deg); }
-  100% { opacity: 0.65; transform: scaleY(0.97) rotate(-0.6deg); }
-}
-
-/* 3-Layer Parallax Undulating Sea of Clouds & Sacred Mist over Lotus Ponds */
+/* Overlaid Artificial Godrays & Mist disabled to prevent background shaking/moire interference */
+.celestial-godrays,
 .celestial-mist {
-  position: absolute;
-  left: -50%;
-  width: 200%;
-  pointer-events: none;
-  mix-blend-mode: screen;
-  z-index: 1;
+  display: none !important;
 }
 
 .celestial-mist-1 {
