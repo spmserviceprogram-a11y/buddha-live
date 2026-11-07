@@ -1881,7 +1881,7 @@ class SmartLiveMicRouter {
       modeSelect.value = this.mode;
       modeSelect.addEventListener('change', async (e) => {
         this.mode = e.target.value;
-        this.saveSettings();
+        this.pushServerConfig();
         if (this.mode !== 'stereo_mix' && (!this.sinkId || this.sinkId === 'default')) {
           await this.refreshDeviceList(true);
         } else {
@@ -1894,7 +1894,7 @@ class SmartLiveMicRouter {
     if (deviceSelect) {
       deviceSelect.addEventListener('change', async (e) => {
         this.sinkId = e.target.value;
-        this.saveSettings();
+        this.pushServerConfig();
         await this.applyGlobalRouting();
         this.broadcastSync();
       });
@@ -1904,6 +1904,7 @@ class SmartLiveMicRouter {
       scanBtn.addEventListener('click', async () => {
         scanBtn.textContent = '⏳ กำลังสแกน...';
         await this.refreshDeviceList(true);
+        this.pushServerConfig();
         this.broadcastSync();
         scanBtn.textContent = '✅ สแกนสำเร็จ';
         setTimeout(() => {
@@ -1916,7 +1917,7 @@ class SmartLiveMicRouter {
       chkAcoustics.checked = this.acousticsEnabled;
       chkAcoustics.addEventListener('change', (e) => {
         this.acousticsEnabled = e.target.checked;
-        this.saveSettings();
+        this.pushServerConfig();
         this.ensureMicAcousticsContext();
         if (this.roomToneGain && this.micCtx) {
           try {
@@ -1931,7 +1932,7 @@ class SmartLiveMicRouter {
       chkKeepAlive.checked = this.keepAliveEnabled;
       chkKeepAlive.addEventListener('change', (e) => {
         this.keepAliveEnabled = e.target.checked;
-        this.saveSettings();
+        this.pushServerConfig();
         this.broadcastSync();
       });
     }
@@ -1940,7 +1941,7 @@ class SmartLiveMicRouter {
       chkMonitor.checked = this.dualMonitorEnabled;
       chkMonitor.addEventListener('change', (e) => {
         this.dualMonitorEnabled = e.target.checked;
-        this.saveSettings();
+        this.pushServerConfig();
         this.broadcastSync();
       });
     }
