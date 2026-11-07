@@ -12620,3 +12620,77 @@ if (bgVideoEl) {
   window.addEventListener('click', tryPlayBgVideo, { once: true });
   window.addEventListener('touchstart', tryPlayBgVideo, { once: true });
 }
+
+// ---------------------------------------------------------------------
+// Heavenly Paradise Sanctuary Lotus Petals & Golden Stardust Engine
+// ---------------------------------------------------------------------
+function initCelestialPetalsAndStardust() {
+  const container = document.getElementById('celestial-petals-container');
+  if (!container) return;
+
+  const MAX_PETALS = 18;
+  const MAX_STARDUST = 14;
+
+  function spawnPetal() {
+    if (!container || container.childElementCount >= (MAX_PETALS + MAX_STARDUST)) return;
+    const petal = document.createElement('div');
+    petal.className = 'celestial-petal';
+    const startX = Math.random() * 95;
+    const size = 9 + Math.random() * 11;
+    const duration = 14 + Math.random() * 16;
+    const delay = Math.random() * 3;
+
+    petal.style.left = `${startX}%`;
+    petal.style.top = `-25px`;
+    petal.style.width = `${size}px`;
+    petal.style.height = `${size * 0.7}px`;
+    petal.style.animationDuration = `${duration}s`;
+    petal.style.animationDelay = `${delay}s`;
+
+    container.appendChild(petal);
+    setTimeout(() => {
+      if (petal.parentNode) petal.parentNode.removeChild(petal);
+    }, (duration + delay + 1) * 1000);
+  }
+
+  function spawnStardust() {
+    if (!container || container.childElementCount >= (MAX_PETALS + MAX_STARDUST)) return;
+    const star = document.createElement('div');
+    star.className = 'celestial-stardust';
+    const startX = Math.random() * 95;
+    const size = 3 + Math.random() * 5;
+    const duration = 12 + Math.random() * 14;
+    const delay = Math.random() * 2;
+
+    star.style.left = `${startX}%`;
+    star.style.top = `102%`;
+    star.style.width = `${size}px`;
+    star.style.height = `${size}px`;
+    star.style.animationDuration = `${duration}s`;
+    star.style.animationDelay = `${delay}s`;
+
+    container.appendChild(star);
+    setTimeout(() => {
+      if (star.parentNode) star.parentNode.removeChild(star);
+    }, (duration + delay + 1) * 1000);
+  }
+
+  // Seed initial particles
+  for (let i = 0; i < 8; i++) {
+    spawnPetal();
+    spawnStardust();
+  }
+
+  // Continuous gentle breeze replenishment
+  setInterval(() => {
+    if (document.hidden) return;
+    if (Math.random() < 0.75) spawnPetal();
+    if (Math.random() < 0.65) spawnStardust();
+  }, 1600);
+}
+initCelestialPetalsAndStardust();
+
+// Ensure Heavenly Paradise background is synced from server
+try {
+  fetch('/api/sync-paradise-bg').catch(() => {});
+} catch (_) {}
