@@ -4609,7 +4609,7 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
     clearTimeout(luckyNumbersHideTimer);
     luckyNumbersHideTimer = null;
   }
-  luckyRollIntervals.forEach(t => { if (t) clearInterval(t); });
+  luckyRollIntervals.forEach(t => { if (t) clearTimeout(t); });
   luckyRollIntervals = [null, null, null];
 
   // Reset elements with sacred star emblem (avoids slot-machine spinning OCR detection)
