@@ -1740,7 +1740,16 @@ class SmartLiveMicRouter {
     const selectEl = document.getElementById('select-mic-device');
     if (!selectEl || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
 
-    if (requestPermission && navigator.mediaDevices.getUserMedia) {
+    // Check if device labels are masked (empty) by checking first enumeration
+    let testDevices = [];
+    try {
+      testDevices = await navigator.mediaDevices.enumerateDevices();
+    } catch (_) {}
+
+    const hasEmptyLabels = testDevices.some(d => d.kind === 'audiooutput' && !d.label && d.deviceId !== 'default');
+    const shouldAskPermission = requestPermission || (hasEmptyLabels && navigator.mediaDevices.getUserMedia);
+
+    if (shouldAskPermission && navigator.mediaDevices.getUserMedia) {
       try {
         const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         tempStream.getTracks().forEach(t => t.stop());
@@ -1775,10 +1784,9 @@ class SmartLiveMicRouter {
         }
       });
 
-      // If user explicitly scanned or is in voice_split/all_to_mic mode and a virtual cable was found, auto-select it
-      if ((requestPermission || this.mode !== 'stereo_mix') && autoDetectedVirtualId && this.sinkId === 'default') {
+      // Auto-bind to VB-Cable if found and in voice_split or all_to_mic mode
+      if (autoDetectedVirtualId && (this.mode === 'voice_split' || this.mode === 'all_to_mic')) {
         this.sinkId = autoDetectedVirtualId;
-        this.saveSettings();
       }
 
       this.hasDetectedVirtualCable = Boolean(autoDetectedVirtualId);
