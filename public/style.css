@@ -3309,3 +3309,36 @@ body {
 .btn-mic-test:hover {
   background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
 }
+
+.mic-diagnostic-guide {
+  background: rgba(45, 22, 10, 0.85);
+  border: 1px dashed rgba(255, 215, 0, 0.55);
+  border-radius: 7px;
+  padding: 7px 9px;
+  margin-bottom: 9px;
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: #fef08a;
+}
+
+.mic-diagnostic-guide.warn {
+  background: rgba(68, 18, 12, 0.90);
+  border: 1px solid #f87171;
+  color: #fecaca;
+}
+
+.mic-diag-title {
+  font-weight: 700;
+  color: #ffd700;
+  margin-bottom: 3px;
+}
+
+.mic-diagnostic-guide.warn .mic-diag-title {
+  color: #fca5a5;
+}
+
+.mic-diag-body {
+  color: #fffbeb;
+  font-weight: 400;
+}
+
