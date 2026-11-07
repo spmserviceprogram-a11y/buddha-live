@@ -8992,72 +8992,114 @@ function triggerFireworksEffect() {
   activeFireworks = fwGroup;
 
   let fwt = 0;
-  const fwInterval = setInterval(() => {
-    fwt += 0.035;
+  let isCleanedUp = false;
+
+  function cleanupFireworks() {
+    if (isCleanedUp) return;
+    isCleanedUp = true;
+    clearInterval(fwInterval);
+    clearTimeout(safetyTimeout);
+    disposeFireworksGroup(fwGroup);
     if (activeFireworks === fwGroup) {
-      shockwaves.forEach((sw, idx) => {
-        sw.scale.addScalar(0.055);
-        sw.rotation.z += (idx % 2 === 0 ? 0.03 : -0.03);
-        sw.material.opacity = Math.max(0, sw.material.opacity - 0.020);
-      });
+      activeFireworks = null;
+    }
+  }
 
-      sparks.forEach(s => {
-        s.position.x += s.userData.vx;
-        s.position.y += s.userData.vy;
-        s.position.z += s.userData.vz;
-        s.userData.vy -= s.userData.gravity;
-        s.material.opacity = Math.max(0, s.material.opacity - 0.009);
-      });
+  // Safety watchdog timer: guarantees removal even in anomalous network/browser delays
+  const safetyTimeout = setTimeout(() => {
+    if (activeFireworks === fwGroup) {
+      cleanupFireworks();
+    }
+  }, 7500);
 
-      // Animate 4 Sparkling Ruby Crystal Hearts
-      crystalHearts.forEach(ch => {
-        const hProg = Math.min(1.0, fwt * 1.8);
-        const easeScale = 0.95 + Math.sin(fwt * 5.0 + ch.phase) * 0.18;
-        ch.group.scale.set(hProg * easeScale, hProg * easeScale, hProg * easeScale);
-        ch.group.rotation.y += 0.024;
-        ch.sprite.rotation += 0.035;
-      });
+  const fwInterval = setInterval(() => {
+    try {
+      fwt += 0.035;
+      if (activeFireworks === fwGroup) {
+        shockwaves.forEach((sw, idx) => {
+          sw.scale.addScalar(0.055);
+          sw.rotation.z += (idx % 2 === 0 ? 0.03 : -0.03);
+          sw.material.opacity = Math.max(0, sw.material.opacity - 0.020);
+        });
 
-      // Animate 16 Ascending Sky Lanterns
-      skyLanterns.forEach(sl => {
-        sl.position.y += sl.userData.vy;
-        sl.position.x = sl.userData.baseX + Math.sin(fwt * sl.userData.wobbleSpeed + sl.userData.wobblePhase) * 0.15;
-        sl.rotation.y += 0.015;
-      });
+        sparks.forEach(s => {
+          s.position.x += s.userData.vx;
+          s.position.y += s.userData.vy;
+          s.position.z += s.userData.vz;
+          s.userData.vy -= s.userData.gravity;
+          s.material.opacity = Math.max(0, s.material.opacity - 0.009);
+        });
 
-      // Animate Royal White Elephant Walking, Ear Flapping & Halo Rotation
-      elephantGroup.position.y = 4.35 + Math.sin(fwt * 2.8) * 0.14;
-      eleHalo.rotation.z += 0.022;
-      eleLegs.forEach(leg => {
-        leg.rotation.x = Math.sin(fwt * 6.5 + leg.userData.phase) * 0.28;
-      });
-      eleEars.forEach(ear => {
-        ear.rotation.y = ear.userData.side * (0.25 + Math.sin(fwt * 8.0) * 0.22);
-      });
+        // Animate 4 Sparkling Ruby Crystal Hearts (Fixed: Sprite.material.rotation prevents TypeError)
+        crystalHearts.forEach(ch => {
+          const hProg = Math.min(1.0, fwt * 1.8);
+          const easeScale = 0.95 + Math.sin(fwt * 5.0 + ch.phase) * 0.18;
+          ch.group.scale.set(hProg * easeScale, hProg * easeScale, hProg * easeScale);
+          ch.group.rotation.y += 0.024;
+          if (ch.sprite && ch.sprite.material) {
+            ch.sprite.material.rotation += 0.035;
+          }
+        });
 
-      fallingItems.forEach(item => {
-        if (!item.userData.landed) {
-          item.position.y -= item.userData.vy;
-          item.rotation.x += item.userData.rx;
-          item.rotation.y += item.userData.ry;
-          item.rotation.z += item.userData.rz;
+        // Animate 16 Ascending Sky Lanterns
+        skyLanterns.forEach(sl => {
+          sl.position.y += sl.userData.vy;
+          sl.position.x = sl.userData.baseX + Math.sin(fwt * sl.userData.wobbleSpeed + sl.userData.wobblePhase) * 0.15;
+          sl.rotation.y += 0.015;
+        });
 
-          if (item.position.y <= 0.06) {
-            item.position.y = 0.06;
-            item.rotation.set(0, item.rotation.y, 0);
-            item.userData.landed = true;
-            spawnBlessingSparks(item.position.x, 0.1, item.position.z, 2, 0xffd700);
+        // Animate Royal White Elephant Walking, Ear Flapping & Halo Rotation
+        elephantGroup.position.y = 4.35 + Math.sin(fwt * 2.8) * 0.14;
+        eleHalo.rotation.z += 0.022;
+        eleLegs.forEach(leg => {
+          leg.rotation.x = Math.sin(fwt * 6.5 + leg.userData.phase) * 0.28;
+        });
+        eleEars.forEach(ear => {
+          ear.rotation.y = ear.userData.side * (0.25 + Math.sin(fwt * 8.0) * 0.22);
+        });
+
+        fallingItems.forEach(item => {
+          if (!item.userData.landed) {
+            item.position.y -= item.userData.vy;
+            item.rotation.x += item.userData.rx;
+            item.rotation.y += item.userData.ry;
+            item.rotation.z += item.userData.rz;
+
+            if (item.position.y <= 0.06) {
+              item.position.y = 0.06;
+              item.rotation.set(0, item.rotation.y, 0);
+              item.userData.landed = true;
+              spawnBlessingSparks(item.position.x, 0.1, item.position.z, 2, 0xffd700);
+            }
+          }
+        });
+
+        // Smooth graceful fade-out before final disposal
+        if (fwt > 5.2) {
+          const fadeRatio = Math.max(0, (6.5 - fwt) / 1.3);
+          crystalHearts.forEach(ch => {
+            ch.group.scale.multiplyScalar(0.97);
+            if (ch.sprite && ch.sprite.material) {
+              ch.sprite.material.opacity = fadeRatio * 0.90;
+            }
+          });
+          skyLanterns.forEach(sl => {
+            if (sl.material) sl.material.opacity = fadeRatio * 0.92;
+          });
+          if (eleHalo && eleHalo.material) {
+            eleHalo.material.opacity = fadeRatio * 0.85;
           }
         }
-      });
 
-      if (fwt > 6.5) {
-        clearInterval(fwInterval);
-        scene.remove(fwGroup);
-        activeFireworks = null;
+        if (fwt >= 6.5) {
+          cleanupFireworks();
+        }
+      } else {
+        cleanupFireworks();
       }
-    } else {
-      clearInterval(fwInterval);
+    } catch (err) {
+      console.error('[Fireworks Loop Exception]', err);
+      cleanupFireworks();
     }
   }, 30);
 }
