@@ -5747,6 +5747,164 @@ function getRadialGlowTexture() {
   return cachedRadialGlowTex;
 }
 
+// Multi-pointed Twinkling Starburst Diamond Texture
+let cachedCrystalSparkTex = null;
+function getCrystalSparkTexture() {
+  if (cachedCrystalSparkTex) return cachedCrystalSparkTex;
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const c = size / 2;
+
+  // Center radial glow
+  const g = ctx.createRadialGradient(c, c, 0, c, c, c * 0.75);
+  g.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+  g.addColorStop(0.18, 'rgba(255, 240, 180, 0.9)');
+  g.addColorStop(0.45, 'rgba(0, 245, 212, 0.45)');
+  g.addColorStop(0.75, 'rgba(255, 105, 180, 0.15)');
+  g.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(c, c, c * 0.75, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 8-Point Diamond Starburst Rays
+  ctx.save();
+  ctx.translate(c, c);
+  for (let r = 0; r < 4; r++) {
+    ctx.rotate(Math.PI / 4);
+    const isMajor = (r % 2 === 0);
+    const rayLen = isMajor ? c * 0.95 : c * 0.58;
+    const rayW = isMajor ? 5 : 3;
+    const rayGrad = ctx.createLinearGradient(0, -rayLen, 0, rayLen);
+    rayGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+    rayGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.95)');
+    rayGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = rayGrad;
+    ctx.fillRect(-rayW / 2, -rayLen, rayW, rayLen * 2);
+  }
+  ctx.restore();
+
+  cachedCrystalSparkTex = new THREE.CanvasTexture(canvas);
+  cachedCrystalSparkTex.minFilter = THREE.LinearFilter;
+  return cachedCrystalSparkTex;
+}
+
+// Iridescent Rainbow Lotus Petal Texture
+let cachedRainbowLotusTex = null;
+function getRainbowLotusPetalTexture() {
+  if (cachedRainbowLotusTex) return cachedRainbowLotusTex;
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const cx = size / 2, cy = size / 2;
+
+  const grad = ctx.createLinearGradient(cx, 16, cx, 240);
+  grad.addColorStop(0.0, 'rgba(255, 255, 255, 0.98)');
+  grad.addColorStop(0.25, 'rgba(255, 130, 190, 0.92)');
+  grad.addColorStop(0.60, 'rgba(150, 255, 240, 0.82)');
+  grad.addColorStop(0.85, 'rgba(255, 220, 90, 0.75)');
+  grad.addColorStop(1.0, 'rgba(255, 240, 160, 0.3)');
+
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.moveTo(cx, 20);
+  ctx.bezierCurveTo(cx + 90, 60, cx + 80, 180, cx, 236);
+  ctx.bezierCurveTo(cx - 80, 180, cx - 90, 60, cx, 20);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.strokeStyle = 'rgba(255, 235, 140, 0.85)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx, 30);
+  ctx.lineTo(cx, 220);
+  ctx.stroke();
+
+  cachedRainbowLotusTex = new THREE.CanvasTexture(canvas);
+  cachedRainbowLotusTex.minFilter = THREE.LinearFilter;
+  return cachedRainbowLotusTex;
+}
+
+// Sacred Thai Numeral "๙" (Nine) Radiant Glyph Texture for Tier 3 Lucky 9
+let cachedNumeralNineTex = null;
+function getSacredNumeralNineTexture() {
+  if (cachedNumeralNineTex) return cachedNumeralNineTex;
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const cx = size / 2, cy = size / 2;
+
+  const halo = ctx.createRadialGradient(cx, cy, 20, cx, cy, 120);
+  halo.addColorStop(0.0, 'rgba(255, 245, 180, 0.95)');
+  halo.addColorStop(0.45, 'rgba(255, 200, 50, 0.65)');
+  halo.addColorStop(0.80, 'rgba(255, 140, 0, 0.22)');
+  halo.addColorStop(1.0, 'rgba(255, 140, 0, 0)');
+  ctx.fillStyle = halo;
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = '900 148px "Kanit", "Sarabun", sans-serif';
+
+  ctx.shadowColor = '#ffd700';
+  ctx.shadowBlur = 24;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText('๙', cx, cy + 6);
+
+  const txtGrad = ctx.createLinearGradient(0, 40, 0, 200);
+  txtGrad.addColorStop(0.0, '#ffffff');
+  txtGrad.addColorStop(0.4, '#fff2a8');
+  txtGrad.addColorStop(0.7, '#ffc72c');
+  txtGrad.addColorStop(1.0, '#e68a00');
+  ctx.fillStyle = txtGrad;
+  ctx.fillText('๙', cx, cy + 6);
+
+  ctx.strokeStyle = '#fff8db';
+  ctx.lineWidth = 3;
+  ctx.strokeText('๙', cx, cy + 6);
+
+  cachedNumeralNineTex = new THREE.CanvasTexture(canvas);
+  cachedNumeralNineTex.minFilter = THREE.LinearFilter;
+  return cachedNumeralNineTex;
+}
+
+// Floating Lotus Water Lantern Texture (for Twin Lotus Ponds)
+let cachedFloatingLanternTex = null;
+function getFloatingLanternTexture() {
+  if (cachedFloatingLanternTex) return cachedFloatingLanternTex;
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const cx = size / 2, cy = size / 2;
+
+  const g = ctx.createRadialGradient(cx, cy, 4, cx, cy, 58);
+  g.addColorStop(0.0, 'rgba(255, 255, 230, 1.0)');
+  g.addColorStop(0.28, 'rgba(255, 200, 60, 0.85)');
+  g.addColorStop(0.65, 'rgba(255, 100, 20, 0.45)');
+  g.addColorStop(1.0, 'rgba(255, 100, 20, 0)');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 58, 0, Math.PI * 2);
+  ctx.fill();
+
+  cachedFloatingLanternTex = new THREE.CanvasTexture(canvas);
+  cachedFloatingLanternTex.minFilter = THREE.LinearFilter;
+  return cachedFloatingLanternTex;
+}
+
 function createSeamSiStickPlaqueTexture(stickTitle = 'ใบที่ ๙') {
   const canvas = document.createElement('canvas');
   canvas.width = 128;
