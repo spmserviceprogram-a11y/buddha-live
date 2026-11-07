@@ -4781,13 +4781,20 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
       this.finalPos = { x: targetX, y: targetLayout.y, z: targetZ, standing: targetLayout.standing, isVip: targetLayout.isVip };
       if (this.userData) this.userData.seatId = newSeatId;
 
-      // Update nameplate VIP styling for front golden mats (seats 0..4)
+      // Update nameplate VIP styling only when VIP status actually changes
       const isVip = (newSeatId < 5);
-      if (this.nameplate && this.userData) {
+      const wasVip = Boolean(this.userData && this.userData.seatId !== undefined && this.userData.seatId < 5);
+      if (this.nameplate && this.userData && (isVip !== wasVip)) {
+        if (this.nameplate.parent) {
+          try { this.nameplate.parent.remove(this.nameplate); } catch (_) {}
+        }
         safeDisposeSprite(this.nameplate);
         this.nameplate = createNameplateSprite(this.userData.nickname || 'ผู้เจริญสติ', isVip, targetZ, false, this.userData.avatar);
         this.nameplate.position.y = (this.baseH || 0.45) + (isVip ? 0.04 : 0.07);
         this.root.add(this.nameplate);
+      } else if (this.nameplate) {
+        const isOuter = (newSeatId >= 12);
+        this.nameplate.position.y = (this.baseH || 0.45) + (isOuter ? 0.07 : 0.04);
       }
 
       // If actor is currently in the middle of walkToAltarAndKowtow ritual, DO NOT interrupt their walking or altar ritual!
@@ -4821,9 +4828,10 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
       // Smooth walk transition to new VIP golden mat / seat
       this.isWalking = true;
       this.isMovingSeat = true;
+      this._hasCrossedCenterCarpet = false;
       this.smoothPoseTransition('walk', 220, () => {
         let t = 0;
-        const dur = 1.65;
+        const dur = 3.0; // Serene, dignified walking duration across aisles
         this.walkPhaseTime = 0;
         const rWalk = (spriteRatios[this.typeKey] || spriteRatios.female_buns).walk || 0.45;
         const baseWalkH = POSE_H.walk * CHIBI_SCALE;
@@ -4842,8 +4850,18 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           const stretch = 1.0 + (cycle - 0.5) * 0.020 * env;
           this.charSprite.scale.set(baseWalkH * rWalk * (2.0 - stretch), baseWalkH * stretch, 1);
 
-          this.root.position.x = THREE.MathUtils.lerp(startX, targetX, ease);
-          this.root.position.z = THREE.MathUtils.lerp(startZ, targetZ, ease);
+          const curX = THREE.MathUtils.lerp(startX, targetX, ease);
+          const curZ = THREE.MathUtils.lerp(startZ, targetZ, ease);
+          this.root.position.x = curX;
+          this.root.position.z = curZ;
+
+          // Subtle ripple when stepping across central red carpet aisle
+          if (!this._hasCrossedCenterCarpet && Math.abs(curX) < 0.25) {
+            this._hasCrossedCenterCarpet = true;
+            if (typeof createCarpetRipple === 'function') {
+              createCarpetRipple(curX, 0.05, curZ, 0xffd700);
+            }
+          }
 
           if (p >= 1.0) {
             clearInterval(this._moveTimer);
@@ -4858,6 +4876,8 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
               if (onComplete) onComplete();
             });
           }
+        }, 16);
+      });
         }, 16);
       });
     }
