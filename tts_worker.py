@@ -13,6 +13,8 @@ try:
 
     # Automatically copy and synchronize the user's new celestial paradise background video
     _src_candidates = [
+        r"C:\Users\BINARY\Desktop\พื้นหลัง.mp4",
+        r"c:\Users\BINARY\Desktop\พื้นหลัง.mp4",
         r"C:\Users\BINARY\Desktop\พื้นหลังใหม่.mp4",
         r"c:\Users\BINARY\Desktop\พื้นหลังใหม่.mp4"
     ]
@@ -25,12 +27,15 @@ try:
     if _src_video:
         _dst_video = os.path.join(os.path.dirname(__file__), 'public', 'background_video.mp4')
         _dst_video2 = os.path.join(os.path.dirname(__file__), 'public', 'bg-video.mp4')
+        _dst_video3 = os.path.join(os.path.dirname(__file__), 'public', 'background.mp4')
         _src_sz = os.path.getsize(_src_video)
         if not os.path.exists(_dst_video) or os.path.getsize(_dst_video) != _src_sz:
             shutil.copyfile(_src_video, _dst_video)
             sys.stderr.write(f"[tts_worker] Copied {_src_video} -> {_dst_video} ({_src_sz} bytes)\n")
         if not os.path.exists(_dst_video2) or os.path.getsize(_dst_video2) != _src_sz:
             shutil.copyfile(_src_video, _dst_video2)
+        if not os.path.exists(_dst_video3) or os.path.getsize(_dst_video3) != _src_sz:
+            shutil.copyfile(_src_video, _dst_video3)
 except Exception as e:
     sys.stderr.write(f"[tts_worker background video copy exception]: {e}\n")
 
