@@ -12615,6 +12615,7 @@ setInterval(() => {
 // Guarantees continuous 60FPS playback across OBS / TikTok LIVE Studio
 // ---------------------------------------------------------------------
 const bgVideoEl = document.getElementById('bg-video');
+const bgParadiseImgEl = document.getElementById('bg-paradise-img');
 if (bgVideoEl) {
   bgVideoEl.playbackRate = 1.0;
   const tryPlayBgVideo = () => {
@@ -12622,6 +12623,15 @@ if (bgVideoEl) {
       bgVideoEl.play().catch(() => {});
     }
   };
+  bgVideoEl.addEventListener('playing', () => {
+    if (bgParadiseImgEl) bgParadiseImgEl.style.display = 'none';
+    bgVideoEl.style.opacity = '1';
+    bgVideoEl.style.display = 'block';
+  });
+  bgVideoEl.addEventListener('error', () => {
+    console.warn('[Video] Background video fallback to paradise image');
+    if (bgParadiseImgEl) bgParadiseImgEl.style.display = 'block';
+  });
   tryPlayBgVideo();
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) tryPlayBgVideo();
