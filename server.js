@@ -128,16 +128,24 @@ customGifts.forEach(g => {
 // Heavenly Paradise Sanctuary Background (สวนสวรรค์ พระแม่กวนอิม)
 // Direct image deployment from user upload
 // ---------------------------------------------------------------------
-const CELESTIAL_BG_SOURCE = 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg';
+const CELESTIAL_BG_CANDIDATES = [
+  'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794069169198_f8371fbf.jpg',
+  'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg'
+];
 const CELESTIAL_BG_DEST = path.join(__dirname, 'public', 'background.jpg');
 const CELESTIAL_BG_PARADISE = path.join(__dirname, 'public', 'heavenly_paradise.jpg');
 
 function syncCelestialBackground() {
   try {
-    if (fs.existsSync(CELESTIAL_BG_SOURCE)) {
-      fs.copyFileSync(CELESTIAL_BG_SOURCE, CELESTIAL_BG_DEST);
-      fs.copyFileSync(CELESTIAL_BG_SOURCE, CELESTIAL_BG_PARADISE);
-      console.log('[Background] Heavenly Paradise background synced successfully to public/background.jpg');
+    for (const src of CELESTIAL_BG_CANDIDATES) {
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, CELESTIAL_BG_DEST);
+        fs.copyFileSync(src, CELESTIAL_BG_PARADISE);
+        try { fs.copyFileSync(src, path.join(__dirname, 'public', 'bg.jpg')); } catch (_) {}
+        try { fs.copyFileSync(src, path.join(__dirname, 'public', 'bg-paradise.jpg')); } catch (_) {}
+        console.log(`[Background] Synced Heavenly Paradise background from ${src} to public/background.jpg`);
+        break;
+      }
     }
   } catch (err) {
     console.warn('[Background Sync Notice]:', err.message);
