@@ -7697,6 +7697,8 @@ function triggerGoldenBellEffect() {
       haloMesh.scale.setScalar(1.0 + Math.sin(t * 3.4) * 0.24);
       waveRing2.rotation.z -= 0.030;
       waveRing2.scale.setScalar(1.0 + Math.sin(t * 3.0 + 0.5) * 0.30);
+      waveRing3.rotation.z += 0.018;
+      waveRing3.scale.setScalar(1.0 + Math.sin(t * 2.6 + 1.0) * 0.35);
 
       // Pulse horizontal acoustic ring outward every cycle
       const sonicPhase = (t * 0.85) % 1.0;
