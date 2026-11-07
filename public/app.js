@@ -6662,6 +6662,13 @@ function triggerIncenseEffect() {
       });
       omamoriGroup.position.y = 1.05 + Math.sin(cTime * 2.6) * 0.055;
       omamoriGroup.rotation.y = Math.sin(cTime * 1.8) * 0.28;
+
+      // Animate floating pond lanterns bobbing on water
+      pondLanterns.forEach(pl => {
+        pl.group.position.y = pl.baseY + Math.sin(cTime * 2.5 + pl.phase) * 0.035;
+        const pPulse = 0.8 + Math.sin(cTime * 4.0 + pl.phase) * 0.2;
+        pl.sprite.scale.set(0.95 * pPulse, 0.95 * pPulse, 1);
+      });
     } else {
       clearInterval(flickerTimer);
     }
@@ -6675,9 +6682,15 @@ function triggerIncenseEffect() {
         alpha -= 0.08;
         censer.scale.multiplyScalar(0.95);
         censerLight.intensity = alpha * 3.0;
+        pondLanterns.forEach(pl => {
+          if (pl.sprite.material) pl.sprite.material.opacity = Math.max(0, alpha * 0.9);
+        });
         if (alpha <= 0.05) {
           clearInterval(cFade);
           scene.remove(censer);
+          pondLanterns.forEach(pl => {
+            scene.remove(pl.group);
+          });
           activeCenserGroup = null;
         }
       }, 30);
