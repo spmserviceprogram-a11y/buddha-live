@@ -2527,6 +2527,7 @@ for (let i = 0; i < 4; i++) {
   godRaysGroup.add(rayMesh);
   godRays.push(rayMesh);
 }
+godRaysGroup.visible = false; // Disabled to eliminate background overlay shaking/flicker
 scene.add(godRaysGroup);
 
 // 3. Sacred Jade Willow Ambrosia Droplets (ละอองน้ำทิพย์แจกันหยก)
