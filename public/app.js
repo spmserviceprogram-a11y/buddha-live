@@ -3498,11 +3498,11 @@ function createPrayerSpeechBubble(name, wish) {
   ctx.quadraticCurveTo(bx, by, bx + r, by);
   ctx.closePath();
 
-  // Crisp White Card with subtle gradient for depth
+  // 50% Translucent Dark Glass Card Body + Pointer Tail
   const cardGrad = ctx.createLinearGradient(bx, by, bx, bBottom);
-  cardGrad.addColorStop(0.0, '#ffffff');
-  cardGrad.addColorStop(0.85, '#fafaf9');
-  cardGrad.addColorStop(1.0, '#f5f5f4');
+  cardGrad.addColorStop(0.0, 'rgba(20, 10, 6, 0.50)');
+  cardGrad.addColorStop(0.85, 'rgba(30, 14, 8, 0.50)');
+  cardGrad.addColorStop(1.0, 'rgba(15, 6, 4, 0.50)');
   ctx.fillStyle = cardGrad;
   ctx.fill();
 
@@ -3530,8 +3530,8 @@ function createPrayerSpeechBubble(name, wish) {
     ctx.rect(pillX, pillY, pillW, pillH);
   }
   const pillGrad = ctx.createLinearGradient(pillX, pillY, pillX, pillY + pillH);
-  pillGrad.addColorStop(0.0, '#db2777');
-  pillGrad.addColorStop(1.0, '#9d174d');
+  pillGrad.addColorStop(0.0, 'rgba(219, 39, 119, 0.75)');
+  pillGrad.addColorStop(1.0, 'rgba(157, 23, 77, 0.75)');
   ctx.fillStyle = pillGrad;
   ctx.fill();
   ctx.lineWidth = 1.2;
@@ -3545,12 +3545,16 @@ function createPrayerSpeechBubble(name, wish) {
   ctx.fillText(headerText, cx, pillY + pillH / 2 + 1);
   ctx.restore();
 
-  // 5. Razor-Sharp Charcoal Typography (#0f172a) for Maximum Contrast
+  // 5. Razor-Sharp Crisp White Typography with Drop Shadow for Maximum Contrast
   ctx.save();
   ctx.font = fontStyle;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#0f172a';
+  ctx.shadowColor = '#000000';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetX = 1;
+  ctx.shadowOffsetY = 1;
+  ctx.fillStyle = '#ffffff';
 
   if (lines.length === 1) {
     ctx.fillText(lines[0], cx, by + bh / 2 + 5);
