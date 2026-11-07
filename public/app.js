@@ -12615,33 +12615,19 @@ setInterval(() => {
 // Guarantees continuous 60FPS playback across OBS / TikTok LIVE Studio
 // ---------------------------------------------------------------------
 const bgVideoEl = document.getElementById('bg-video');
-const bgParadiseImgEl = document.getElementById('bg-paradise-img');
-if (bgVideoEl && bgVideoEl.style.display !== 'none' && bgVideoEl.querySelector('source')) {
+if (bgVideoEl) {
   bgVideoEl.playbackRate = 1.0;
   const tryPlayBgVideo = () => {
     if (bgVideoEl.paused) {
       bgVideoEl.play().catch(() => {});
     }
   };
-  bgVideoEl.addEventListener('playing', () => {
-    if (bgParadiseImgEl) bgParadiseImgEl.style.display = 'none';
-    bgVideoEl.style.opacity = '1';
-    bgVideoEl.style.display = 'block';
-  });
-  bgVideoEl.addEventListener('error', () => {
-    console.warn('[Video] Background video fallback to paradise image');
-    if (bgParadiseImgEl) bgParadiseImgEl.style.display = 'block';
-  });
   tryPlayBgVideo();
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) tryPlayBgVideo();
   });
   window.addEventListener('click', tryPlayBgVideo, { once: true });
   window.addEventListener('touchstart', tryPlayBgVideo, { once: true });
-} else {
-  // If video is not active or has no source, ensure the Heavenly Paradise image is proudly displayed
-  if (bgParadiseImgEl) bgParadiseImgEl.style.display = 'block';
-  if (bgVideoEl) bgVideoEl.style.display = 'none';
 }
 
 // ---------------------------------------------------------------------
@@ -12717,3 +12703,853 @@ initCelestialPetalsAndStardust();
 try {
   fetch('/api/sync-paradise-bg').catch(() => {});
 } catch (_) {}
+
+// =====================================================================
+// 9. HEAVENLY GIFT FX LAYER — เลเยอร์เอฟเฟคดินแดนสวรรค์สำหรับของขวัญทั้ง 10 ระดับ
+//    (เสริมทับเอฟเฟคเดิม ไม่แก้ตรรกะเดิม: แสงเทพ, มณฑลธรรม, ละอองบุปผา, เมฆทิพย์, โคมลอย,
+//     เหรียญทอง, นกกระเรียน, รุ้งทิพย์, อักขระมงคล ฯลฯ)
+//    ทดสอบจาก console ได้ด้วย: heavenlyFX.play('dragon')
+//    ระดับ: incense lotus flowers golden_bell crystal_fountain royal_carriage
+//           fireworks castle dragon seamsi
+// =====================================================================
+function createHeavenlyFX(THREE, scene, camera, opts = {}) {
+  const ADD = THREE.AdditiveBlending;
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = (arr) => arr[(Math.random() * arr.length) | 0];
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const ease = (t) => t * t * (3 - 2 * t);
+  const TAU = Math.PI * 2;
+
+  const PAL = {
+    gold: 0xffd25a, amber: 0xffb347, white: 0xffffff, cream: 0xfff2c4,
+    pink: 0xff8fc4, rose: 0xff5d8f, red: 0xff4d4d, jade: 0x6ee7b7,
+    sky: 0x9fd8ff, violet: 0xc4a1ff, orange: 0xff8a2a
+  };
+  const RAINBOW = [0xff6b6b, 0xffb347, 0xffe66d, 0x7be495, 0x6ec6ff, 0x9d8cff, 0xff8fe0];
+
+  // ------------------------------------------------------------------
+  // Procedural textures (cached, shared)
+  // ------------------------------------------------------------------
+  const cache = {};
+  function canvasTex(w, h, draw) {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    draw(c.getContext('2d'), w, h);
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.minFilter = THREE.LinearFilter;
+    t.magFilter = THREE.LinearFilter;
+    t.generateMipmaps = false;
+    return t;
+  }
+  const T = {
+    glow() {
+      return cache.glow || (cache.glow = canvasTex(128, 128, (g, w, h) => {
+        const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+        gr.addColorStop(0, 'rgba(255,255,255,1)');
+        gr.addColorStop(0.22, 'rgba(255,255,255,0.55)');
+        gr.addColorStop(0.55, 'rgba(255,255,255,0.14)');
+        gr.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      }));
+    },
+    spark() {
+      return cache.spark || (cache.spark = canvasTex(128, 128, (g, w, h) => {
+        const cx = w / 2, cy = h / 2;
+        const gr = g.createRadialGradient(cx, cy, 0, cx, cy, 30);
+        gr.addColorStop(0, 'rgba(255,255,255,1)');
+        gr.addColorStop(0.35, 'rgba(255,255,255,0.45)');
+        gr.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gr; g.fillRect(0, 0, w, h);
+        [[0, 1.0, 0.07], [Math.PI / 2, 1.0, 0.07], [Math.PI / 4, 0.55, 0.05], [-Math.PI / 4, 0.55, 0.05]].forEach(([ang, len, th]) => {
+          g.save(); g.translate(cx, cy); g.rotate(ang); g.scale(1, th);
+          const sg = g.createRadialGradient(0, 0, 0, 0, 0, 62 * len);
+          sg.addColorStop(0, 'rgba(255,255,255,1)');
+          sg.addColorStop(0.5, 'rgba(255,255,255,0.5)');
+          sg.addColorStop(1, 'rgba(255,255,255,0)');
+          g.fillStyle = sg; g.beginPath(); g.arc(0, 0, 62 * len, 0, TAU); g.fill();
+          g.restore();
+        });
+      }));
+    },
+    ring() {
+      return cache.ring || (cache.ring = canvasTex(256, 256, (g, w, h) => {
+        const gr = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
+        gr.addColorStop(0, 'rgba(255,255,255,0.05)');
+        gr.addColorStop(0.72, 'rgba(255,255,255,0.08)');
+        gr.addColorStop(0.86, 'rgba(255,255,255,0.95)');
+        gr.addColorStop(0.93, 'rgba(255,255,255,0.35)');
+        gr.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      }));
+    },
+    beam() {
+      return cache.beam || (cache.beam = canvasTex(64, 256, (g, w, h) => {
+        const img = g.createImageData(w, h);
+        for (let y = 0; y < h; y++) {
+          const v = y / (h - 1); // 0 top .. 1 bottom
+          const av = Math.pow(v, 1.15) * Math.min(1, (1 - v) / 0.04 + 0.0);
+          for (let x = 0; x < w; x++) {
+            const hx = 1 - Math.abs((x / (w - 1)) * 2 - 1);
+            const a = Math.pow(hx, 1.6) * Math.min(1, av);
+            const i = (y * w + x) * 4;
+            img.data[i] = 255; img.data[i + 1] = 255; img.data[i + 2] = 255;
+            img.data[i + 3] = Math.round(255 * a);
+          }
+        }
+        g.putImageData(img, 0, 0);
+      }));
+    },
+    petal() {
+      return cache.petal || (cache.petal = canvasTex(96, 144, (g, w, h) => {
+        const gr = g.createLinearGradient(0, h, 0, 0);
+        gr.addColorStop(0, 'rgba(255,255,255,0.95)');
+        gr.addColorStop(0.55, 'rgba(255,240,245,0.95)');
+        gr.addColorStop(1, 'rgba(255,200,220,0.9)');
+        g.fillStyle = gr;
+        g.beginPath();
+        g.moveTo(w / 2, h * 0.96);
+        g.bezierCurveTo(w * 0.02, h * 0.7, w * 0.0, h * 0.25, w / 2, h * 0.03);
+        g.bezierCurveTo(w * 1.0, h * 0.25, w * 0.98, h * 0.7, w / 2, h * 0.96);
+        g.fill();
+        g.strokeStyle = 'rgba(255,255,255,0.7)'; g.lineWidth = 1.5;
+        g.beginPath(); g.moveTo(w / 2, h * 0.92); g.lineTo(w / 2, h * 0.14); g.stroke();
+      }));
+    },
+    mandala() {
+      return cache.mandala || (cache.mandala = canvasTex(512, 512, (g, w, h) => {
+        const cx = w / 2, cy = h / 2;
+        g.shadowColor = 'rgba(255,255,255,0.9)'; g.shadowBlur = 8;
+        g.strokeStyle = 'rgba(255,255,255,0.95)'; g.fillStyle = 'rgba(255,255,255,0.9)';
+        [248, 240, 205, 199, 122, 117, 56].forEach((r, i) => { g.lineWidth = i % 2 ? 1.5 : 3; g.beginPath(); g.arc(cx, cy, r, 0, TAU); g.stroke(); });
+        for (let i = 0; i < 48; i++) { const a = (i / 48) * TAU; g.beginPath(); g.arc(cx + Math.cos(a) * 222, cy + Math.sin(a) * 222, 3.4, 0, TAU); g.fill(); }
+        const petals = (n, r0, r1, wid, lw) => {
+          g.lineWidth = lw;
+          for (let i = 0; i < n; i++) {
+            const a = (i / n) * TAU;
+            g.save(); g.translate(cx, cy); g.rotate(a);
+            g.beginPath(); g.moveTo(r0, 0);
+            g.bezierCurveTo(r0 + (r1 - r0) * 0.35, -wid, r0 + (r1 - r0) * 0.8, -wid * 0.6, r1, 0);
+            g.bezierCurveTo(r0 + (r1 - r0) * 0.8, wid * 0.6, r0 + (r1 - r0) * 0.35, wid, r0, 0);
+            g.stroke(); g.restore();
+          }
+        };
+        petals(16, 128, 196, 22, 2.4);
+        petals(8, 62, 120, 28, 3);
+        petals(24, 206, 244, 9, 1.8);
+        // 12-point star polygon {12/5}
+        g.lineWidth = 1.4; g.beginPath();
+        for (let i = 0; i <= 12; i++) { const a = ((i * 5) % 12) / 12 * TAU; const x = cx + Math.cos(a) * 112, y = cy + Math.sin(a) * 112; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+        g.stroke();
+        const cg = g.createRadialGradient(cx, cy, 0, cx, cy, 56);
+        cg.addColorStop(0, 'rgba(255,255,255,0.55)'); cg.addColorStop(1, 'rgba(255,255,255,0)');
+        g.shadowBlur = 0; g.fillStyle = cg; g.beginPath(); g.arc(cx, cy, 56, 0, TAU); g.fill();
+      }));
+    },
+    rays() {
+      return cache.rays || (cache.rays = canvasTex(512, 512, (g, w, h) => {
+        const cx = w / 2, cy = h / 2, R = w / 2;
+        const gr = g.createRadialGradient(cx, cy, 0, cx, cy, R);
+        gr.addColorStop(0, 'rgba(255,255,255,0.95)');
+        gr.addColorStop(0.35, 'rgba(255,255,255,0.45)');
+        gr.addColorStop(0.8, 'rgba(255,255,255,0.12)');
+        gr.addColorStop(1, 'rgba(255,255,255,0)');
+        g.fillStyle = gr;
+        const N = 28;
+        for (let i = 0; i < N; i++) {
+          const a = (i / N) * TAU, half = (i % 2 ? 0.045 : 0.075);
+          g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R, a - half, a + half); g.closePath(); g.fill();
+        }
+      }));
+    },
+    rainbow() {
+      return cache.rainbow || (cache.rainbow = canvasTex(512, 290, (g, w, h) => {
+        const cx = w / 2, cy = h - 4;
+        RAINBOW.forEach((c, i) => {
+          const col = '#' + c.toString(16).padStart(6, '0');
+          g.strokeStyle = col; g.globalAlpha = 0.62; g.lineWidth = 15;
+          g.shadowColor = col; g.shadowBlur = 14;
+          g.beginPath(); g.arc(cx, cy, 236 - i * 14.5, Math.PI, TAU); g.stroke();
+        });
+        g.globalAlpha = 1;
+      }));
+    },
+    bird(up) {
+      const k = up ? 'birdUp' : 'birdDn';
+      return cache[k] || (cache[k] = canvasTex(256, 128, (g, w, h) => {
+        g.shadowColor = 'rgba(255,225,140,0.95)'; g.shadowBlur = 10;
+        g.fillStyle = 'rgba(255,255,255,0.97)';
+        const dir = up ? -1 : 1;
+        g.beginPath(); g.ellipse(128, 70, 30, 8, 0, 0, TAU); g.fill(); // body
+        g.beginPath(); g.moveTo(150, 68); g.quadraticCurveTo(178, 62, 190, 52); g.lineTo(194, 55); g.quadraticCurveTo(180, 70, 152, 74); g.fill(); // neck
+        g.beginPath(); g.ellipse(192, 52, 6, 4.5, -0.3, 0, TAU); g.fill();
+        g.fillStyle = 'rgba(255,200,90,0.95)'; g.beginPath(); g.moveTo(197, 51); g.lineTo(212, 54); g.lineTo(197, 55); g.fill();
+        g.fillStyle = 'rgba(255,255,255,0.97)';
+        [-1, 1].forEach((sd) => { // wings
+          g.beginPath(); g.moveTo(128, 68);
+          g.quadraticCurveTo(128 + sd * 40, 68 + dir * 44, 128 + sd * 98, 68 + dir * 28 + (up ? 6 : -4));
+          g.quadraticCurveTo(128 + sd * 52, 68 + dir * 10, 128, 76); g.fill();
+        });
+        g.beginPath(); g.moveTo(100, 70); g.lineTo(58, 84); g.lineTo(100, 76); g.fill(); // tail legs
+      }));
+    },
+    coin() {
+      return cache.coin || (cache.coin = canvasTex(96, 96, (g, w, h) => {
+        const cx = w / 2, cy = h / 2;
+        const gr = g.createRadialGradient(cx - 10, cy - 12, 4, cx, cy, 44);
+        gr.addColorStop(0, '#fff7c2'); gr.addColorStop(0.55, '#ffd34d'); gr.addColorStop(1, '#c98a0c');
+        g.shadowColor = 'rgba(255,220,110,0.9)'; g.shadowBlur = 8;
+        g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, 40, 0, TAU); g.fill();
+        g.shadowBlur = 0; g.strokeStyle = '#8a5a00'; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, 39, 0, TAU); g.stroke();
+        g.strokeStyle = 'rgba(255,248,200,0.9)'; g.lineWidth = 2; g.beginPath(); g.arc(cx, cy, 31, 0, TAU); g.stroke();
+        g.globalCompositeOperation = 'destination-out'; g.fillRect(cx - 9, cy - 9, 18, 18);
+        g.globalCompositeOperation = 'source-over'; g.strokeStyle = '#8a5a00'; g.lineWidth = 2; g.strokeRect(cx - 9, cy - 9, 18, 18);
+        g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, 24, Math.PI * 1.1, Math.PI * 1.55); g.stroke();
+      }));
+    },
+    lantern() {
+      return cache.lantern || (cache.lantern = canvasTex(128, 192, (g, w, h) => {
+        const cx = w / 2;
+        const gl = g.createRadialGradient(cx, 112, 4, cx, 112, 70);
+        gl.addColorStop(0, 'rgba(255,190,80,0.75)'); gl.addColorStop(1, 'rgba(255,150,40,0)');
+        g.fillStyle = gl; g.fillRect(0, 30, w, h);
+        const body = g.createLinearGradient(0, 40, 0, 160);
+        body.addColorStop(0, '#ffe9a0'); body.addColorStop(0.5, '#ffb347'); body.addColorStop(1, '#ff8a1f');
+        g.fillStyle = body; g.beginPath();
+        g.moveTo(34, 42); g.lineTo(94, 42); g.lineTo(106, 152); g.quadraticCurveTo(cx, 164, 22, 152); g.closePath(); g.fill();
+        g.strokeStyle = 'rgba(160,70,0,0.55)'; g.lineWidth = 1.5;
+        for (let i = -2; i <= 2; i++) { g.beginPath(); g.moveTo(cx + i * 10, 42); g.lineTo(cx + i * 17, 156); g.stroke(); }
+        g.fillStyle = '#b3541a'; g.beginPath(); g.ellipse(cx, 42, 30, 6, 0, 0, TAU); g.fill();
+        const fl = g.createRadialGradient(cx, 150, 0, cx, 150, 22);
+        fl.addColorStop(0, 'rgba(255,255,230,1)'); fl.addColorStop(1, 'rgba(255,200,80,0)');
+        g.fillStyle = fl; g.beginPath(); g.arc(cx, 150, 22, 0, TAU); g.fill();
+      }));
+    },
+    heart() {
+      return cache.heart || (cache.heart = canvasTex(128, 128, (g, w, h) => {
+        g.shadowColor = 'rgba(255,170,200,1)'; g.shadowBlur = 16;
+        const gr = g.createRadialGradient(64, 54, 4, 64, 64, 56);
+        gr.addColorStop(0, '#fff3f7'); gr.addColorStop(0.5, '#ff9cc2'); gr.addColorStop(1, '#ff5d8f');
+        g.fillStyle = gr; g.beginPath(); g.moveTo(64, 108);
+        g.bezierCurveTo(8, 70, 14, 22, 46, 22); g.bezierCurveTo(58, 22, 64, 32, 64, 38);
+        g.bezierCurveTo(64, 32, 70, 22, 82, 22); g.bezierCurveTo(114, 22, 120, 70, 64, 108); g.fill();
+        g.shadowBlur = 0; g.strokeStyle = 'rgba(255,255,255,0.85)'; g.lineWidth = 3;
+        g.beginPath(); g.arc(44, 44, 14, Math.PI * 1.05, Math.PI * 1.45); g.stroke();
+      }));
+    },
+    cloud(variant = 0) {
+      const k = 'cloud' + (variant % 3);
+      return cache[k] || (cache[k] = canvasTex(256, 160, (g, w, h) => {
+        let seed = 17 + variant * 31;
+        const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+        for (let i = 0; i < 22; i++) {
+          const x = w / 2 + (rnd() - 0.5) * 150, y = h / 2 + (rnd() - 0.5) * 50, r = 24 + rnd() * 34;
+          const gr = g.createRadialGradient(x, y, 0, x, y, r);
+          gr.addColorStop(0, 'rgba(255,255,255,0.30)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+          g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
+        }
+      }));
+    },
+    glyph(text, hue = '#ffe27a') {
+      const k = 'glyph:' + text + hue;
+      return cache[k] || (cache[k] = canvasTex(384, 160, (g, w, h) => {
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        let fs = 84;
+        const fam = "Sarabun,'Noto Serif Thai','Noto Sans Thai',Loma,Garuda,Tahoma,sans-serif";
+        g.font = '700 ' + fs + 'px ' + fam;
+        while (g.measureText(text).width > w - 56 && fs > 30) { fs -= 4; g.font = '700 ' + fs + 'px ' + fam; }
+        g.shadowColor = hue; g.shadowBlur = 26;
+        g.lineWidth = 8; g.strokeStyle = 'rgba(120,20,10,0.85)'; g.strokeText(text, w / 2, h / 2 + 4);
+        const gr = g.createLinearGradient(0, 40, 0, 120);
+        gr.addColorStop(0, '#fffbe0'); gr.addColorStop(0.5, hue); gr.addColorStop(1, '#ff9d2e');
+        g.fillStyle = gr; g.fillText(text, w / 2, h / 2 + 4);
+      }));
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // Engine: pooled-by-lifetime sprites / meshes + timers
+  // ------------------------------------------------------------------
+  const MAX_ITEMS = 1200;
+  const items = [];
+  const timers = [];
+  const planeGeo = new THREE.PlaneGeometry(1, 1);
+  const planeBottomGeo = new THREE.PlaneGeometry(1, 1).translate(0, 0.5, 0);
+  let running = false;
+  let manual = !!opts.manual;
+  let lastT = 0;
+
+  const env = (u, fi, fo) => (u < fi ? u / Math.max(fi, 1e-4) : (u > 1 - fo ? Math.max(0, (1 - u) / Math.max(fo, 1e-4)) : 1));
+
+  function later(sec, fn) { timers.push({ t: sec, fn }); kick(); }
+
+  function addSprite(o) {
+    if (items.length >= MAX_ITEMS) return null;
+    const mat = new THREE.SpriteMaterial({
+      map: o.tex, color: o.color == null ? 0xffffff : o.color, transparent: true, opacity: 0,
+      blending: o.normal ? THREE.NormalBlending : ADD, depthWrite: false,
+      depthTest: o.depthTest == null ? true : o.depthTest, toneMapped: false, rotation: o.rot || 0
+    });
+    const s = new THREE.Sprite(mat);
+    s.renderOrder = o.order == null ? 50 : o.order;
+    s.visible = !(o.delay > 0);
+    s.position.set(o.x || 0, o.y || 0, o.z || 0);
+    const s0 = o.s0 == null ? 1 : o.s0;
+    s.scale.set(s0 * (o.aspect || 1), s0, 1);
+    scene.add(s);
+    const p = {
+      kind: 's', obj: s, mat, t: 0, life: o.life || 2, delay: o.delay || 0,
+      x: o.x || 0, y: o.y || 0, z: o.z || 0,
+      vx: o.vx || 0, vy: o.vy || 0, vz: o.vz || 0, ax: o.ax || 0, ay: o.ay || 0, az: o.az || 0,
+      drag: o.drag || 0, s0, s1: o.s1 == null ? s0 : o.s1, aspect: o.aspect || 1,
+      a: o.a == null ? 1 : o.a, fi: o.fi == null ? 0.15 : o.fi, fo: o.fo == null ? 0.4 : o.fo,
+      rot: o.rot || 0, vrot: o.vrot || 0, tw: o.tw || 0, ph: Math.random() * TAU,
+      sw: o.sw ? Object.assign({ ang: 0, w: 1, r: 1, dr: 0, cx: 0, cy: 0, cz: 0, rise: 0, plane: 'xz', squash: 0.55 }, o.sw) : null,
+      fl: o.fl || null, spin: o.spin || 0, flap: o.flap || 0, flapTex: o.flapTex || null, _fm: -1
+    };
+    items.push(p); kick();
+    return p;
+  }
+
+  function addPlane(o) {
+    if (items.length >= MAX_ITEMS) return null;
+    const mat = new THREE.MeshBasicMaterial({
+      map: o.tex, color: o.color == null ? 0xffffff : o.color, transparent: true, opacity: 0,
+      blending: ADD, depthWrite: false, side: THREE.DoubleSide, toneMapped: false,
+      depthTest: o.depthTest == null ? true : o.depthTest
+    });
+    const m = new THREE.Mesh(o.bottom ? planeBottomGeo : planeGeo, mat);
+    m.renderOrder = o.order == null ? 40 : o.order;
+    m.position.set(o.x || 0, o.y || 0, o.z || 0);
+    m.rotation.set(o.rx || 0, o.ry || 0, o.rz || 0);
+    m.visible = !(o.delay > 0);
+    scene.add(m);
+    const p = {
+      kind: 'm', obj: m, mat, t: 0, life: o.life || 2, delay: o.delay || 0,
+      w0: o.w0 == null ? 1 : o.w0, w1: o.w1 == null ? (o.w0 == null ? 1 : o.w0) : o.w1,
+      h0: o.h0 == null ? (o.w0 == null ? 1 : o.w0) : o.h0, h1: o.h1 == null ? (o.h0 == null ? (o.w1 == null ? (o.w0 == null ? 1 : o.w0) : o.w1) : o.h0) : o.h1,
+      a: o.a == null ? 1 : o.a, fi: o.fi == null ? 0.15 : o.fi, fo: o.fo == null ? 0.4 : o.fo,
+      spin: o.spin || 0, rz: o.rz || 0, tw: o.tw || 0, ph: Math.random() * TAU, vy: o.vy || 0, y: o.y || 0
+    };
+    m.scale.set(p.w0, p.h0, 1);
+    items.push(p); kick();
+    return p;
+  }
+
+  function stepItem(p, dt) {
+    if (p.delay > 0) {
+      p.delay -= dt;
+      if (p.delay > 0) return true;
+      p.obj.visible = true;
+    }
+    p.t += dt;
+    const u = p.t / p.life;
+    if (u >= 1) return false;
+    const e = ease(u);
+    let a = env(u, p.fi, p.fo) * p.a;
+    if (p.tw) a *= 0.65 + 0.35 * Math.sin(p.t * p.tw + p.ph);
+    if (p.kind === 's') {
+      p.vx += p.ax * dt; p.vy += p.ay * dt; p.vz += p.az * dt;
+      if (p.drag) { const k = Math.max(0, 1 - p.drag * dt); p.vx *= k; p.vy *= k; p.vz *= k; }
+      p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
+      let X = p.x, Y = p.y, Z = p.z;
+      if (p.sw) {
+        const w = p.sw;
+        w.ang += w.w * dt; w.r += w.dr * dt; w.cy += w.rise * dt;
+        if (w.plane === 'xy') { X = w.cx + Math.cos(w.ang) * w.r; Y = w.cy + Math.sin(w.ang) * w.r; Z = w.cz; }
+        else { X = w.cx + Math.cos(w.ang) * w.r; Z = w.cz + Math.sin(w.ang) * w.r * w.squash; Y = w.cy; }
+      }
+      if (p.fl) { X += Math.sin(p.t * p.fl.f + p.ph) * p.fl.a; Z += Math.cos(p.t * p.fl.f * 0.7 + p.ph) * p.fl.a * 0.4; }
+      p.obj.position.set(X, Y, Z);
+      const sc = lerp(p.s0, p.s1, e);
+      const sx = p.spin ? Math.max(0.12, Math.abs(Math.cos(p.t * p.spin + p.ph))) : 1;
+      p.obj.scale.set(sc * p.aspect * sx, sc, 1);
+      if (p.vrot) p.mat.rotation = p.rot + p.vrot * p.t;
+      if (p.flap && p.flapTex) {
+        const fm = (Math.floor(p.t * p.flap + p.ph) & 1);
+        if (fm !== p._fm) { p._fm = fm; p.mat.map = p.flapTex[fm]; }
+      }
+    } else {
+      p.obj.scale.set(lerp(p.w0, p.w1, e), lerp(p.h0, p.h1, e), 1);
+      if (p.spin) p.obj.rotation.z = p.rz + p.spin * p.t;
+      if (p.vy) p.obj.position.y = p.y + p.vy * p.t;
+    }
+    p.mat.opacity = a;
+    return true;
+  }
+
+  function disposeItem(p) {
+    scene.remove(p.obj);
+    p.mat.dispose();
+  }
+
+  function tick(dt) {
+    for (let i = timers.length - 1; i >= 0; i--) {
+      timers[i].t -= dt;
+      if (timers[i].t <= 0) { const f = timers[i].fn; timers.splice(i, 1); try { f(); } catch (err) { console.warn('[HeavenlyFX]', err); } }
+    }
+    for (let i = items.length - 1; i >= 0; i--) {
+      if (!stepItem(items[i], dt)) { disposeItem(items[i]); items.splice(i, 1); }
+    }
+  }
+
+  function loop(now) {
+    if (manual) { running = false; return; }
+    const dt = Math.min(0.05, Math.max(0.001, (now - lastT) / 1000 || 0.016));
+    lastT = now;
+    tick(dt);
+    if (items.length || timers.length) requestAnimationFrame(loop); else running = false;
+  }
+  function kick() {
+    if (running || manual) return;
+    running = true; lastT = performance.now();
+    requestAnimationFrame(loop);
+  }
+
+  // ------------------------------------------------------------------
+  // Screen anchors (derived from the live camera → always aligned with the 9:16 backdrop)
+  // ------------------------------------------------------------------
+  const _v = new THREE.Vector3(), _d = new THREE.Vector3();
+  function A(nx, ny, z = 0) {
+    camera.updateMatrixWorld(true);
+    _v.set(nx, ny, 0.5).unproject(camera);
+    _d.copy(_v).sub(camera.position).normalize();
+    const k = (z - camera.position.z) / _d.z;
+    return { x: camera.position.x + _d.x * k, y: camera.position.y + _d.y * k, z };
+  }
+  const anchors = () => ({
+    halo: A(0, 0.74, -1.2),   // เศียรพระแม่กวนอิม / วงรัศมี
+    chest: A(0, 0.50, -0.6),  // องค์พระ
+    lotus: A(0, 0.12, 0.2),   // ฐานบัวทอง
+    sky: (nx, ny, z = 0.5) => A(nx, ny, z)
+  });
+
+  // ------------------------------------------------------------------
+  // Reusable heavenly building blocks
+  // ------------------------------------------------------------------
+  function flash(p, color, size, life = 1.1, a = 0.95, delay = 0) {
+    addSprite({ tex: T.glow(), color, x: p.x, y: p.y, z: p.z, s0: size * 0.35, s1: size, life, a: a * 0.55, fi: 0.08, fo: 0.9, delay, order: 70 });
+  }
+  function starburst(p, color, size, life = 1.4, delay = 0) {
+    addSprite({ tex: T.spark(), color, x: p.x, y: p.y, z: p.z, s0: size * 0.2, s1: size, life, a: 1, fi: 0.1, fo: 0.7, vrot: 0.6, delay, order: 72 });
+    addSprite({ tex: T.spark(), color: PAL.white, x: p.x, y: p.y, z: p.z + 0.01, s0: size * 0.1, s1: size * 0.55, life: life * 0.8, a: 1, fi: 0.1, fo: 0.7, vrot: -0.9, delay, order: 73 });
+  }
+  function raysHalo(p, color, size, life, a = 0.5, spin = 0.28, delay = 0) {
+    addSprite({ tex: T.rays(), color, x: p.x, y: p.y, z: p.z, s0: size * 0.75, s1: size, life, a, fi: 0.2, fo: 0.4, vrot: spin, delay, order: 20 });
+    addSprite({ tex: T.rays(), color: PAL.white, x: p.x, y: p.y, z: p.z + 0.02, s0: size * 0.5, s1: size * 0.7, life, a: a * 0.35, fi: 0.2, fo: 0.4, vrot: -spin * 1.6, delay, order: 21 });
+  }
+  function ringWave(p, color, size, life, a = 0.9, flat = false, delay = 0) {
+    if (flat) {
+      addPlane({ tex: T.ring(), color, x: p.x, y: p.y + 0.03, z: p.z, rx: -Math.PI / 2, w0: size * 0.12, w1: size, life, a, fi: 0.06, fo: 0.8, delay, order: 30 });
+    } else {
+      addSprite({ tex: T.ring(), color, x: p.x, y: p.y, z: p.z, s0: size * 0.12, s1: size, life, a, fi: 0.06, fo: 0.8, delay, order: 60 });
+    }
+  }
+  function mandalaFloor(p, color, size, life, spin = 0.35, a = 0.85, delay = 0) {
+    addPlane({ tex: T.mandala(), color, x: p.x, y: p.y + 0.04, z: p.z, rx: -Math.PI / 2, w0: size * 0.6, w1: size, life, a, fi: 0.18, fo: 0.35, spin, delay, order: 31 });
+    addPlane({ tex: T.glow(), color, x: p.x, y: p.y + 0.035, z: p.z, rx: -Math.PI / 2, w0: size * 1.1, w1: size * 1.35, life, a: a * 0.55, fi: 0.2, fo: 0.4, delay, order: 29 });
+  }
+  function pillar(p, color, h, w, life, a = 0.7, delay = 0) {
+    a *= 0.55;
+    [-0.55, 0.55].forEach((ry) => addPlane({ tex: T.beam(), color, x: p.x, y: p.y, z: p.z, ry, bottom: true, w0: w * 0.55, w1: w, h0: h * 0.3, h1: h, life, a, fi: 0.18, fo: 0.45, delay, tw: 2.6, order: 25 }));
+  }
+  function sparkles(p, n, o = {}) {
+    const cols = o.colors || [PAL.gold, PAL.cream, PAL.white];
+    for (let i = 0; i < n; i++) {
+      const ang = Math.random() * TAU, sp = rand(o.v0 || 0.2, o.v1 || 1.2), up = rand(o.up0 == null ? 0.2 : o.up0, o.up1 == null ? 1.4 : o.up1);
+      const sz = rand(o.s0 || 0.12, o.s1 || 0.3);
+      addSprite({
+        tex: T.spark(), color: pick(cols),
+        x: p.x + rand(-(o.spread || 0.3), o.spread || 0.3), y: p.y + rand(-(o.spreadY || 0.1), o.spreadY || 0.1), z: p.z + rand(-(o.spread || 0.3), o.spread || 0.3),
+        vx: Math.cos(ang) * sp, vy: up, vz: Math.sin(ang) * sp * 0.5, ay: o.g == null ? -0.2 : o.g, drag: o.drag || 0,
+        s0: sz, s1: sz * 0.4, life: rand(o.l0 || 1.4, o.l1 || 2.8), a: 1, fi: 0.08, fo: 0.55, tw: rand(6, 14),
+        delay: o.delay ? rand(0, o.delay) : 0, order: 65
+      });
+    }
+  }
+  function petals(n, o = {}) {
+    const cols = o.colors || [PAL.pink, PAL.white, PAL.rose, PAL.gold];
+    for (let i = 0; i < n; i++) {
+      const sz = rand(o.s0 || 0.16, o.s1 || 0.3);
+      const sw = o.swirl ? { cx: o.swirl.x, cy: o.swirl.y + rand(0, 0.3), cz: o.swirl.z, ang: rand(0, TAU), w: rand(0.9, 1.7) * (Math.random() < 0.5 ? 1 : -1) * (o.swirl.dir || 1), r: o.swirl.r * rand(0.7, 1.1), dr: o.swirl.dr || 0, rise: rand(o.swirl.rise0 || 0.4, o.swirl.rise1 || 0.9) } : null;
+      addSprite({
+        tex: T.petal(), color: pick(cols), normal: true, aspect: 0.66,
+        x: sw ? 0 : rand(o.x0, o.x1), y: sw ? 0 : rand(o.y0, o.y1), z: sw ? 0 : rand(o.z0, o.z1),
+        vx: rand(-0.15, 0.15), vy: sw ? 0 : -rand(o.fall0 || 0.8, o.fall1 || 1.6), vz: 0, sw,
+        s0: sz, s1: sz * 0.9, rot: rand(0, TAU), vrot: rand(-2.4, 2.4), fl: { f: rand(1.6, 3.2), a: o.flutter == null ? 0.16 : o.flutter },
+        life: rand(o.l0 || 3, o.l1 || 5), a: 0.95, fi: 0.12, fo: 0.3, delay: o.delay ? rand(0, o.delay) : 0, order: 55
+      });
+    }
+  }
+  function coins(n, o) {
+    for (let i = 0; i < n; i++) {
+      const sz = rand(0.17, 0.28);
+      addSprite({
+        tex: T.coin(), normal: true, x: rand(o.x0, o.x1), y: rand(o.y0, o.y1), z: rand(o.z0, o.z1),
+        vx: rand(-0.2, 0.2), vy: -rand(2.2, 3.8), s0: sz, s1: sz, spin: rand(5, 11),
+        life: rand(o.l0 || 2.4, o.l1 || 3.8), a: 1, fi: 0.05, fo: 0.18, delay: rand(0, o.delay || 3), order: 58
+      });
+    }
+  }
+  function birds(n, from, to, y, z, life, delay = 0) {
+    for (let i = 0; i < n; i++) {
+      const row = i === 0 ? 0 : Math.ceil(i / 2), side = i % 2 ? 1 : -1;
+      const dir = Math.sign(to - from);
+      const sz = rand(0.55, 0.75);
+      addSprite({
+        tex: T.bird(true), flapTex: [T.bird(true), T.bird(false)], flap: rand(3.4, 4.4),
+        x: from - dir * row * 0.55, y: y + row * 0.18 * side + rand(-0.05, 0.05), z: z + row * 0.1 * side,
+        vx: (to - from) / life, vy: 0.05, s0: sz, s1: sz * 0.9, aspect: dir < 0 ? -2 : 2,
+        life, a: 0.95, fi: 0.15, fo: 0.2, delay: delay + row * 0.08, normal: true, order: 52
+      });
+    }
+  }
+  function lanterns(n, o) {
+    for (let i = 0; i < n; i++) {
+      const sz = rand(0.38, 0.62);
+      addSprite({
+        tex: T.lantern(), aspect: 0.66, x: rand(o.x0, o.x1), y: rand(o.y0, o.y1), z: rand(o.z0, o.z1),
+        vx: rand(-0.1, 0.25), vy: rand(0.55, 1.05), s0: sz, s1: sz * 0.7, life: rand(o.l0 || 5, o.l1 || 7.5),
+        a: 1, fi: 0.15, fo: 0.35, tw: rand(2.5, 4.5), fl: { f: rand(0.8, 1.6), a: 0.14 }, delay: rand(0, o.delay || 2.5), order: 54
+      });
+    }
+  }
+  function hearts(n, o) {
+    for (let i = 0; i < n; i++) {
+      const sz = rand(0.2, 0.42);
+      addSprite({
+        tex: T.heart(), x: rand(o.x0, o.x1), y: rand(o.y0, o.y1), z: rand(o.z0, o.z1),
+        vx: rand(-0.12, 0.12), vy: rand(0.5, 1.1), s0: sz * 0.5, s1: sz, rot: rand(-0.4, 0.4), vrot: rand(-0.6, 0.6),
+        fl: { f: rand(1.4, 2.6), a: 0.18 }, life: rand(3.4, 5), a: 0.95, fi: 0.2, fo: 0.35, delay: rand(0, o.delay || 2), order: 56
+      });
+    }
+  }
+  function glyph(text, p, rise, size, life, hue = '#ffe27a', delay = 0) {
+    addSprite({ tex: T.glyph(text, hue), aspect: 2.4, x: p.x, y: p.y, z: p.z, vy: rise, s0: size * 0.7, s1: size, life, a: 1, fi: 0.2, fo: 0.4, delay, order: 80, depthTest: false });
+  }
+  function mist(p, n, color, spread, life, size = 2.6, a = 0.5, delay = 0) {
+    for (let i = 0; i < n; i++) {
+      addSprite({
+        tex: T.cloud(i), color, x: p.x + rand(-spread, spread), y: p.y + rand(-0.15, 0.25), z: p.z + rand(-0.8, 0.8),
+        vx: rand(-0.25, 0.25), vy: rand(0.02, 0.12), s0: size * rand(0.7, 1), s1: size * rand(1.2, 1.6), aspect: 1.6,
+        life: life * rand(0.85, 1.1), a: a * 0.42 * rand(0.7, 1), fi: 0.3, fo: 0.4, delay: delay + rand(0, 0.8), order: 22
+      });
+    }
+  }
+  function fireflies(p, n, color, spread, life) {
+    for (let i = 0; i < n; i++) {
+      const sz = rand(0.1, 0.2);
+      addSprite({
+        tex: T.glow(), color: pick([color, PAL.gold, PAL.white]), x: p.x + rand(-spread, spread), y: p.y + rand(0, 2.0), z: p.z + rand(-spread * 0.6, spread * 0.6),
+        vx: rand(-0.3, 0.3), vy: rand(0.0, 0.3), s0: sz, s1: sz, life: life * rand(0.7, 1), a: 1, fi: 0.2, fo: 0.3, tw: rand(3, 7), fl: { f: rand(1, 2.4), a: 0.3 }, delay: rand(0, 1.5), order: 62
+      });
+    }
+  }
+  function rainbow(p, size, life, a = 0.75, delay = 0) {
+    addSprite({ tex: T.rainbow(), x: p.x, y: p.y, z: p.z, aspect: 1.77, s0: size * 0.85, s1: size, life, a, fi: 0.3, fo: 0.4, delay, order: 18 });
+  }
+  function peony(p, n, colors, life = 2.6, power = 3.4, delay = 0) {
+    flash(p, colors[0], 3.2, 1.0, 0.8, delay);
+    ringWave(p, colors[1] || PAL.white, 3.6, 1.1, 0.9, false, delay);
+    for (let i = 0; i < n; i++) {
+      const ang = (i / n) * TAU + rand(-0.04, 0.04), ring = i % 3, sp = power * (0.55 + ring * 0.25);
+      const col = colors[i % colors.length];
+      const common = { x: p.x, y: p.y, z: p.z, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, vz: 0, ay: -0.8, drag: 0.95, life: life * rand(0.85, 1.1), delay };
+      // แกนสีสด (blend ปกติ → เห็นชัดบนท้องฟ้าสีทอง) + ประกายดาวสว่างซ้อนบน
+      addSprite(Object.assign({ tex: T.glow(), color: col, normal: true, s0: 0.55, s1: 0.16, a: 1, fi: 0.04, fo: 0.6, order: 67 }, common));
+      if (i % 2 === 0) addSprite(Object.assign({ tex: T.spark(), color: PAL.white, s0: 0.4, s1: 0.12, a: 1, fi: 0.04, fo: 0.6, tw: 12, order: 68 }, common));
+    }
+  }
+
+  // Screen-space (CSS) overlay → subtle god-ray veil + coloured bloom around the whole frame
+  function screenFx(tier, dur) {
+    try {
+      const host = document.getElementById('stream-container') || document.body;
+      const el = document.createElement('div');
+      el.className = 'hfx-screen hfx-' + tier;
+      el.style.setProperty('--hfx-dur', dur + 's');
+      el.innerHTML = '<i class="hfx-glow"></i><i class="hfx-rays"></i><i class="hfx-edge"></i><i class="hfx-shine"></i>';
+      host.appendChild(el);
+      setTimeout(() => { try { el.remove(); } catch (_) { } }, dur * 1000 + 400);
+    } catch (_) { }
+  }
+
+  const gp = () => A(0, -0.14, 2.6);
+
+  // Common "Heavenly halo" that every tier shares: rays behind Guan Yin + soft flash + mist at the lotus throne
+  function heavenBase(an, color, strength, life) {
+    raysHalo(an.halo, color, 7.5 * strength, life, 0.30 * Math.min(1.2, strength));
+    flash(an.chest, color, 4.6 * strength, 1.4, 0.4);
+    mist(an.lotus, Math.round(2 + strength * 2), PAL.cream, 3.2, life * 0.8, 2.8, 0.4);
+  }
+
+  // ------------------------------------------------------------------
+  // 10 TIER RECIPES
+  // ------------------------------------------------------------------
+  const recipes = {
+    // ── 1. เครื่องรางศักดิ์สิทธิ์ / จุดประทีปบูชาธูปทอง ──
+    incense() {
+      const an = anchors(), c = { x: 0, y: 0, z: 1.05 };
+      heavenBase(an, PAL.amber, 0.8, 6);
+      mandalaFloor(c, PAL.gold, 3.4, 6.2, 0.3);
+      pillar({ x: 0, y: 0, z: 0.9 }, PAL.amber, 8, 1.1, 6, 0.55);
+      ringWave(c, PAL.gold, 4.6, 2.2, 0.8, true);
+      ringWave(c, PAL.white, 5.4, 2.6, 0.5, true, 0.7);
+      // ประทีปลอยโคจร 8 ดวงรอบกระถางธูป
+      for (let i = 0; i < 8; i++) {
+        addSprite({
+          tex: T.glow(), color: PAL.amber, s0: 0.5, s1: 0.4, life: 5.6, a: 0.9, fi: 0.2, fo: 0.3, tw: 5, order: 62,
+          sw: { cx: 0, cy: 1.7 + (i % 2) * 0.5, cz: 1.05, ang: (i / 8) * TAU, w: 1.0, r: 0.95, dr: 0.04, rise: 0.12, squash: 0.45 }
+        });
+        addSprite({
+          tex: T.spark(), color: PAL.white, s0: 0.22, s1: 0.16, life: 5.6, a: 1, fi: 0.2, fo: 0.3, tw: 9, order: 63,
+          sw: { cx: 0, cy: 1.7 + (i % 2) * 0.5, cz: 1.05, ang: (i / 8) * TAU, w: 1.0, r: 0.95, dr: 0.04, rise: 0.12, squash: 0.45 }
+        });
+      }
+      sparkles({ x: 0, y: 2.0, z: 1.05 }, 34, { spread: 0.35, v0: 0.05, v1: 0.45, up0: 0.4, up1: 1.2, g: 0.05, colors: [PAL.gold, PAL.amber, PAL.white], delay: 2.5, l0: 2.2, l1: 3.6 });
+      petals(10, { x0: -1.8, x1: 1.8, y0: 6.5, y1: 8, z0: 0.5, z1: 3, colors: [PAL.white, PAL.pink], fall0: 0.5, fall1: 0.9, l0: 5, l1: 7, delay: 3 });
+      glyph('สาธุ', gp(), 0.30, 0.87, 4.4, '#ffd77a', 0.4);
+      screenFx('incense', 5.5);
+    },
+
+    // ── 2. ดอกบัวมงคล / สระดอกบัวทิพย์ ──
+    lotus() {
+      const an = anchors(), c = { x: 0, y: 0.22, z: 2.35 };
+      heavenBase(an, PAL.pink, 0.9, 6.5);
+      mandalaFloor(c, PAL.pink, 4.4, 6.8, -0.28);
+      ringWave(c, PAL.pink, 4.6, 2.4, 0.9, true);
+      ringWave(c, PAL.white, 5.2, 2.6, 0.7, true, 0.6);
+      ringWave(c, PAL.gold, 5.8, 2.8, 0.7, true, 1.3);
+      petals(44, { swirl: { x: 0, y: 0.5, z: 2.35, r: 1.9, dr: -0.12, rise0: 0.45, rise1: 0.85 }, colors: [PAL.pink, PAL.white, PAL.rose, PAL.gold], l0: 3.8, l1: 5.4, s0: 0.17, s1: 0.3, delay: 1.5 });
+      rainbow(A(0, 0.28, -0.6), 9.5, 6, 0.7, 0.3);
+      [-1.7, 0, 1.7].forEach((x, i) => pillar({ x, y: 0.2, z: 2.2 }, i === 1 ? PAL.white : PAL.pink, 5.4, 0.9, 5.4, 0.45, 0.2 * i));
+      fireflies({ x: 0, y: 0.3, z: 2.4 }, 24, PAL.jade, 2.3, 6);
+      sparkles({ x: 0, y: 0.8, z: 2.35 }, 30, { spread: 1.8, v0: 0.05, v1: 0.3, up0: 0.5, up1: 1.4, g: 0.08, colors: [PAL.white, PAL.pink, PAL.gold], delay: 3, l0: 2, l1: 3.2 });
+      glyph('ศรัทธา', gp(), 0.25, 0.93, 4.6, '#ffc2de', 0.6);
+      screenFx('lotus', 6);
+    },
+
+    // ── 3. กุหลาบ 99 / โปรยบุปผามงคล ──
+    flowers() {
+      const an = anchors();
+      heavenBase(an, PAL.pink, 1.0, 6.5);
+      petals(96, { x0: -3.6, x1: 3.6, y0: 7.2, y1: 9, z0: -0.5, z1: 6, colors: [PAL.pink, PAL.rose, PAL.white, PAL.gold, PAL.red], fall0: 1.0, fall1: 1.9, flutter: 0.28, l0: 4.4, l1: 6.4, delay: 3.8 });
+      // ช่อมาลัยบุปผารอบวงรัศมี
+      const hp = an.halo;
+      for (let i = 0; i < 18; i++) {
+        addSprite({
+          tex: T.petal(), color: pick([PAL.pink, PAL.white, PAL.gold]), normal: true, aspect: 0.66, s0: 0.3, s1: 0.28, rot: rand(0, TAU), vrot: 0.5, life: 5.6, a: 0.95, fi: 0.2, fo: 0.3, order: 57,
+          sw: { plane: 'xy', cx: hp.x, cy: hp.y, cz: hp.z + 0.5, ang: (i / 18) * TAU, w: 0.32, r: 2.6 + (i % 2) * 0.28, dr: 0 }
+        });
+      }
+      [-2.5, 2.5].forEach((x, i) => pillar({ x, y: -0.5, z: 1.0 }, PAL.gold, 9, 2.0, 5.6, 0.35, 0.3 * i));
+      sparkles(A(0, 0.2, 1.4), 54, { spread: 3.2, v0: 0.1, v1: 0.7, up0: 0.2, up1: 1.4, g: 0.0, colors: [PAL.gold, PAL.pink, PAL.white], delay: 4, l0: 2, l1: 3.4 });
+      starburst(an.chest, PAL.pink, 4.2, 1.6, 0.1);
+      glyph('มงคล', gp(), 0.28, 0.99, 4.4, '#ffb3d4', 0.5);
+      screenFx('flowers', 6.2);
+    },
+
+    // ── 4. พวงมาลัย / สั่นระฆังทอง ──
+    golden_bell() {
+      const an = anchors(), b = { x: 0, y: 3.85, z: 2.1 };
+      heavenBase(an, PAL.gold, 0.95, 6);
+      raysHalo({ x: 0, y: 3.85, z: 1.5 }, PAL.gold, 5.5, 5.6, 0.28, 0.4);
+      // คลื่นเสียงระฆัง 3 ครั้ง สอดคล้องกับการสั่นระฆัง
+      [0.25, 1.45, 2.65].forEach((d, i) => {
+        ringWave(b, PAL.cream, 6.4 + i * 0.6, 2.3, 1.0, false, d);
+        ringWave(b, PAL.white, 4.4 + i * 0.5, 1.8, 1.0, false, d + 0.18);
+        ringWave(b, PAL.amber, 7.6 + i * 0.6, 2.6, 0.8, false, d + 0.35);
+        flash(b, PAL.cream, 2.6, 0.9, 0.35, d);
+        sparkles(b, 20, { spread: 0.2, v0: 1.2, v1: 2.6, up0: -0.6, up1: 1.4, g: -0.3, drag: 1.2, colors: [PAL.gold, PAL.white, PAL.amber], l0: 1.2, l1: 2.0, s0: 0.14, s1: 0.28, delay: 0.01 });
+      });
+      pillar({ x: 0, y: 0, z: 2.1 }, PAL.gold, 4.4, 0.8, 5.4, 0.4);
+      ringWave({ x: 0, y: 0, z: 2.1 }, PAL.gold, 4.8, 2.0, 0.7, true, 0.3);
+      ringWave({ x: 0, y: 0, z: 2.1 }, PAL.gold, 5.8, 2.2, 0.6, true, 1.5);
+      sparkles(A(0, 0.75, 1.0), 44, { spread: 2.8, spreadY: 0.5, v0: 0.05, v1: 0.2, up0: -0.9, up1: -0.2, g: 0.0, colors: [PAL.gold, PAL.amber, PAL.cream], delay: 3.2, l0: 2.2, l1: 3.4 });
+      glyph('เมตตา', gp(), 0.25, 0.87, 4.4, '#ffe27a', 0.5);
+      screenFx('golden_bell', 5.6);
+    },
+
+    // ── 5. น้ำหอมโคโลญจน์ / ธารน้ำพุมณี ──
+    crystal_fountain() {
+      const an = anchors(), c = { x: 0, y: 0.1, z: 2.3 };
+      heavenBase(an, PAL.sky, 0.8, 6.4);
+      rainbow(A(0, 0.3, -0.8), 10.5, 6.6, 0.85, 0.2);
+      mandalaFloor(c, PAL.sky, 4.6, 6.6, 0.3);
+      ringWave(c, PAL.sky, 4.8, 2.4, 0.9, true);
+      ringWave(c, PAL.white, 5.6, 2.6, 0.7, true, 0.7);
+      ringWave(c, PAL.violet, 6.2, 2.8, 0.6, true, 1.4);
+      // ประกายอัญมณี 7 สีพุ่งเป็นสายน้ำ
+      for (let i = 0; i < 84; i++) {
+        const ang = Math.random() * TAU, sp = rand(0.3, 1.5);
+        const sz = rand(0.14, 0.3);
+        addSprite({
+          tex: T.spark(), color: RAINBOW[i % RAINBOW.length], x: 0, y: 1.0, z: 2.3, vx: Math.cos(ang) * sp, vy: rand(3.4, 5.6), vz: Math.sin(ang) * sp * 0.5,
+          ay: -5.2, s0: sz, s1: sz * 0.5, life: rand(1.6, 2.4), a: 1, fi: 0.05, fo: 0.4, tw: 10, delay: rand(0, 3.4), order: 66
+        });
+      }
+      mist({ x: 0, y: 0.4, z: 2.6 }, 4, PAL.white, 1.8, 5.4, 2.0, 0.3, 0.2);
+      pillar({ x: 0, y: 0, z: 2.2 }, PAL.white, 7, 0.9, 5.6, 0.35);
+      fireflies({ x: 0, y: 0.5, z: 2.3 }, 14, PAL.sky, 2.0, 5.5);
+      glyph('มณีทิพย์', gp(), 0.22, 0.93, 4.6, '#bfe6ff', 0.6);
+      screenFx('crystal_fountain', 6.2);
+    },
+
+    // ── 6. โดนัท / ขบวนราชรถ ──
+    royal_carriage() {
+      const an = anchors();
+      heavenBase(an, PAL.gold, 1.05, 7);
+      mandalaFloor({ x: 0, y: 0, z: 6.0 }, PAL.gold, 4.0, 7, -0.25, 0.6);
+      mandalaFloor({ x: 0, y: 0, z: 3.2 }, PAL.red, 3.0, 6, 0.3, 0.5, 0.8);
+      birds(7, 4.6, -4.6, 6.2, 0.6, 6.2, 0.2);
+      birds(5, -4.6, 4.6, 5.0, 1.2, 6.6, 1.6);
+      coins(54, { x0: -1.5, x1: 1.5, y0: 7, y1: 8.5, z0: 2.5, z1: 8.5, delay: 4.2 });
+      [-1.35, 1.35].forEach((x, i) => [3.2, 5.4, 7.6].forEach((z, j) => pillar({ x, y: 0, z }, PAL.gold, 3.6, 0.55, 5.8, 0.38, 0.15 * (i + j))));
+      petals(34, { x0: -2.4, x1: 2.4, y0: 6.5, y1: 8, z0: 1, z1: 8, colors: [PAL.gold, PAL.red, PAL.pink, PAL.white], fall0: 0.9, fall1: 1.5, l0: 4.4, l1: 6, delay: 4 });
+      sparkles({ x: 0, y: 0.3, z: 6 }, 44, { spread: 1.1, spreadY: 0.1, v0: 0.1, v1: 0.5, up0: 0.5, up1: 1.7, g: -0.1, colors: [PAL.gold, PAL.white, PAL.amber], delay: 4.4, l0: 1.8, l1: 3, s0: 0.14, s1: 0.28 });
+      starburst(an.chest, PAL.gold, 4.4, 1.6, 0.2);
+      glyph('บารมี', gp(), 0.25, 0.99, 4.8, '#ffd24a', 0.6);
+      screenFx('royal_carriage', 6.8);
+    },
+
+    // ── 7. หัวใจ 4 ดวง / พลุเพลิงบุญ ──
+    fireworks() {
+      const an = anchors();
+      heavenBase(an, PAL.rose, 1.0, 7);
+      const cols = [[0xff2d6f, 0xffd24a, 0xff7a3d], [0x2f9bff, 0x7be495, 0xb9e6ff], [0xa13dff, 0xff8fe0, 0xffd24a], [0xff4a1f, 0xffd24a, 0xff8fa8]];
+      [[-0.45, 0.62, 0.55], [0.5, 0.74, 1.4], [0.0, 0.86, 2.3], [-0.55, 0.88, 3.2], [0.58, 0.58, 3.9]].forEach(([nx, ny, d], i) => {
+        peony(A(nx, ny, -0.4), 54, cols[i % cols.length], 3.0, 4.4 + (i % 2) * 0.7, d);
+      });
+      lanterns(26, { x0: -3.3, x1: 3.3, y0: 0.2, y1: 2.4, z0: -0.2, z1: 5, delay: 3 });
+      hearts(16, { x0: -1.6, x1: 1.6, y0: 0.4, y1: 1.8, z0: 3, z1: 7, delay: 3.2 });
+      // ท้องฟ้าดาวระยิบ
+      for (let i = 0; i < 46; i++) {
+        const p = A(rand(-0.95, 0.95), rand(0.2, 0.98), -1.6);
+        addSprite({ tex: T.spark(), color: pick([PAL.white, PAL.gold, PAL.cream]), x: p.x, y: p.y, z: p.z, s0: rand(0.1, 0.28), s1: rand(0.1, 0.28), life: rand(3.4, 6), a: 0.9, fi: 0.25, fo: 0.3, tw: rand(4, 9), delay: rand(0, 3), order: 17 });
+      }
+      glyph('บุญ', gp(), 0.28, 1.10, 4.6, '#ffb8d0', 0.6);
+      screenFx('fireworks', 6.8);
+    },
+
+    // ── 8. ประตูวิมาน / เปิดวิมานทิพย์ ──
+    castle() {
+      const an = anchors(), pt = { x: 0, y: 3.2, z: 1.8 };
+      heavenBase(an, PAL.gold, 1.2, 7.5);
+      raysHalo({ x: 0, y: 3.2, z: 0.4 }, PAL.gold, 10.5, 7, 0.55, 0.22, 0.2);
+      starburst(pt, PAL.cream, 5.4, 2.0, 0.1);
+      ringWave(pt, PAL.gold, 9.5, 2.4, 0.9, false, 0.2);
+      ringWave(pt, PAL.white, 7.0, 2.0, 0.8, false, 0.5);
+      ringWave(pt, PAL.cream, 11.5, 2.8, 0.5, false, 1.0);
+      // ธารแสงทิพย์ไหลลงจากประตูสวรรค์
+      pillar({ x: 0, y: 0, z: 1.8 }, PAL.cream, 6.4, 2.6, 6.4, 0.4, 0.4);
+      [-1.7, 1.7].forEach((x, i) => pillar({ x, y: 0, z: 1.8 }, PAL.gold, 6, 1.2, 5.6, 0.45, 0.8 + i * 0.2));
+      // ทะเลเมฆใต้ประตู
+      mist({ x: 0, y: 0.6, z: 2.8 }, 7, PAL.white, 4.0, 6.6, 3.0, 0.42, 0.3);
+      mist({ x: 0, y: 1.8, z: 1.0 }, 3, PAL.cream, 3.4, 6, 3.0, 0.3, 0.8);
+      birds(7, -4.6, 4.6, 6.0, 0.4, 6.4, 0.5);
+      birds(5, 4.6, -4.6, 4.7, 0.9, 6.6, 2.2);
+      petals(40, { x0: -3, x1: 3, y0: 6.8, y1: 8.5, z0: 0, z1: 5, colors: [PAL.gold, PAL.white, PAL.cream, PAL.pink], fall0: 0.7, fall1: 1.3, l0: 5, l1: 7, delay: 3.4 });
+      sparkles(pt, 70, { spread: 0.8, v0: 0.5, v1: 2.2, up0: -1.0, up1: 1.6, g: -0.25, drag: 0.7, colors: [PAL.gold, PAL.white, PAL.cream], l0: 2.0, l1: 3.6, s0: 0.14, s1: 0.32, delay: 1.2 });
+      glyph('วิมานทิพย์', gp(), 0.22, 1.10, 5, '#fff0b0', 0.7);
+      screenFx('castle', 7.2);
+    },
+
+    // ── 9. มังกรทอง / มังกรทองเหิน ──
+    dragon() {
+      const an = anchors(), c = an.chest;
+      heavenBase(an, PAL.orange, 1.5, 8.5);
+      raysHalo({ x: 0, y: 3.8, z: -0.4 }, PAL.gold, 14, 8.5, 0.62, 0.2);
+      flash(c, PAL.white, 9, 1.4, 0.9);
+      starburst(c, PAL.gold, 7, 2.0, 0.05);
+      starburst(A(0, 0.5, 0.2), PAL.cream, 8, 1.8, 2.0);
+      starburst(A(0, 0.5, 0.2), PAL.amber, 9, 1.8, 4.2);
+      [0, 0.5, 1.1].forEach((d, i) => {
+        ringWave({ x: 0, y: 0, z: 4.0 }, [PAL.gold, PAL.orange, PAL.white][i], 9 + i * 1.6, 2.6, 0.9, true, d);
+        ringWave({ x: 0, y: 0, z: 4.0 }, PAL.gold, 9 + i * 1.8, 2.8, 0.7, true, d + 2.2);
+      });
+      mandalaFloor({ x: 0, y: 0, z: 4.2 }, PAL.gold, 7.0, 8.2, 0.22, 0.7);
+      [-3.0, -1.5, 0, 1.5, 3.0].forEach((x, i) => pillar({ x, y: -0.5, z: 1.0 + (i % 2) * 0.8 }, i % 2 ? PAL.orange : PAL.gold, 10, 1.4, 7, 0.5, 0.15 * i));
+      coins(96, { x0: -3.4, x1: 3.4, y0: 7, y1: 9, z0: -0.5, z1: 8, delay: 5.6, l0: 2.6, l1: 4 });
+      // เมฆมงคลโคจรรอบองค์มังกร
+      for (let i = 0; i < 16; i++) {
+        addSprite({
+          tex: T.cloud(i), color: pick([PAL.cream, PAL.gold, PAL.white]), aspect: 1.6, s0: 2.0, s1: 2.8, life: 7.4, a: 0.5, fi: 0.2, fo: 0.3, order: 21, delay: rand(0, 0.8),
+          sw: { plane: 'xy', cx: 0, cy: 3.6, cz: 0.2, ang: (i / 16) * TAU, w: 0.34, r: 3.6 + (i % 3) * 0.5, dr: 0 }
+        });
+      }
+      sparkles(A(0, 0.45, 1.0), 96, { spread: 2.8, spreadY: 2.4, v0: 0.2, v1: 1.1, up0: -0.5, up1: 1.2, g: 0.0, colors: [PAL.gold, PAL.white, PAL.amber, PAL.cream], delay: 6, l0: 2.2, l1: 3.8, s0: 0.14, s1: 0.34 });
+      glyph('มังกรทอง', gp(), 0.28, 1.33, 5.6, '#ffd24a', 0.4);
+      glyph('มั่งคั่ง ร่ำรวย', gp(), 0.22, 1.04, 5, '#ffe9a8', 2.0);
+      screenFx('dragon', 8.6);
+    },
+
+    // ── 10. ซองมงคล / เสี่ยงเซียมซีมหาโชค ──
+    seamsi() {
+      const an = anchors(), c = { x: 0, y: 1.12, z: 2.35 };
+      heavenBase(an, PAL.jade, 0.9, 6);
+      raysHalo({ x: 0, y: 1.5, z: 1.4 }, PAL.gold, 5.2, 5.6, 0.5, 0.35);
+      mandalaFloor({ x: 0, y: 0, z: 2.35 }, PAL.jade, 3.6, 6.2, 0.32, 0.8);
+      mandalaFloor({ x: 0, y: 0, z: 2.35 }, PAL.gold, 2.6, 6.0, -0.45, 0.7);
+      pillar({ x: 0, y: 0, z: 2.3 }, PAL.gold, 6.5, 1.0, 5.4, 0.5);
+      ringWave(c, PAL.gold, 4.2, 2.0, 0.9, false);
+      ringWave({ x: 0, y: 0, z: 2.35 }, PAL.jade, 4.6, 2.2, 0.8, true, 0.3);
+      // เกลียวประกายรอบกระบอกเซียมซี
+      for (let i = 0; i < 34; i++) {
+        addSprite({
+          tex: T.spark(), color: pick([PAL.gold, PAL.jade, PAL.white, PAL.cream]), s0: rand(0.14, 0.28), s1: 0.1, life: 4.6, a: 1, fi: 0.15, fo: 0.35, tw: rand(6, 12), order: 66, delay: (i / 34) * 1.6,
+          sw: { cx: 0, cy: 0.3, cz: 2.35, ang: rand(0, TAU), w: 2.2, r: 1.1, dr: -0.12, rise: 0.55, squash: 0.5 }
+        });
+      }
+      petals(36, { x0: -1.8, x1: 1.8, y0: 6.4, y1: 8, z0: 0.8, z1: 4.5, colors: [PAL.red, PAL.gold, PAL.rose, PAL.white], fall0: 0.8, fall1: 1.4, l0: 4.4, l1: 6, delay: 2.4 });
+      coins(24, { x0: -1.2, x1: 1.2, y0: 6.5, y1: 8, z0: 1.5, z1: 4, delay: 2.6, l0: 2.4, l1: 3.4 });
+      glyph('มหาโชค', gp(), 0.28, 1.10, 4.6, '#b6ffd2', 0.7);
+      screenFx('seamsi', 5.8);
+    }
+  };
+
+  // ------------------------------------------------------------------
+  // Public API
+  // ------------------------------------------------------------------
+  const lastPlay = {};
+  function play(tier) {
+    const r = recipes[tier];
+    if (!r) return false;
+    const now = performance.now();
+    if (lastPlay[tier] && now - lastPlay[tier] < 900) return false; // กัน combo รัวซ้อนเกินจำเป็น
+    lastPlay[tier] = now;
+    if (items.length > MAX_ITEMS * 0.8) return false;             // ป้องกันโหลดหนักบนสตรีม
+    r();
+    return true;
+  }
+  return {
+    play, tiers: Object.keys(recipes), recipes,
+    // test helpers
+    tick, setManual(v) { manual = !!v; }, count: () => items.length,
+    clear() { while (items.length) disposeItem(items.pop()); timers.length = 0; Object.keys(lastPlay).forEach((k) => delete lastPlay[k]); document.querySelectorAll('.hfx-screen').forEach((e) => e.remove()); }
+  };
+}
+
+
+// ---------------------------------------------------------------------
+// 9.1 Wiring: ครอบ trigger ของขวัญทั้ง 10 ระดับ → เล่นเอฟเฟคสวรรค์เสริมทับของเดิม (ไม่แก้ตรรกะเดิม)
+// ---------------------------------------------------------------------
+const heavenlyFX = createHeavenlyFX(THREE, scene, camera);
+window.heavenlyFX = heavenlyFX; // ทดสอบ: heavenlyFX.play('dragon')
+
+function withHeavenlyFX(original, tier) {
+  return function (...args) {
+    const result = original.apply(this, args);
+    try { heavenlyFX.play(tier); } catch (err) { console.warn('[HeavenlyFX]', tier, err); }
+    return result;
+  };
+}
+triggerIncenseEffect        = withHeavenlyFX(triggerIncenseEffect, 'incense');
+triggerLotusBloomEffect     = withHeavenlyFX(triggerLotusBloomEffect, 'lotus');
+triggerLotusRainEffect      = withHeavenlyFX(triggerLotusRainEffect, 'flowers');
+triggerGoldenBellEffect     = withHeavenlyFX(triggerGoldenBellEffect, 'golden_bell');
+triggerCrystalFountainEffect = withHeavenlyFX(triggerCrystalFountainEffect, 'crystal_fountain');
+triggerRoyalCarriageEffect  = withHeavenlyFX(triggerRoyalCarriageEffect, 'royal_carriage');
+triggerFireworksEffect      = withHeavenlyFX(triggerFireworksEffect, 'fireworks');
+triggerHeavenlyPortalEffect = withHeavenlyFX(triggerHeavenlyPortalEffect, 'castle');
+triggerDragonDescentEffect  = withHeavenlyFX(triggerDragonDescentEffect, 'dragon');
+triggerSeamSiEffect         = withHeavenlyFX(triggerSeamSiEffect, 'seamsi');
