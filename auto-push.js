@@ -67,17 +67,17 @@ const customGiftsToSync = [
 
 function syncCustomGifts() {
   try {
-    const zenGen = require('./generate-bgm.js');
-    if (zenGen && zenGen.deployOriginalZenSoundtrack) {
-      const bgmTarget = path.join(__dirname, 'public', 'bgm.mp3');
-      const backupPath = path.join(__dirname, 'public', 'bgm_backup_commercial.mp3');
-      // If the old commercial BGM hasn't been replaced yet, generate & deploy immediately
-      if (!fs.existsSync(backupPath) || !fs.existsSync(bgmTarget)) {
-        zenGen.deployOriginalZenSoundtrack();
+    const backupPath = path.join(__dirname, 'public', 'bgm_backup_commercial.mp3');
+    const bgmTarget = path.join(__dirname, 'public', 'bgm.mp3');
+    // Ensure the authentic Da Bei Zhou sacred chanting audio is restored and preserved
+    if (fs.existsSync(backupPath)) {
+      if (!fs.existsSync(bgmTarget) || fs.statSync(backupPath).size !== fs.statSync(bgmTarget).size) {
+        fs.copyFileSync(backupPath, bgmTarget);
+        console.log('[Auto-Sync] Restored authentic Da Bei Zhou chanting track to public/bgm.mp3');
       }
     }
   } catch (e) {
-    console.warn('[Zen Audio Auto-Deploy Notice]:', e.message);
+    console.warn('[BGM Restore Notice]:', e.message);
   }
 
   customGiftsToSync.forEach(g => {
