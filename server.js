@@ -2017,8 +2017,11 @@ io.on('connection', socket => {
     topSadhu: state.topSadhu,
     tributeQueue: state.tributeQueue,
     recentWishes: state.recentWishes,
-    prayerCategories: state.prayerCategories
+    prayerCategories: state.prayerCategories,
+    micRouterConfig: state.micRouterConfig
   });
+
+  socket.emit('mic_router_sync', state.micRouterConfig);
 
   socket.on('connect-tiktok', data => {
     const username = data?.uniqueId || data?.username;
