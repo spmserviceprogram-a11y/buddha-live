@@ -1086,12 +1086,12 @@ body {
 .seamsi-popup-title {
   font-family: 'Sarabun', 'Kanit', sans-serif;
   font-size: 9.5px;
-  font-weight: 700;
-  color: #9d174d;
+  font-weight: 800;
+  color: #ffd700;
   letter-spacing: 0px;
   line-height: 1.2;
   white-space: nowrap;
-  text-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .seamsi-popup-sub {
@@ -1103,48 +1103,48 @@ body {
   display: inline-block;
   font-family: 'Sarabun', 'Kanit', sans-serif;
   font-size: 7.5px;
-  font-weight: 600;
+  font-weight: 700;
   color: #ffffff;
-  background: linear-gradient(90deg, #be185d, #db2777);
+  background: linear-gradient(90deg, rgba(190, 24, 93, 0.70), rgba(219, 39, 119, 0.70));
   border: 1px solid #ffd700;
   border-radius: 999px;
   padding: 1px 4.5px;
   letter-spacing: 0px;
   white-space: nowrap;
-  text-shadow: none;
+  text-shadow: 0 1px 2px #000;
 }
 
 .vip-guide-item {
-  background: linear-gradient(90deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.95));
-  border-color: #f59e0b;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.50), rgba(180, 83, 9, 0.50));
+  border-color: #ffd700;
 }
 
 .vip-guide-item .guide-action {
-  color: #92400e;
+  color: #ffeb3b;
   font-weight: 800;
-  text-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .vip-guide-item .guide-price {
-  color: #92400e;
+  color: #ffd700;
 }
 
 .supreme-guide-item {
-  background: linear-gradient(90deg, rgba(255, 228, 230, 0.96), rgba(254, 240, 138, 0.96));
-  border: 1.2px solid #e11d48;
-  box-shadow: 0 0 6px rgba(225, 29, 72, 0.35);
+  background: linear-gradient(90deg, rgba(225, 29, 72, 0.50), rgba(180, 83, 9, 0.50));
+  border: 1.2px solid #ffd700;
+  box-shadow: 0 0 6px rgba(225, 29, 72, 0.45);
 }
 
 .supreme-guide-item .guide-action {
-  color: #9f1239;
+  color: #ffffff;
   font-weight: 800;
-  text-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .supreme-guide-item .guide-price {
   color: #ffffff;
   border-color: #ffd700;
-  background: linear-gradient(135deg, #e11d48, #be123c);
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.8), rgba(190, 18, 60, 0.8));
   box-shadow: 0 0 4px rgba(255, 215, 0, 0.60);
 }
 
@@ -1172,22 +1172,24 @@ body {
   align-items: center;
   gap: 3px;
   font-size: 8.5px;
-  color: #0f172a;
+  color: #ffffff;
   font-weight: 700;
   padding: 1.5px 3.5px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(217, 119, 6, 0.35);
+  background: rgba(24, 10, 6, 0.50);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 4px;
-  text-shadow: none;
   box-sizing: border-box;
   min-height: 19px;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 
 .queue-row.active {
-  background: linear-gradient(90deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.95));
-  border-color: #f59e0b;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.35);
+  background: linear-gradient(90deg, rgba(180, 83, 9, 0.50), rgba(245, 158, 11, 0.50));
+  border-color: #ffd700;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
 }
 
 .queue-row .q-avatar {
@@ -1231,12 +1233,14 @@ body {
   white-space: nowrap;
   font-weight: 700;
   font-size: 8.5px;
-  color: #0f172a;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .queue-row.active .q-name {
-  color: #92400e;
+  color: #fffaea;
   font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .queue-row .q-status-active {
@@ -1255,13 +1259,14 @@ body {
 .queue-row .q-status-waiting {
   font-size: 7px;
   font-weight: 700;
-  color: #475569;
-  background: rgba(241, 245, 249, 0.9);
-  border: 1px solid rgba(217, 119, 6, 0.35);
+  color: #fffaea;
+  background: rgba(35, 18, 10, 0.65);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   padding: 0.5px 3px;
   border-radius: 2.5px;
   white-space: nowrap;
   flex-shrink: 0;
+  text-shadow: 0 1px 2px #000;
 }
 
 .queue-row .q-badge {
@@ -1275,19 +1280,20 @@ body {
 .queue-row .q-combo {
   font-size: 8px;
   font-weight: 800;
-  color: #b45309;
+  color: #ffd700;
+  text-shadow: 0 1px 2px #000;
 }
 
 .sub-header-gold {
   font-size: 9.5px;
   font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-weight: 700;
-  color: #9d174d;
+  font-weight: 800;
+  color: #ffd700;
   padding: 2px 5px;
-  background: linear-gradient(90deg, rgba(254, 242, 242, 0.95), rgba(254, 243, 199, 0.95));
+  background: linear-gradient(90deg, rgba(157, 23, 77, 0.50), rgba(180, 83, 9, 0.50));
   border-top: 1px solid rgba(255, 215, 0, 0.45);
   border-bottom: 1px solid rgba(255, 215, 0, 0.45);
-  text-shadow: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .wishes-stream {
@@ -1325,43 +1331,48 @@ body {
   align-items: center;
   gap: 2.5px;
   font-size: 8.5px;
-  color: #0f172a;
-  background: rgba(255, 255, 255, 0.94);
-  border: 1px solid rgba(217, 119, 6, 0.38);
+  color: #ffffff;
+  background: rgba(24, 10, 6, 0.50);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 4px;
   padding: 1.5px 3.5px;
   flex-shrink: 0;
   min-height: 18px;
   line-height: 1.2;
   box-sizing: border-box;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 
 .wish-item .w-icon {
-  color: #db2777;
+  color: #ffd700;
   font-size: 8px;
   flex-shrink: 0;
+  text-shadow: 0 0 4px #ffd700;
 }
 
 .wish-item .w-name {
-  color: #b45309;
-  font-weight: 700;
+  color: #ffd700;
+  font-weight: 800;
   white-space: nowrap;
   flex-shrink: 0;
   max-width: 48px;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 8.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .wish-item .w-text {
-  color: #1e293b;
-  font-weight: 600;
+  color: #ffffff;
+  font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
   font-size: 8.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
 }
 
 .wish-item-old {
