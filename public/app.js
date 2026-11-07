@@ -1744,16 +1744,7 @@ class SmartLiveMicRouter {
     const selectEl = document.getElementById('select-mic-device');
     if (!selectEl || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
 
-    // Check if device labels are masked (empty) by checking first enumeration
-    let testDevices = [];
-    try {
-      testDevices = await navigator.mediaDevices.enumerateDevices();
-    } catch (_) {}
-
-    const hasEmptyLabels = testDevices.some(d => d.kind === 'audiooutput' && !d.label && d.deviceId !== 'default');
-    const shouldAskPermission = requestPermission || (hasEmptyLabels && navigator.mediaDevices.getUserMedia);
-
-    if (shouldAskPermission && navigator.mediaDevices.getUserMedia) {
+    if (requestPermission && navigator.mediaDevices.getUserMedia) {
       try {
         const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         tempStream.getTracks().forEach(t => t.stop());
