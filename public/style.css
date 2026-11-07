@@ -3179,3 +3179,133 @@ body {
   accent-color: #ffd700;
   cursor: pointer;
 }
+
+/* Smart Live Mic Router Section */
+.mic-router-section {
+  background: linear-gradient(180deg, rgba(28, 16, 8, 0.78) 0%, rgba(16, 8, 4, 0.88) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 10px;
+  padding: 10px 11px;
+}
+
+.mic-router-status-box {
+  background: rgba(10, 26, 16, 0.72);
+  border: 1px solid rgba(74, 222, 128, 0.45);
+  border-radius: 8px;
+  padding: 7px 9px;
+  margin-bottom: 10px;
+}
+
+.mic-status-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+
+.mic-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+  flex-shrink: 0;
+}
+
+.mic-status-dot.speaking {
+  background: #facc15;
+  box-shadow: 0 0 12px #facc15, 0 0 4px #ffffff;
+}
+
+.mic-status-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #bbf7d0;
+  line-height: 1.2;
+}
+
+.mic-vu-meter {
+  width: 100%;
+  height: 7px;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.mic-vu-fill {
+  height: 100%;
+  width: 12%;
+  background: linear-gradient(90deg, #22c55e 0%, #eab308 70%, #f97316 100%);
+  border-radius: 999px;
+  transition: width 0.12s ease-out;
+  box-shadow: 0 0 8px rgba(74, 222, 128, 0.65);
+}
+
+.mic-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 9px;
+}
+
+.mic-field-group label {
+  font-size: 11px;
+  color: #fde68a;
+  font-weight: 600;
+}
+
+.mic-device-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.btn-mic-scan {
+  background: rgba(255, 215, 0, 0.16);
+  border: 1px solid rgba(255, 215, 0, 0.55);
+  color: #ffe866;
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.btn-mic-scan:hover {
+  background: rgba(255, 215, 0, 0.30);
+  color: #ffffff;
+}
+
+.mic-select {
+  width: 100%;
+  background: rgba(36, 18, 9, 0.92);
+  border: 1px solid rgba(255, 215, 0, 0.42);
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-family: 'Sarabun', sans-serif;
+  outline: none;
+  cursor: pointer;
+}
+
+.mic-select:focus {
+  border-color: #ffd700;
+}
+
+.btn-mic-test {
+  width: 100%;
+  background: linear-gradient(135deg, #15803d 0%, #166534 100%);
+  border: 1px solid #4ade80;
+  color: #ffffff;
+  font-weight: 700;
+  margin-top: 4px;
+  box-shadow: 0 2px 10px rgba(22, 163, 74, 0.4);
+}
+
+.btn-mic-test:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
