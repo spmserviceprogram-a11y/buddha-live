@@ -10000,7 +10000,7 @@ if (btnToggleLeaderboard) {
 // ---------------------------------------------------------------------
 // 5.1 Center Stage Character Ritual Engine (เดินตามรันเวย์พรมแดงไปกราบ/ถวายหน้าแท่นบูชา)
 // ---------------------------------------------------------------------
-let lastRitualActivityTime = Date.now();
+let lastRitualActivityTime = 0; // Initialized to 0 so startup has zero lockout delay
 const stageActionQueue = [];
 let isStageActionRunning = false;
 let stageActionWatchdogTimer = null;
