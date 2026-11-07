@@ -184,8 +184,8 @@ function deployOriginalZenSoundtrack() {
     // 1. Create a safe backup of the old commercial recording if not already backed up
     if (fs.existsSync(targetBgmPath) && !fs.existsSync(backupBgmPath)) {
       const stats = fs.statSync(targetBgmPath);
-      // Only backup if the file is larger than 25MB (the old Da Bei Zhou chanting file)
-      if (stats.size > 25000000) {
+      // Only backup if the file exists and is not empty
+      if (stats.size > 1000) {
         fs.copyFileSync(targetBgmPath, backupBgmPath);
         console.log('[Zen Audio] Backed up old commercial chanting MP3 to bgm_backup_commercial.mp3');
       }
