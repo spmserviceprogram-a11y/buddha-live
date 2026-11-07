@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ห้องสวดมนต์ บารมีพระแม่กวนอิม - TikTok Live</title>
-  <link rel="stylesheet" href="style.css?v=anti_reproduced_content_v89">
+  <link rel="stylesheet" href="style.css?v=ambient_walk_v93">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -580,11 +580,12 @@
         </div>
 
         <div id="mic-diagnostic-guide" class="mic-diagnostic-guide">
-          <div id="mic-diag-title" class="mic-diag-title">📌 วิธีตั้งค่าให้แถบไมค์ใน TikTok LIVE Studio ขยับ:</div>
+          <div id="mic-diag-title" class="mic-diag-title">📌 วิธีตั้งค่าให้แถบไมค์ใน TikTok LIVE Studio ขยับ & เสียงไม่ก้อง:</div>
           <div id="mic-diag-body" class="mic-diag-body">
             1. ในโปรแกรม <b>TikTok LIVE Studio</b> กดรูปเฟืองที่แถบ <b>ไมโครโฟน (Mic)</b><br>
             2. เลือกอุปกรณ์ไมโครโฟนเป็น <b>Stereo Mix (สเตอริโอมิกซ์)</b> หรือ <b>CABLE Output (VB-Audio)</b><br>
-            3. 💡 <b>เมื่อเปิดคู่กับ TikTok LIVE Studio ไม่ให้เสียงเพลงซ้อนกัน</b>: กดปุ่มสีส้ม <b>"🔇 ปิดเสียงเพลงในหน้านี้"</b> (หรือกดปุ่ม 🎵 บนขวา) เพื่อปิดเพลงใน Chrome โดยที่เสียงพูด AI จะยังคงส่งเข้าสายไมค์จำลองตามปกติ 100%!
+            3. 💡 <b>เมื่อเปิดคู่กับ TikTok LIVE Studio ไม่ให้เสียงเพลงซ้อน</b>: กดปุ่มสีส้ม <b>"🔇 ปิดเสียงเพลงในหน้านี้"</b> (หรือกดปุ่ม 🎵 บนขวา) เพื่อปิดเพลงใน Chrome โดยที่เสียงพูด AI ยังคงส่งเข้าไมค์ตามปกติ 100%<br>
+            4. 🚫 <b>ป้องกันเสียงก้อง (Echo)</b>: ให้ปิดตัวเลือก <b>"ได้ยินเสียงพูดออกลำโพงด้วย"</b> เสมอ และใน TikTok LIVE Studio ช่องเบราว์เซอร์ให้ใส่ลิงก์ <code>?voice=0</code> ต่อท้ายเพื่อไม่ให้เสียงพูด AI ดังซ้อนกัน 2 ทางครับ
           </div>
         </div>
 
@@ -597,8 +598,8 @@
           <input type="checkbox" id="chk-mic-keepalive" checked />
         </div>
         <div class="toggle-row">
-          <label for="chk-mic-dual-monitor" title="ให้ได้ยินเสียงพูดพระแม่ทางลำโพงหลักด้วยเมื่อแยกสายไมค์">ฟังเสียงพูดออกลำโพงหลักควบคู่ด้วย (Monitor):</label>
-          <input type="checkbox" id="chk-mic-dual-monitor" checked />
+          <label for="chk-mic-dual-monitor" title="แนะนำให้ปิดไว้ขณะไลฟ์สด เพราะหากเปิดไว้จะทำให้เสียงพูดออกทั้งลำโพงและไมค์พร้อมกันจนเกิดเสียงก้อง (Echo)">ได้ยินเสียงพูดออกลำโพงด้วย (ปิดไว้เพื่อไม่ให้เสียงก้อง Echo):</label>
+          <input type="checkbox" id="chk-mic-dual-monitor" />
         </div>
 
         <button id="btn-toggle-chrome-bgm" type="button" class="btn btn-warning" style="width:100%; margin-bottom:8px; font-weight:bold; background:#b26a00; border:1px solid #ffcc00; color:#fff; padding:8px 12px; border-radius:6px; cursor:pointer;" title="กดเพื่อปิดเฉพาะเสียงเพลงในหน้านี้ ป้องกันเสียงซ้อนกับ TikTok LIVE Studio โดยเสียงพูด AI ยังคงเข้าไมค์ตามปกติ">🔇 ปิดเสียงเพลงในหน้านี้ (กันเสียงซ้อนเมื่อเปิดคู่กับ TikTok)</button>
@@ -609,7 +610,7 @@
   </aside>
 
   <!-- Main Application Logic (ES Module) -->
-  <script type="module" src="app.js?v=anti_reproduced_content_v89"></script>
+  <script type="module" src="app.js?v=ambient_walk_v93"></script>
 </body>
 
 </html>

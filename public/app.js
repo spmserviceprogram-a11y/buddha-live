@@ -381,14 +381,14 @@ class TempleAudio {
             const sacredFreqs = [432, 513.6, 528, 639, 741, 852];
             const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
             try { this.playBell(chosenF, 4.5); } catch (_) {}
-            // Dynamic micro-pitch & tempo modulation (1.012 - 1.026) so audio spectral hash never repeats
-            const rateJitter = 1.018 + (Math.random() - 0.5) * 0.015;
+            // Dynamic micro-pitch & tempo modulation (1.035 - 1.050) so audio spectral hash never matches static Content ID
+            const rateJitter = 1.042 + (Math.random() - 0.5) * 0.015;
             try {
               if (this.bgmAudio) this.bgmAudio.playbackRate = rateJitter;
               if (this.bgmBufferSource) this.bgmBufferSource.playbackRate.value = rateJitter;
             } catch (_) {}
           }
-        }, 18000);
+        }, 14000);
       }
     };
 
@@ -396,8 +396,8 @@ class TempleAudio {
     if (this.bgmAudio) {
       this.bgmAudio.muted = false;
       this.bgmAudio.volume = this.volume;
-      // Micro-pitch & tempo shift (+1.8%): Scrambles TikTok Audio Content ID hash while sounding natural & serene
-      try { this.bgmAudio.playbackRate = 1.018; } catch (_) {}
+      // Key & tempo shift (+4.2%): Scrambles TikTok Audio Content ID hash while sounding natural & serene
+      try { this.bgmAudio.playbackRate = 1.042; } catch (_) {}
 
       // Only seek to 0.8s if media metadata/data is already loaded (avoids stalling initial stream load on Render)
       if (this.bgmAudio.readyState >= 2 && this.bgmAudio.currentTime < 0.5) {
@@ -785,6 +785,15 @@ class GuanYinDivineVoice {
       }
     } catch (_) {}
 
+    // Check if query parameter requests voice disable: ?voice=0 or ?no_voice=1
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('voice') === '0' || params.get('no_voice') === '1') {
+        this.enabled = false;
+        console.log('[GuanYin Voice] URL parameter ?voice=0 requested. AI Voice generation disabled on this tab.');
+      }
+    } catch (_) {}
+
     this.initVoice();
   }
 
@@ -852,6 +861,9 @@ class GuanYinDivineVoice {
 
   enqueue(item) {
     if (!this.enabled) return;
+    if (typeof speechCoordinator !== 'undefined' && speechCoordinator && !speechCoordinator.canSpeak()) {
+      return;
+    }
     this.queue.push(item);
     // Sort so Priority 1 (gifts) always play first, while keeping arrival order
     this.queue.sort((a, b) => (a.priority || 3) - (b.priority || 3));
@@ -882,6 +894,9 @@ class GuanYinDivineVoice {
   }
 
   async executeVoiceTask(task) {
+    if (typeof speechCoordinator !== 'undefined' && speechCoordinator && !speechCoordinator.canSpeak()) {
+      return;
+    }
     this.currentTask = task;
     this.currentAbortController = new AbortController();
     const abortSignal = this.currentAbortController.signal;
@@ -1419,6 +1434,162 @@ const guanYinVoice = new GuanYinDivineVoice();
 window.guanYinVoice = guanYinVoice;
 
 // ---------------------------------------------------------------------
+// 1.7 Universal Cross-Tab & Multi-Process Speech Master Coordinator
+// GUARANTEES that ONLY ONE tab/window across the entire machine can EVER speak AI blessings or trigger Keep-Alive!
+// Eliminates duplicate / overlapping / conflicting speeches across multiple open tabs 100%!
+// ---------------------------------------------------------------------
+class BuddhaSpeechCoordinator {
+  constructor(voiceEngine) {
+    this.voice = voiceEngine;
+    this.tabId = 'speech_tab_' + Math.random().toString(36).slice(2, 9) + '_' + Date.now();
+    this.channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('buddha_speech_coordinator') : null;
+    this.isMaster = false;
+    this.heartbeatTimer = null;
+    this.watchdogTimer = null;
+
+    this.init();
+  }
+
+  init() {
+    // Check if explicitly disabled via URL: ?voice=0 or ?no_voice=1 or ?display=1
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('voice') === '0' || params.get('no_voice') === '1' || params.get('display') === '1') {
+        console.log('[SpeechCoordinator] URL explicitly disabled voice on this tab.');
+        this.isMaster = false;
+        if (this.voice) this.voice.enabled = false;
+        return;
+      }
+    } catch (_) {}
+
+    if (this.channel) {
+      this.channel.onmessage = (e) => {
+        const msg = e.data;
+        if (!msg || msg.tabId === this.tabId) return;
+
+        if (msg.type === 'CLAIM_SPEECH_MASTER') {
+          if (this.isMaster) {
+            console.log('[SpeechCoordinator] Another tab claimed Speech Master. Yielding leadership.');
+            this.yieldMaster();
+          }
+        } else if (msg.type === 'SPEECH_HEARTBEAT') {
+          if (this.isMaster && msg.tabId !== this.tabId) {
+            // Tie-break: older tabId wins
+            if (msg.tabId < this.tabId) {
+              console.log('[SpeechCoordinator] Resolving split-brain: yielding to older tab:', msg.tabId);
+              this.yieldMaster();
+            }
+          }
+        }
+      };
+    }
+
+    // Try to claim master immediately if no valid master exists
+    this.evaluateLeadership();
+
+    // Check leadership every 1500ms
+    this.watchdogTimer = setInterval(() => {
+      this.evaluateLeadership();
+    }, 1500);
+
+    // Release master on unload
+    window.addEventListener('beforeunload', () => {
+      this.releaseMaster();
+    });
+  }
+
+  evaluateLeadership() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('voice') === '0' || params.get('no_voice') === '1' || params.get('display') === '1') {
+        this.isMaster = false;
+        if (this.voice) this.voice.enabled = false;
+        return;
+      }
+
+      const activeMaster = localStorage.getItem('buddha_speech_master_tab');
+      const activeTime = parseInt(localStorage.getItem('buddha_speech_master_time') || '0', 10);
+      const now = Date.now();
+
+      // If active master is this tab
+      if (activeMaster === this.tabId) {
+        this.isMaster = true;
+        this.sendHeartbeat();
+        return;
+      }
+
+      // If active master exists and is fresh (< 2800ms old)
+      if (activeMaster && (now - activeTime < 2800)) {
+        if (this.isMaster) {
+          this.yieldMaster();
+        }
+        return;
+      }
+
+      // Master is dead or non-existent -> Claim master!
+      this.claimMaster();
+    } catch (e) {
+      this.isMaster = true; // Fallback if localStorage blocked
+    }
+  }
+
+  claimMaster() {
+    this.isMaster = true;
+    try {
+      localStorage.setItem('buddha_speech_master_tab', this.tabId);
+      localStorage.setItem('buddha_speech_master_time', Date.now().toString());
+    } catch (_) {}
+
+    if (this.channel) {
+      this.channel.postMessage({ type: 'CLAIM_SPEECH_MASTER', tabId: this.tabId });
+    }
+
+    if (this.voice) {
+      this.voice.enabled = true;
+    }
+
+    this.sendHeartbeat();
+    console.log('[SpeechCoordinator] This tab is now the ACTIVE SPEECH MASTER 🎙️');
+  }
+
+  sendHeartbeat() {
+    try {
+      localStorage.setItem('buddha_speech_master_time', Date.now().toString());
+    } catch (_) {}
+    if (this.channel) {
+      this.channel.postMessage({ type: 'SPEECH_HEARTBEAT', tabId: this.tabId });
+    }
+  }
+
+  yieldMaster() {
+    this.isMaster = false;
+    if (this.voice) {
+      this.voice.stopAll();
+      this.voice.enabled = false;
+    }
+    console.log('[SpeechCoordinator] Yielded Speech Master. Voice disabled on this secondary tab to prevent speech overlap.');
+  }
+
+  releaseMaster() {
+    if (this.isMaster) {
+      this.isMaster = false;
+      try {
+        if (localStorage.getItem('buddha_speech_master_tab') === this.tabId) {
+          localStorage.removeItem('buddha_speech_master_tab');
+        }
+      } catch (_) {}
+    }
+  }
+
+  canSpeak() {
+    return this.isMaster;
+  }
+}
+
+const speechCoordinator = new BuddhaSpeechCoordinator(guanYinVoice);
+window.speechCoordinator = speechCoordinator;
+
+// ---------------------------------------------------------------------
 // 1.8 Smart Live Mic Router & Natural Condenser-Mic Acoustics Engine
 // Routes AI Voice & Natural Room-Tone Presence into TikTok LIVE Studio Mic Input
 // ---------------------------------------------------------------------
@@ -1430,7 +1601,7 @@ class SmartLiveMicRouter {
     this.sinkId = 'default';
     this.acousticsEnabled = true;
     this.keepAliveEnabled = true;
-    this.dualMonitorEnabled = true;
+    this.dualMonitorEnabled = false; // Disabled by default to prevent audio duplication / reverb / echo
     this.isTransmittingSpeech = false;
     this.monitorAudio = null;
     this.micCtx = null;
@@ -1726,6 +1897,7 @@ class SmartLiveMicRouter {
   startKeepAliveWatchdog() {
     setInterval(() => {
       if (!this.keepAliveEnabled) return;
+      if (typeof speechCoordinator !== 'undefined' && speechCoordinator && !speechCoordinator.canSpeak()) return;
       if (!this.voiceEngine || !this.voiceEngine.enabled) return;
       if (this.voiceEngine.isSpeaking || this.voiceEngine.isProcessing || this.voiceEngine.queue.length > 0) return;
 
@@ -1733,7 +1905,7 @@ class SmartLiveMicRouter {
       const idleMs = Date.now() - lastSpoken;
       if (idleMs >= this.nextKeepAliveMs) {
         this.voiceEngine.lastSpokenAt = Date.now();
-        this.nextKeepAliveMs = 48000 + Math.floor(Math.random() * 18000); // Random 48s - 66s
+        this.nextKeepAliveMs = 28000 + Math.floor(Math.random() * 12000); // Dynamic 28s - 40s active presence
 
         let idx = Math.floor(Math.random() * this.keepAlivePhrases.length);
         if (idx === this.lastKeepAliveIdx) {
@@ -1743,7 +1915,7 @@ class SmartLiveMicRouter {
         const phrase = this.keepAlivePhrases[idx];
         this.voiceEngine.speak(phrase, 4);
       }
-    }, 8000);
+    }, 6000);
   }
 
   async refreshDeviceList(requestPermission = false) {
@@ -1838,6 +2010,13 @@ class SmartLiveMicRouter {
     }
 
     if (!statusEl) return;
+
+    const isMasterTab = typeof speechCoordinator !== 'undefined' && speechCoordinator ? speechCoordinator.canSpeak() : true;
+    if (!isMasterTab) {
+      statusEl.textContent = '🔒 ระบบเสียงพูดควบคุมอยู่ที่แท็บหลัก (หน้านี้ปิดเสียงพูดอัตโนมัติเพื่อป้องกันเสียงพูดซ้อน 100%)';
+      statusEl.style.color = '#93c5fd';
+      return;
+    }
 
     if (this.isTransmittingSpeech) {
       statusEl.textContent = '🎙️ กำลังส่งคลื่นเสียงพูดพระแม่เข้าช่องไมค์ (Speaking)';
@@ -9813,9 +9992,11 @@ let activeStageActor = null;
 let activeStageAction = null;
 
 function performStageAction(type, name = 'ผู้มีจิตศรัทธา', wish = null, giftInfo = null) {
-  lastRitualActivityTime = Date.now();
   const isAmbient = Boolean(giftInfo?.isAmbient);
   const isStreakCombo = Boolean(giftInfo?.isStreakCombo);
+  if (!isAmbient) {
+    lastRitualActivityTime = Date.now();
+  }
 
   if (!isAmbient) {
     // Real viewer gift: freeze ambient bots for at least 60 seconds
@@ -10709,6 +10890,9 @@ socket.on('mic_router_sync', (data) => {
 socket.on('mic_router_test', () => {
   if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
     smartMicRouter.ensureMicAcousticsContext();
+  }
+  if (typeof speechCoordinator !== 'undefined' && speechCoordinator && !speechCoordinator.canSpeak()) {
+    return;
   }
   if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
     guanYinVoice.enabled = true;
@@ -11714,13 +11898,18 @@ function animate() {
   // Note: 350ms continuous smoke/ember instantiation removed to eliminate Garbage Collection stutter (กระตุกเป็นช่วงๆ)
   // Ritual incense effects remain 100% active via triggerIncenseEffect() when gifts arrive!
 
-  // ── Original Dignified Altar Overview Camera (มุมมองตรงกลาง สงบ มั่นคง สู่พระพักตร์) ──
+  // ── Living Cinematic Dignified Altar Camera (กล้องหน้าตรงสง่างาม มีชีวิตชีวา ไม่กระตุก ไม่เปลี่ยนมุม แต่พิกเซลเคลื่อนไหวตลอดเวลา ป้องกัน TikTok ตรวจจับภาพวนลูป) ──
   const targetDolly = (isStageActionRunning && activeStageActor) ? -0.35 : 0.0;
   if (typeof window._currentCameraDolly === 'undefined') window._currentCameraDolly = 0;
   window._currentCameraDolly = THREE.MathUtils.lerp(window._currentCameraDolly, targetDolly, 0.035);
 
-  camera.position.set(0, 5.2, 15.5 + window._currentCameraDolly);
-  camera.lookAt(0, -0.3, 0);
+  // Subtle living breathing sway (Very slow 35-50s cycle, imperceptible to human eye but completely breaks AI frame-hash loop detection)
+  const camSwayX = Math.sin(time * 0.14) * 0.10;
+  const camSwayY = Math.cos(time * 0.18) * 0.05;
+  const camSwayZ = Math.sin(time * 0.09) * 0.12;
+
+  camera.position.set(camSwayX, 5.2 + camSwayY, 15.5 + window._currentCameraDolly + camSwayZ);
+  camera.lookAt(camSwayX * 0.3, -0.3, 0);
 
   renderer.render(scene, camera);
 }
@@ -11904,47 +12093,47 @@ function getAdaptiveAmbientConfig() {
     return {
       mode: 'lively',
       enabled: true,
-      minDelay: 25000,
-      randomRange: 15000, // 25s - 40s
+      minDelay: 18000,
+      randomRange: 12000, // 18s - 30s: Continuous subtle organic motion ensures TikTok AI never detects a static video loop
       allowMicroBubbles: true,
       bubbleIntervalMin: 65000,
-      bubbleIntervalRange: 40000, // 65s - 105s (very calm & infrequent)
-      quietRequired: 25000
+      bubbleIntervalRange: 40000, // 65s - 105s (calm & infrequent)
+      quietRequired: 16000
     };
   } else if (viewers <= 10) {
     return {
       mode: 'audience_first',
       enabled: true,
-      minDelay: 35000,
-      randomRange: 20000, // 35s - 55s
+      minDelay: 28000,
+      randomRange: 15000, // 28s - 43s
       allowMicroBubbles: false, // 100% OFF for bot bubbles, real chatters only
-      quietRequired: 30000
+      quietRequired: 22000
     };
   } else if (viewers <= 25) {
     return {
       mode: 'crowded',
       enabled: true,
-      minDelay: 45000,
-      randomRange: 25000, // 45s - 70s
+      minDelay: 38000,
+      randomRange: 20000, // 38s - 58s
       allowMicroBubbles: false,
-      quietRequired: 35000
+      quietRequired: 28000
     };
   } else {
     // High-audience mode: Keep stage naturally alive when audience is watching quietly
     return {
       mode: 'surge',
       enabled: true,
-      minDelay: 50000,
-      randomRange: 30000, // 50s - 80s
+      minDelay: 45000,
+      randomRange: 25000, // 45s - 70s
       allowMicroBubbles: false,
-      quietRequired: 40000
+      quietRequired: 35000
     };
   }
 }
 
 const recentAmbientDevoteeSeats = [];
-let nextAmbientDevotionTime = Date.now() + 25000 + Math.random() * 10000;
-let nextAmbientMicroActionTime = Date.now() + 14000;
+let nextAmbientDevotionTime = Date.now() + 18000 + Math.random() * 8000;
+let nextAmbientMicroActionTime = Date.now() + 12000;
 
 function scheduleNextAmbientDevotion(extraDelayMs = 0) {
   const cfg = getAdaptiveAmbientConfig();
@@ -11954,6 +12143,91 @@ function scheduleNextAmbientDevotion(extraDelayMs = 0) {
   }
   const baseDelay = cfg.minDelay + Math.random() * cfg.randomRange;
   nextAmbientDevotionTime = Date.now() + baseDelay + extraDelayMs;
+}
+
+// ── Organic Congregation Seat Walk & Swap (การเดินสลับที่นั่ง / เดินย้ายที่นั่งอย่างเป็นธรรมชาติ) ──
+// Causes idle devotees to stand up, walk smoothly across aisles, and settle into new seats.
+// Generates rich, continuous 3D optical flow vectors and defeats TikTok's static video/loop classifiers.
+function triggerAmbientSeatSwap() {
+  if (isStageActionRunning || stageActionQueue.length > 0) return false;
+  if (Date.now() - lastRitualActivityTime < 14000) return false;
+
+  // Candidate idle devotees in general seats (seats 5..TOTAL_SEATS - 1)
+  // NEVER touch VIP golden mats (seats 0..4)
+  const candidates = [];
+  for (let s = 5; s < TOTAL_SEATS; s++) {
+    const d = disciplesMap.get(s);
+    if (
+      d &&
+      !d.isWalking &&
+      !d.isPerformingAltarRitual &&
+      !d.isMovingSeat &&
+      !d.isBowing &&
+      !d._poseTimer
+    ) {
+      candidates.push({ seatId: s, devotee: d });
+    }
+  }
+
+  if (candidates.length === 0) return false;
+
+  // Check for any empty general seat
+  const emptyGeneralSeats = [];
+  for (let s = 5; s < TOTAL_SEATS; s++) {
+    if (!disciplesMap.has(s)) {
+      emptyGeneralSeats.push(s);
+    }
+  }
+
+  // Branch A: If an unoccupied general seat exists, a devotee stands up and walks to take that seat
+  if (emptyGeneralSeats.length > 0 && Math.random() < 0.55) {
+    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
+    const targetSeat = emptyGeneralSeats[Math.floor(Math.random() * emptyGeneralSeats.length)];
+    const d = chosen.devotee;
+    const oldSeat = chosen.seatId;
+
+    disciplesMap.delete(oldSeat);
+    disciplesMap.set(targetSeat, d);
+    if (d.moveToNewSeat) {
+      d.moveToNewSeat(targetSeat, () => {
+        scheduleNextAmbientDevotion();
+      });
+      return true;
+    }
+  }
+
+  // Branch B: Two devotees in general seats swap seats, walking across the congregation floor
+  if (candidates.length >= 2) {
+    const idxA = Math.floor(Math.random() * candidates.length);
+    let idxB = Math.floor(Math.random() * (candidates.length - 1));
+    if (idxB >= idxA) idxB++;
+
+    const candA = candidates[idxA];
+    const candB = candidates[idxB];
+    const seatA = candA.seatId;
+    const seatB = candB.seatId;
+    const dA = candA.devotee;
+    const dB = candB.devotee;
+
+    disciplesMap.set(seatA, dB);
+    disciplesMap.set(seatB, dA);
+
+    if (dA.moveToNewSeat) {
+      dA.moveToNewSeat(seatB);
+    }
+    // Stagger second devotee slightly so they don't start on the exact identical frame
+    setTimeout(() => {
+      if (dB && dB.moveToNewSeat && !dB.isPerformingAltarRitual && !dB.isWalking) {
+        dB.moveToNewSeat(seatA, () => {
+          scheduleNextAmbientDevotion();
+        });
+      }
+    }, 240);
+
+    return true;
+  }
+
+  return false;
 }
 
 function triggerAmbientDevotion() {
@@ -11966,17 +12240,26 @@ function triggerAmbientDevotion() {
   // 1. Strict Mutex & Live Gift Exclusivity:
   // Never trigger if ANY stage action is currently running or queued in stageActionQueue ("อย่าเล่นพร้อมกันหลายตัว")
   if (isStageActionRunning || stageActionQueue.length > 0) {
-    scheduleNextAmbientDevotion(25000);
+    scheduleNextAmbientDevotion(20000);
     return;
   }
 
   // Defer if a live gift or altar ritual ran recently to guarantee live gifts have 100% priority
   if (Date.now() - lastRitualActivityTime < cfg.quietRequired) {
-    scheduleNextAmbientDevotion(20000);
+    scheduleNextAmbientDevotion(15000);
     return;
   }
 
-  // Gather all idle devotees sitting or standing in their assigned seats
+  // 2. Decide between Aisle Walking / Seat Relocation (50% chance) vs Altar Pilgrimage Walk (50% chance)
+  if (Math.random() < 0.50) {
+    const swapped = triggerAmbientSeatSwap();
+    if (swapped) {
+      scheduleNextAmbientDevotion();
+      return;
+    }
+  }
+
+  // 3. Altar Pilgrimage Walk: A devotee walks down the red carpet to offer incense or kowtow
   const idleCandidates = [];
   disciplesMap.forEach((devotee, sId) => {
     if (
@@ -11984,6 +12267,7 @@ function triggerAmbientDevotion() {
       !devotee.isWalking &&
       !devotee.isBowing &&
       !devotee.isPerformingAltarRitual &&
+      !devotee.isMovingSeat &&
       !devotee._poseTimer
     ) {
       idleCandidates.push({ seatId: sId, devotee });
@@ -12019,7 +12303,7 @@ function triggerAmbientDevotion() {
     recentAmbientDevoteeSeats.shift();
   }
 
-  // 2. Low-tier humble offerings ONLY for ambient bots (1-coin Kowtow, 5-coin Incense)
+  // 4. Low-tier humble offerings ONLY for ambient bots (1-coin Kowtow, 5-coin Incense)
   // NEVER trigger expensive gifts (dragon, castle, fireworks, etc.) to prevent lag & maintain dignity of real gifts
   const AMBIENT_RITUALS = [
     { type: 'kowtow',  icon: '🌹', name: 'กุหลาบมงคล',   coins: 1 },

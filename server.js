@@ -415,7 +415,7 @@ const state = {
     deviceName: 'cable', // Preferred device label keyword (CABLE Input / VB-Audio / Virtual)
     acousticsEnabled: true,
     keepAliveEnabled: true,
-    dualMonitorEnabled: true,
+    dualMonitorEnabled: false, // Disabled by default to prevent audio duplication / reverb / echo
     updatedAt: Date.now()
   },
   historyEvents: []
