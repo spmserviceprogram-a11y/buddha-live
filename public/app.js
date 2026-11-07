@@ -4878,8 +4878,6 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           }
         }, 16);
       });
-        }, 16);
-      });
     }
   };
   disciplesMap.set(sId, discipleObj);
