@@ -17,6 +17,10 @@ class TempleAudio {
     this.volume = 0.85;
     this.bgmAudio = null;
     this.bgmSourceNode = null;
+    this.bgmBuffer = null;
+    this.bgmBufferLoading = false;
+    this.bgmBufferSource = null;
+    this.bgmBufferGain = null;
     this.userMuted = false;
     this.isStartingBgm = false;
 
@@ -48,13 +52,16 @@ class TempleAudio {
       this.bgmAudio.volume = this.volume;
 
       this.bgmAudio.addEventListener('playing', () => {
-        this.ambientPlaying = true;
-        this.isStartingBgm = false;
-        this.syncUIState(true);
+        if (!this.bgmAudio.muted) {
+          this.stopWebAudioBgmBuffer();
+          this.ambientPlaying = true;
+          this.isStartingBgm = false;
+          this.syncUIState(true);
+        }
       });
 
       this.bgmAudio.addEventListener('pause', () => {
-        if (this.bgmAudio.paused) {
+        if (this.bgmAudio.paused && !this.bgmBufferSource) {
           this.ambientPlaying = false;
           this.isStartingBgm = false;
           this.syncUIState(false);
@@ -268,6 +275,69 @@ class TempleAudio {
     }
   }
 
+  stopWebAudioBgmBuffer() {
+    if (this.bgmBufferSource) {
+      try {
+        this.bgmBufferSource.stop();
+        this.bgmBufferSource.disconnect();
+      } catch (_) {}
+      this.bgmBufferSource = null;
+    }
+    if (this.bgmBufferGain) {
+      try { this.bgmBufferGain.disconnect(); } catch (_) {}
+      this.bgmBufferGain = null;
+    }
+  }
+
+  async startWebAudioBgmFallback() {
+    if (this.userMuted || !this.enabled) return false;
+    this.init();
+    if (!this.ctx) return false;
+    if (this.ctx.state === 'suspended') {
+      try { await this.ctx.resume(); } catch (_) {}
+    }
+    if (this.ctx.state !== 'running') return false;
+    if (this.bgmBufferSource) return true;
+    if (this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) return true;
+
+    try {
+      if (!this.bgmBuffer && !this.bgmBufferLoading) {
+        this.bgmBufferLoading = true;
+        const resp = await fetch('/bgm.mp3');
+        if (resp.ok) {
+          const arr = await resp.arrayBuffer();
+          this.bgmBuffer = await this.ctx.decodeAudioData(arr);
+        }
+        this.bgmBufferLoading = false;
+      }
+      if (!this.bgmBuffer || this.userMuted || !this.enabled) return false;
+      if (this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) return true;
+
+      this.stopWebAudioBgmBuffer();
+      const src = this.ctx.createBufferSource();
+      src.buffer = this.bgmBuffer;
+      src.loop = true;
+      try { src.playbackRate.value = 1.018; } catch (_) {}
+
+      const gain = this.ctx.createGain();
+      gain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+      src.connect(gain);
+      gain.connect(this.ctx.destination);
+      src.start(0, 0.8);
+
+      this.bgmBufferSource = src;
+      this.bgmBufferGain = gain;
+      this.ambientPlaying = true;
+      this.isStartingBgm = false;
+      this.syncUIState(true);
+      console.log('[TempleAudio] WebAudio AudioBuffer BGM active (TikTok LIVE Studio CEF fallback)');
+      return true;
+    } catch (err) {
+      this.bgmBufferLoading = false;
+      return false;
+    }
+  }
+
   // Sacred Da Bei Zhou Chant (บทสวดไต่ปุยจิ่ว ทิเบต พระแม่กวนอิม - เพลงพื้นหลังหลัก)
   startAmbient(withBell = false) {
     if (this.userMuted || !this.enabled) return;
@@ -282,7 +352,7 @@ class TempleAudio {
       try { this.playBell(432, 4.0); } catch (_) {}
     }
 
-    if (this.bgmAudio && !this.bgmAudio.paused) {
+    if ((this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) || this.bgmBufferSource) {
       this.ambientPlaying = true;
       this.syncUIState(true);
       return;
@@ -298,35 +368,71 @@ class TempleAudio {
       audioCoordinator.claimMaster();
     }
 
+    const startHarmonicTimer = () => {
+      if (!this._antiLoopHarmonicTimer) {
+        this._antiLoopHarmonicTimer = setInterval(() => {
+          if (!this.userMuted && this.enabled && this.ambientPlaying) {
+            const sacredFreqs = [432, 528, 639, 741];
+            const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
+            try { this.playBell(chosenF, 4.0); } catch (_) {}
+          }
+        }, 60000);
+      }
+    };
+
     // Play Sacred Tibetan Da Bei Zhou Chanting MP3 with Anti-Fingerprint Pitch/Tempo Modulation
     if (this.bgmAudio) {
+      this.bgmAudio.muted = false;
       this.bgmAudio.volume = this.volume;
       // Micro-pitch & tempo shift (+1.8%): Scrambles TikTok Audio Content ID hash while sounding natural & serene
       try { this.bgmAudio.playbackRate = 1.018; } catch (_) {}
 
-      if (this.bgmAudio.currentTime < 0.5) {
+      // Only seek to 0.8s if media metadata/data is already loaded (avoids stalling initial stream load on Render)
+      if (this.bgmAudio.readyState >= 2 && this.bgmAudio.currentTime < 0.5) {
         try { this.bgmAudio.currentTime = 0.8; } catch (_) {}
       }
       const playPromise = this.bgmAudio.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
+            this.stopWebAudioBgmBuffer();
             this.ambientPlaying = true;
             this.isStartingBgm = false;
             this.syncUIState(true);
-
-            // Periodic Procedural Zen Harmonics (Generates real-time live acoustic variance every 50-70s)
-            if (!this._antiLoopHarmonicTimer) {
-              this._antiLoopHarmonicTimer = setInterval(() => {
-                if (!this.userMuted && this.enabled && this.ambientPlaying) {
-                  const sacredFreqs = [432, 528, 639, 741];
-                  const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
-                  try { this.playBell(chosenF, 4.0); } catch (_) {}
-                }
-              }, 60000);
-            }
+            startHarmonicTimer();
           })
-          .catch(e => {
+          .catch(async (e) => {
+            // Bypass 1: Muted-Autoplay-Then-Unmute (Works in many CEF / TikTok LIVE Studio embedded browsers)
+            try {
+              this.bgmAudio.muted = true;
+              await this.bgmAudio.play();
+              setTimeout(() => {
+                if (!this.userMuted && this.bgmAudio) {
+                  this.bgmAudio.muted = false;
+                  this.bgmAudio.volume = this.volume;
+                  if (!this.bgmAudio.paused) {
+                    this.stopWebAudioBgmBuffer();
+                    this.ambientPlaying = true;
+                    this.isStartingBgm = false;
+                    this.syncUIState(true);
+                    startHarmonicTimer();
+                  } else {
+                    this.startWebAudioBgmFallback();
+                  }
+                }
+              }, 150);
+              return;
+            } catch (_) {
+              if (this.bgmAudio) this.bgmAudio.muted = false;
+            }
+
+            // Bypass 2: WebAudio AudioBuffer Decode & Play
+            const webAudioStarted = await this.startWebAudioBgmFallback();
+            if (webAudioStarted) {
+              startHarmonicTimer();
+              return;
+            }
+
             this.ambientPlaying = false;
             this.isStartingBgm = false;
             this.syncUIState(false);
@@ -389,6 +495,7 @@ class TempleAudio {
     if (this.bgmAudio) {
       try { this.bgmAudio.pause(); } catch (_) {}
     }
+    this.stopWebAudioBgmBuffer();
     if (this._antiLoopHarmonicTimer) {
       clearInterval(this._antiLoopHarmonicTimer);
       this._antiLoopHarmonicTimer = null;
@@ -407,6 +514,7 @@ class TempleAudio {
     if (this.bgmAudio && !this.bgmAudio.paused) {
       try { this.bgmAudio.pause(); } catch (_) {}
     }
+    this.stopWebAudioBgmBuffer();
     this.stopSynthesizedDrone();
     this.ambientPlaying = false;
     this.syncUIState(false);
@@ -416,13 +524,13 @@ class TempleAudio {
   }
 
   duckBgm(duck = true, durationMs = 350) {
-    if (!this.bgmAudio) return;
+    if (!this.bgmAudio && !this.bgmBufferGain) return;
     if (this._duckTimer) {
       clearInterval(this._duckTimer);
       this._duckTimer = null;
     }
     const targetVolume = duck ? (this.volume * 0.18) : this.volume;
-    const startVolume = this.bgmAudio.volume;
+    const startVolume = this.bgmAudio ? this.bgmAudio.volume : this.volume;
     const steps = 14;
     const stepInterval = Math.max(10, Math.floor(durationMs / steps));
     let currentStep = 0;
@@ -432,13 +540,22 @@ class TempleAudio {
       const progress = currentStep / steps;
       const factor = (1 - Math.cos(progress * Math.PI)) / 2;
       const v = startVolume + (targetVolume - startVolume) * factor;
+      const clampedV = Math.max(0, Math.min(1, v));
       try {
-        this.bgmAudio.volume = Math.max(0, Math.min(1, v));
+        if (this.bgmAudio) this.bgmAudio.volume = clampedV;
+        if (this.bgmBufferGain && this.ctx) {
+          this.bgmBufferGain.gain.setValueAtTime(clampedV, this.ctx.currentTime);
+        }
       } catch (_) {}
       if (currentStep >= steps) {
         clearInterval(this._duckTimer);
         this._duckTimer = null;
-        try { this.bgmAudio.volume = targetVolume; } catch (_) {}
+        try {
+          if (this.bgmAudio) this.bgmAudio.volume = targetVolume;
+          if (this.bgmBufferGain && this.ctx) {
+            this.bgmBufferGain.gain.setValueAtTime(targetVolume, this.ctx.currentTime);
+          }
+        } catch (_) {}
       }
     }, stepInterval);
   }
@@ -448,13 +565,16 @@ class TempleAudio {
     if (this.masterGain && this.ctx) {
       this.masterGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
     }
+    if (this.bgmBufferGain && this.ctx) {
+      this.bgmBufferGain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
+    }
     if (this.bgmAudio) {
       this.bgmAudio.volume = this.volume;
     }
   }
 
   toggleAmbient() {
-    const isPlaying = this.bgmAudio && !this.bgmAudio.paused;
+    const isPlaying = (this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) || Boolean(this.bgmBufferSource);
     if (isPlaying) {
       this.userMuted = true;
       this.stopAmbient();
@@ -9677,14 +9797,17 @@ const unlockAndStartAudio = (withFeedback = false) => {
   templeAudio.startAmbient(withFeedback);
 };
 
-const unlockEvents = ['click', 'touchstart', 'pointerdown', 'keydown'];
+const unlockEvents = ['click', 'touchstart', 'pointerdown', 'pointermove', 'mousemove', 'mouseenter', 'wheel', 'keydown', 'focus'];
 const handleUnlockGesture = (e) => {
   if (e && e.target) {
     if (e.target.id === 'btn-audio-toggle' || (e.target.closest && e.target.closest('#control-panel'))) return;
   }
   if (!templeAudio.userMuted) {
-    unlockAndStartAudio(true);
-    detachUnlockListeners();
+    const isClickOrKey = e && (e.type === 'click' || e.type === 'touchstart' || e.type === 'pointerdown' || e.type === 'keydown');
+    unlockAndStartAudio(isClickOrKey);
+    if (templeAudio.ambientPlaying) {
+      detachUnlockListeners();
+    }
   }
 };
 
@@ -9705,12 +9828,17 @@ function detachUnlockListeners() {
 // Start listening for initial gesture unlock
 attachUnlockListeners();
 
-// Immediate start on boot (ensures continuous audio presence for streaming software)
+// Immediate start on boot + continuous watchdog for TikTok LIVE Studio / OBS CEF
 unlockAndStartAudio(false);
 setTimeout(() => unlockAndStartAudio(false), 300);
 setTimeout(() => unlockAndStartAudio(false), 800);
 setTimeout(() => unlockAndStartAudio(false), 2000);
 setTimeout(() => unlockAndStartAudio(false), 4000);
+setInterval(() => {
+  if (!templeAudio.userMuted && templeAudio.enabled && !templeAudio.ambientPlaying) {
+    unlockAndStartAudio(false);
+  }
+}, 3000);
 
 const unlockPill = document.getElementById('audio-unlock-pill');
 if (unlockPill) {
