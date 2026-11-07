@@ -490,10 +490,16 @@ body {
   pointer-events: auto;
 }
 
-.panel-left-queue .panel-header-gold,
-.panel-left-sadhu .panel-header-gold {
+.panel-left-queue .panel-header-gold {
   padding: 3px 5px;
   font-size: 10px;
+}
+
+.panel-left-sadhu .panel-header-gold {
+  padding: 3px 5px;
+  font-size: 9.4px;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
 }
 
 /* Panel Left: คิวถวาย + คำขอพรล่าสุด */
@@ -1217,7 +1223,13 @@ body {
   width: 100%;
 }
 
-.panel-right-merit .panel-header-gold,
+.panel-right-merit .panel-header-gold {
+  padding: 3px 5px;
+  font-size: 9.2px;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+}
+
 .panel-right-guide .panel-header-gold {
   padding: 3px 5px;
   font-size: 10px;
