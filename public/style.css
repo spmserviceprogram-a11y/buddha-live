@@ -1077,12 +1077,12 @@ body {
 .seamsi-popup-title {
   font-family: 'Sarabun', 'Kanit', sans-serif;
   font-size: 9.5px;
-  font-weight: 600;
-  color: #ffe866;
+  font-weight: 700;
+  color: #9d174d;
   letter-spacing: 0px;
   line-height: 1.2;
   white-space: nowrap;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  text-shadow: none;
 }
 
 .seamsi-popup-sub {
@@ -1094,10 +1094,10 @@ body {
   display: inline-block;
   font-family: 'Sarabun', 'Kanit', sans-serif;
   font-size: 7.5px;
-  font-weight: 500;
+  font-weight: 600;
   color: #ffffff;
-  background: rgba(14, 4, 3, 0.85);
-  border: 1px solid rgba(255, 215, 0, 0.55);
+  background: linear-gradient(90deg, #be185d, #db2777);
+  border: 1px solid #ffd700;
   border-radius: 999px;
   padding: 1px 4.5px;
   letter-spacing: 0px;
@@ -1106,38 +1106,36 @@ body {
 }
 
 .vip-guide-item {
-  background: linear-gradient(90deg, rgba(96, 24, 15, 0.68), rgba(48, 12, 8, 0.62));
-  border-color: rgba(255, 215, 0, 0.65);
+  background: linear-gradient(90deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.95));
+  border-color: #f59e0b;
 }
 
 .vip-guide-item .guide-action {
-  color: #ffe066;
-  font-weight: 700;
-  text-shadow: 0 1px 3px #000, 0 0 2px #000;
+  color: #92400e;
+  font-weight: 800;
+  text-shadow: none;
 }
 
 .vip-guide-item .guide-price {
-  color: #fff6b3;
-  border-color: rgba(255, 215, 0, 0.75);
-  background: rgba(60, 15, 9, 0.85);
+  color: #92400e;
 }
 
 .supreme-guide-item {
-  background: linear-gradient(90deg, rgba(148, 30, 18, 0.78), rgba(78, 16, 54, 0.72));
-  border: 1.2px solid #ffd700;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.50);
+  background: linear-gradient(90deg, rgba(255, 228, 230, 0.96), rgba(254, 240, 138, 0.96));
+  border: 1.2px solid #e11d48;
+  box-shadow: 0 0 6px rgba(225, 29, 72, 0.35);
 }
 
 .supreme-guide-item .guide-action {
-  color: #ffffff;
+  color: #9f1239;
   font-weight: 800;
-  text-shadow: 0 0 6px #ffd700, 0 1px 3px #000;
+  text-shadow: none;
 }
 
 .supreme-guide-item .guide-price {
   color: #ffffff;
   border-color: #ffd700;
-  background: linear-gradient(135deg, rgba(170, 38, 22, 0.92), rgba(110, 22, 68, 0.92));
+  background: linear-gradient(135deg, #e11d48, #be123c);
   box-shadow: 0 0 4px rgba(255, 215, 0, 0.60);
 }
 
@@ -1165,22 +1163,22 @@ body {
   align-items: center;
   gap: 3px;
   font-size: 8.5px;
-  color: #ffffff;
+  color: #0f172a;
   font-weight: 700;
   padding: 1.5px 3.5px;
-  background: rgba(16, 5, 3, 0.62);
-  border: 1px solid rgba(255, 215, 0, 0.30);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(217, 119, 6, 0.35);
   border-radius: 4px;
-  text-shadow: 0 1px 3px #000, 0 0 2px #000;
+  text-shadow: none;
   box-sizing: border-box;
   min-height: 19px;
   transition: all 0.2s ease;
 }
 
 .queue-row.active {
-  background: linear-gradient(90deg, rgba(102, 26, 16, 0.78), rgba(52, 14, 9, 0.65));
-  border-color: rgba(255, 215, 0, 0.78);
-  box-shadow: 0 0 6px rgba(255, 215, 0, 0.32);
+  background: linear-gradient(90deg, rgba(254, 243, 199, 0.95), rgba(253, 230, 138, 0.95));
+  border-color: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.35);
 }
 
 .queue-row .q-avatar {
@@ -1193,10 +1191,10 @@ body {
   align-items: center;
   justify-content: center;
   background: rgba(255, 215, 0, 0.25);
-  border: 1px solid rgba(255, 215, 0, 0.60);
+  border: 1px solid #f59e0b;
   font-size: 9px;
   flex-shrink: 0;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .queue-row .q-avatar img {
