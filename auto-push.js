@@ -64,6 +64,18 @@ const customGiftsToSync = [
     dest: path.join(__dirname, 'public', 'heavenly_paradise.jpg')
   },
   {
+    source: 'C:/Users/BINARY/Desktop/พื้นหลัง.mp4',
+    dest: path.join(__dirname, 'public', 'background_video.mp4')
+  },
+  {
+    source: 'C:/Users/BINARY/Desktop/พื้นหลัง.mp4',
+    dest: path.join(__dirname, 'public', 'bg-video.mp4')
+  },
+  {
+    source: 'C:/Users/BINARY/Desktop/พื้นหลัง.mp4',
+    dest: path.join(__dirname, 'public', 'background.mp4')
+  },
+  {
     source: 'C:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
     dest: path.join(__dirname, 'public', 'background_video.mp4')
   },
