@@ -3841,7 +3841,7 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   const pillHeaderR = 9.5;
 
   ctx.save();
-  ctx.fillStyle = 'rgba(42, 8, 18, 0.88)';
+  ctx.fillStyle = 'rgba(42, 8, 18, 0.50)';
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
     ctx.roundRect(pillHeaderX, pillHeaderY, pillHeaderW, pillHeaderH, pillHeaderR);
