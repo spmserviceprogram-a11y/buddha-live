@@ -6999,6 +6999,103 @@ function triggerLotusBloomEffect() {
     dewdrops.push(dew);
   }
 
+  // 6. Sacred Lucky 9 (เก้ามงคล): 8 Blooming Sacred Lotuses in Twin Ponds + Ascending Golden Numeral "๙"
+  const pondLotusesGroup = new THREE.Group();
+  const pondLotusNodes = [];
+  const pondSpots = [
+    { x: -4.6, y: 0.16, z: 2.5 },
+    { x: -3.6, y: 0.16, z: 4.2 },
+    { x: -4.8, y: 0.16, z: 5.8 },
+    { x: -3.8, y: 0.16, z: 7.4 },
+    { x:  4.6, y: 0.16, z: 2.5 },
+    { x:  3.6, y: 0.16, z: 4.2 },
+    { x:  4.8, y: 0.16, z: 5.8 },
+    { x:  3.8, y: 0.16, z: 7.4 }
+  ];
+
+  const pondPetalTex = getRainbowLotusPetalTexture();
+  const pLotusMat = new THREE.MeshStandardMaterial({
+    map: pondPetalTex,
+    color: 0xff69b4,
+    emissive: 0xff1493,
+    emissiveIntensity: 0.5,
+    roughness: 0.2,
+    metalness: 0.15,
+    side: THREE.DoubleSide
+  });
+
+  pondSpots.forEach((ps, pIdx) => {
+    const pl = new THREE.Group();
+    pl.position.set(ps.x, ps.y, ps.z);
+    pl.scale.set(0.01, 0.01, 0.01);
+
+    // Expanding water ripple ring at base
+    const wRipple = new THREE.Mesh(
+      new THREE.RingGeometry(0.18, 0.72, 32),
+      new THREE.MeshBasicMaterial({ color: 0x96fff2, side: THREE.DoubleSide, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending })
+    );
+    wRipple.rotation.x = -Math.PI / 2;
+    pl.add(wRipple);
+
+    // 8 Petals
+    for (let p = 0; p < 8; p++) {
+      const pang = (p / 8) * Math.PI * 2;
+      const pet = new THREE.Mesh(new THREE.SphereGeometry(0.24, 8, 8), pLotusMat);
+      pet.scale.set(0.55, 1.25, 0.18);
+      pet.rotation.y = -pang;
+      pet.rotation.x = 0.55;
+      pet.position.set(Math.cos(pang) * 0.18, 0.08, Math.sin(pang) * 0.18);
+      pl.add(pet);
+    }
+    // Inner 6 Petals
+    for (let p = 0; p < 6; p++) {
+      const pang = (p / 6) * Math.PI * 2 + 0.35;
+      const pet = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), pLotusMat);
+      pet.scale.set(0.5, 1.1, 0.18);
+      pet.rotation.y = -pang;
+      pet.rotation.x = 0.32;
+      pet.position.set(Math.cos(pang) * 0.11, 0.12, Math.sin(pang) * 0.11);
+      pl.add(pet);
+    }
+    // Golden Stamen
+    const plCore = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), goldTrimMat);
+    plCore.position.y = 0.14;
+    pl.add(plCore);
+
+    // Rainbow Light Beam shooting into clouds
+    const beamGeo = new THREE.PlaneGeometry(0.28, 6.2);
+    const beamMat = new THREE.MeshBasicMaterial({
+      color: (pIdx % 2 === 0) ? 0x00f5d4 : 0xffea00,
+      transparent: true,
+      opacity: 0.28,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const beam = new THREE.Mesh(beamGeo, beamMat);
+    beam.position.y = 3.1;
+    pl.add(beam);
+
+    pondLotusesGroup.add(pl);
+    pondLotusNodes.push({ group: pl, ripple: wRipple, beam, delay: pIdx * 0.08 });
+  });
+  scene.add(pondLotusesGroup);
+
+  // Radiant Golden Numeral "๙" (Ascending to Guan Yin)
+  const nineTex = getSacredNumeralNineTexture();
+  const nineMat = new THREE.SpriteMaterial({
+    map: nineTex,
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  const nineSprite = new THREE.Sprite(nineMat);
+  nineSprite.scale.set(1.6, 1.6, 1);
+  nineSprite.position.set(0, 0.95, 2.35);
+  bloomGroup.add(nineSprite);
+
   const bloomLight = new THREE.PointLight(0xff99e6, 3.8, 8.5);
   bloomLight.position.y = 0.65;
   bloomGroup.add(bloomLight);
@@ -7017,6 +7114,25 @@ function triggerLotusBloomEffect() {
     haloDisc.rotation.z -= 0.022;
     pondSurface.rotation.z += 0.008;
     bloomGroup.position.y = 0.26 + Math.sin(progress) * 0.04;
+
+    // Animate 8 pond lotuses in Left and Right ponds
+    pondLotusNodes.forEach(pn => {
+      const pProg = Math.max(0, Math.min(1.0, (progress - pn.delay) * 1.35));
+      const pScale = Math.sin(pProg * Math.PI / 2);
+      pn.group.scale.set(pScale, pScale, pScale);
+      pn.group.rotation.y += 0.015;
+      pn.ripple.scale.setScalar(1.0 + Math.sin(progress * 3.5) * 0.22);
+      pn.beam.rotation.y += 0.02;
+    });
+
+    // Ascend radiant Thai Numeral "๙" toward Guan Yin's celestial halo
+    if (progress > 0.3) {
+      const nineProg = Math.min(1.0, (progress - 0.3) * 1.25);
+      nineMat.opacity = Math.min(1.0, nineProg * 1.4);
+      nineSprite.position.y = 0.95 + nineProg * 1.85;
+      const pulseS = 1.6 + Math.sin(progress * 8.0) * 0.18;
+      nineSprite.scale.set(pulseS, pulseS, 1);
+    }
 
     // Unfurl lotus petals smoothly
     animatedPetals.forEach(ap => {
@@ -7057,14 +7173,17 @@ function triggerLotusBloomEffect() {
           fadeOutProgress -= 0.05;
           if (activeLotusBloom === bloomGroup) {
             bloomGroup.scale.multiplyScalar(0.96);
+            pondLotusesGroup.scale.multiplyScalar(0.96);
             bloomLight.intensity = fadeOutProgress * 3.8;
             if (fadeOutProgress <= 0.05) {
               clearInterval(fadeInterval);
               scene.remove(bloomGroup);
+              scene.remove(pondLotusesGroup);
               activeLotusBloom = null;
             }
           } else {
             clearInterval(fadeInterval);
+            scene.remove(pondLotusesGroup);
           }
         }, 30);
       }, 4200);
