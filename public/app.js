@@ -8737,7 +8737,87 @@ function triggerFireworksEffect() {
   elephantGroup.add(eleHalo);
   fwGroup.add(elephantGroup);
 
-  // 3. 64 Authentic Square-Hole Ancient Gold Coins + 18 Boat-Shaped Yuanbao Gold Ingots
+  // 3. 4 Sparkling Ruby Crystal Hearts in the Heavenly Sky (หัวใจมณีทิพย์ 4 ดวงเปล่งประกาย)
+  const rubyHeartMat = new THREE.MeshStandardMaterial({
+    color: 0xff1744,
+    emissive: 0xd50000,
+    emissiveIntensity: 0.65,
+    roughness: 0.12,
+    metalness: 0.90
+  });
+  const sparkTex = getCrystalSparkTexture();
+  const heartPositions = [
+    { x: -1.8, y: 5.8, z: 2.5 },
+    { x:  1.8, y: 5.8, z: 2.5 },
+    { x: -0.9, y: 6.8, z: 2.0 },
+    { x:  0.9, y: 6.8, z: 2.0 }
+  ];
+  const crystalHearts = [];
+
+  heartPositions.forEach((hp, idx) => {
+    const hGroup = new THREE.Group();
+    hGroup.position.set(hp.x, hp.y, hp.z);
+
+    const lobeGeo = new THREE.SphereGeometry(0.16, 12, 10);
+    const coneGeo = new THREE.ConeGeometry(0.24, 0.44, 12);
+
+    const lobeL = new THREE.Mesh(lobeGeo, rubyHeartMat);
+    lobeL.position.set(-0.10, 0.10, 0);
+    hGroup.add(lobeL);
+
+    const lobeR = new THREE.Mesh(lobeGeo, rubyHeartMat);
+    lobeR.position.set(0.10, 0.10, 0);
+    hGroup.add(lobeR);
+
+    const cone = new THREE.Mesh(coneGeo, rubyHeartMat);
+    cone.rotation.z = Math.PI;
+    cone.position.set(0, -0.10, 0);
+    hGroup.add(cone);
+
+    const sparkSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: sparkTex,
+      color: 0xffe066,
+      transparent: true,
+      opacity: 0.90,
+      blending: THREE.AdditiveBlending
+    }));
+    sparkSprite.scale.set(1.4, 1.4, 1);
+    hGroup.add(sparkSprite);
+
+    hGroup.scale.set(0.01, 0.01, 0.01);
+    fwGroup.add(hGroup);
+    crystalHearts.push({ group: hGroup, sprite: sparkSprite, phase: idx * 1.5 });
+  });
+
+  // 4. 16 Ascending Glowing Sky Lanterns (โคมลอยบุญบารมี 16 ดวงลอยสู่สวรรค์)
+  const skyLanterns = [];
+  const lanternCylGeo = new THREE.CylinderGeometry(0.12, 0.09, 0.26, 12);
+  const lanternPaperMat = new THREE.MeshStandardMaterial({
+    color: 0xffb703,
+    emissive: 0xff7b00,
+    emissiveIntensity: 0.85,
+    roughness: 0.35,
+    metalness: 0.1,
+    transparent: true,
+    opacity: 0.92
+  });
+  for (let l = 0; l < 16; l++) {
+    const lMesh = new THREE.Mesh(lanternCylGeo, lanternPaperMat);
+    const lx = (Math.random() - 0.5) * 6.5;
+    const lz = 1.0 + Math.random() * 6.0;
+    const ly = 3.2 + Math.random() * 2.0;
+    lMesh.position.set(lx, ly, lz);
+    lMesh.userData = {
+      vy: 0.024 + Math.random() * 0.018,
+      wobbleSpeed: 1.5 + Math.random() * 2.0,
+      wobblePhase: Math.random() * Math.PI * 2,
+      baseX: lx
+    };
+    fwGroup.add(lMesh);
+    skyLanterns.push(lMesh);
+  }
+
+  // 5. 64 Authentic Square-Hole Ancient Gold Coins + 18 Boat-Shaped Yuanbao Gold Ingots
   const coinGeo = new THREE.CylinderGeometry(0.13, 0.13, 0.024, 20);
   const coinMat = new THREE.MeshStandardMaterial({
     map: getAncientGoldCoinTexture(),
