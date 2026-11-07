@@ -112,7 +112,7 @@ function commitAndPush(forcePush = false) {
 // Initial sync & push on startup
 commitAndPush(true);
 
-// Watch directory recursively (Supported natively in Windows)
+// Watch directory recursively (Supported natively in Windows - Clean Production Sync v76)
 fs.watch(__dirname, { recursive: true }, (eventType, filename) => {
   if (shouldIgnore(filename)) return;
 
