@@ -3525,8 +3525,8 @@ function createPrayerSpeechBubble(name, wish) {
     ctx.rect(pillX, pillY, pillW, pillH);
   }
   const pillGrad = ctx.createLinearGradient(pillX, pillY, pillX, pillY + pillH);
-  pillGrad.addColorStop(0.0, '#dc2626');
-  pillGrad.addColorStop(1.0, '#881337');
+  pillGrad.addColorStop(0.0, '#db2777');
+  pillGrad.addColorStop(1.0, '#9d174d');
   ctx.fillStyle = pillGrad;
   ctx.fill();
   ctx.lineWidth = 1.2;
