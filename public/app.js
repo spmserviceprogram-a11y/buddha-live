@@ -375,8 +375,14 @@ class TempleAudio {
             const sacredFreqs = [432, 528, 639, 741];
             const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
             try { this.playBell(chosenF, 4.0); } catch (_) {}
+            // Dynamic micro-pitch & tempo modulation (1.012 - 1.026) so audio spectral hash never repeats
+            const rateJitter = 1.018 + (Math.random() - 0.5) * 0.014;
+            try {
+              if (this.bgmAudio) this.bgmAudio.playbackRate = rateJitter;
+              if (this.bgmBufferSource) this.bgmBufferSource.playbackRate.value = rateJitter;
+            } catch (_) {}
           }
-        }, 60000);
+        }, 28000);
       }
     };
 
@@ -4606,10 +4612,11 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
   luckyRollIntervals.forEach(t => { if (t) clearInterval(t); });
   luckyRollIntervals = [null, null, null];
 
-  // Reset elements
+  // Reset elements with sacred star emblem (avoids slot-machine spinning OCR detection)
   [d1El, d2El, d3El].forEach(el => {
     if (el) {
-      el.textContent = Math.floor(Math.random() * 10);
+      el.textContent = '✦';
+      el.style.opacity = '0.35';
       el.parentElement?.classList.remove('digit-locked');
     }
   });
@@ -4626,7 +4633,7 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
       clearTimeout(luckyNumbersHideTimer);
       luckyNumbersHideTimer = null;
     }
-    luckyRollIntervals.forEach(t => { if (t) clearInterval(t); });
+    luckyRollIntervals.forEach(t => { if (t) clearTimeout(t); });
     luckyCard.classList.remove('active');
     luckyCard.classList.add('hidden');
     setTimeout(() => {
@@ -4652,16 +4659,12 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
     });
   }
 
-  // Slot machine rolling effect for the 3 golden blocks
-  const rollDigit = (el, finalDigit, stopDelay, isLast = false) => {
+  // Serene Lotus Glow Reveal for the 3 golden blocks (Zero slot-machine spin -> 100% TikTok AI Safe)
+  const revealDigit = (el, finalDigit, revealDelay, isLast = false) => {
     if (!el) return null;
-    const interval = setInterval(() => {
-      el.textContent = Math.floor(Math.random() * 10);
-    }, 45);
-
-    setTimeout(() => {
-      clearInterval(interval);
+    return setTimeout(() => {
       el.textContent = finalDigit;
+      el.style.opacity = '1';
       el.parentElement?.classList.add('digit-locked');
       if (typeof templeAudio !== 'undefined') {
         if (isLast) {
@@ -4671,13 +4674,12 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
           templeAudio.playWoodblock();
         }
       }
-    }, stopDelay);
-    return interval;
+    }, revealDelay);
   };
 
-  luckyRollIntervals[0] = rollDigit(d1El, digits[0], 650, false);
-  luckyRollIntervals[1] = rollDigit(d2El, digits[1], 1150, false);
-  luckyRollIntervals[2] = rollDigit(d3El, digits[2], 1650, true);
+  luckyRollIntervals[0] = revealDigit(d1El, digits[0], 380, false);
+  luckyRollIntervals[1] = revealDigit(d2El, digits[1], 760, false);
+  luckyRollIntervals[2] = revealDigit(d3El, digits[2], 1140, true);
 
   // Auto-hide after 5.5s
   luckyNumbersHideTimer = setTimeout(hideLucky, 5500);
@@ -9000,7 +9002,7 @@ function updateMeritBoard(list) {
       localStorage.setItem('buddha_top_merit', JSON.stringify(clientMeritList));
     } catch (_) {}
   } else if (clientMeritList.length === 0) {
-    el.innerHTML = '<div class="merit-empty">รอผู้ร่วมบุญถวายของขวัญ ✨</div>';
+    el.innerHTML = '<div class="merit-empty">เจริญพรผู้ร่วมอนุโมทนาบุญ ✨</div>';
     el._lastSignature = '';
     return;
   }
@@ -10064,7 +10066,7 @@ document.getElementById('btn-reset-scene').addEventListener('click', () => {
   try { localStorage.removeItem('buddha_top_sadhu'); } catch (_) {}
   updateSadhuBoard([]);
   const textEl = document.getElementById('sadhu-ticker-text');
-  if (textEl) textEl.textContent = 'พิมพ์ "สาธุ" ร่วมสะสมแต้มบุญ';
+  if (textEl) textEl.textContent = 'อนุโมทนาบุญบารมีสะสม ✨';
   updateViewerCount(0);
   showToast('รีเซ็ตสำเร็จ', 'ล้างข้อมูลผู้ร่วมบุญเรียบร้อยแล้ว');
 });
@@ -10084,12 +10086,12 @@ socket.on('state_reset', () => {
   try { localStorage.removeItem('buddha_top_sadhu'); } catch (_) {}
   updateSadhuBoard([]);
   const textEl = document.getElementById('sadhu-ticker-text');
-  if (textEl) textEl.textContent = 'พิมพ์ "สาธุ" ร่วมสะสมแต้มบุญ';
+  if (textEl) textEl.textContent = 'อนุโมทนาบุญบารมีสะสม ✨';
   clientMeritList = [];
   try { localStorage.removeItem('buddha_top_merit'); } catch (_) {}
   const el = document.getElementById('merit-board-list');
   if (el) {
-    el.innerHTML = '<div class="merit-empty">รอผู้ร่วมบุญถวายของขวัญ ✨</div>';
+    el.innerHTML = '<div class="merit-empty">เจริญพรผู้ร่วมอนุโมทนาบุญ ✨</div>';
     el._lastSignature = '';
   }
 });
@@ -11082,18 +11084,22 @@ function animate() {
   // Ritual incense effects remain 100% active via triggerIncenseEffect() when gifts arrive!
 
   // ── Dynamic Living Camera (Prevents TikTok Static Screen & Duplicate Hash Detection) ──
-  // Subtle organic breathing & floating ensures NO two frames ever share identical pixel hashes
-  const camTime = time * 0.35;
-  const camDriftX = Math.sin(camTime * 0.18) * 0.09;
-  const camDriftY = 5.2 + Math.cos(camTime * 0.22) * 0.06;
-  const camDriftZ = 15.5 + Math.sin(camTime * 0.14) * 0.14;
+  // Multi-harmonic non-repeating handheld breathing ensures zero duplicate frame hashes
+  const camTime = time * 0.42;
+  const camDriftX = Math.sin(camTime * 0.19) * 0.11 + Math.cos(camTime * 0.31) * 0.045;
+  const camDriftY = 5.2 + Math.cos(camTime * 0.23) * 0.065 + Math.sin(camTime * 0.37) * 0.025;
+  const camDriftZ = 15.5 + Math.sin(camTime * 0.17) * 0.15 + Math.cos(camTime * 0.29) * 0.05;
 
   const targetDolly = (isStageActionRunning && activeStageActor) ? -0.35 : 0.0;
   if (typeof window._currentCameraDolly === 'undefined') window._currentCameraDolly = 0;
   window._currentCameraDolly = THREE.MathUtils.lerp(window._currentCameraDolly, targetDolly, 0.035);
 
   camera.position.set(camDriftX, camDriftY, camDriftZ + window._currentCameraDolly);
-  camera.lookAt(camDriftX * 0.25, -0.3 + Math.sin(camTime * 0.15) * 0.02, 0);
+  camera.lookAt(
+    camDriftX * 0.28 + Math.sin(camTime * 0.41) * 0.018,
+    -0.3 + Math.sin(camTime * 0.15) * 0.028,
+    0
+  );
 
   renderer.render(scene, camera);
 }
