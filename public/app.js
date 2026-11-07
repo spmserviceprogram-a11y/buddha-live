@@ -2270,6 +2270,29 @@ class SmartLiveMicRouter {
       });
     }
 
+    const soundModeSelect = document.getElementById('select-sound-mode');
+    if (soundModeSelect) {
+      soundModeSelect.value = this.templeAudio.soundMode || 'zen_original';
+      soundModeSelect.addEventListener('change', (e) => {
+        const newMode = e.target.value;
+        this.templeAudio.soundMode = newMode;
+        try { localStorage.setItem('buddha_sound_mode', newMode); } catch (_) {}
+        if (this.templeAudio.ambientPlaying) {
+          this.templeAudio.stopAmbient();
+          setTimeout(() => {
+            this.templeAudio.startAmbient(true);
+          }, 300);
+        }
+        if (typeof showToast === 'function') {
+          if (newMode === 'zen_original') {
+            showToast('โหมดเสียงเซน 432Hz ✨', 'เปิดใช้งานเสียงสมาธิเซนบริสุทธิ์ สดใหม่ ปลอดภัยจากการตรวจจับลิขสิทธิ์ 100%');
+          } else {
+            showToast('โหมดไฟล์เสียงสวดมนต์ 📜', 'เปลี่ยนเป็นไฟล์เสียงสวดมนต์ไต่ปุยจิ่ว');
+          }
+        }
+      });
+    }
+
     this.updateStatusText();
   }
 }
