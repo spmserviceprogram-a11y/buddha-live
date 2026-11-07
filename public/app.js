@@ -7283,7 +7283,7 @@ function triggerLotusRainEffect() {
     }
 
     particleMesh.position.set(
-      (Math.random() - 0.5) * 4.8,
+      (Math.random() - 0.5) * 3.2, // Channeled within marble bridge balustrades
       7.0 + Math.random() * 4.2,
       1.6 + Math.random() * 6.2
     );
@@ -7294,14 +7294,14 @@ function triggerLotusRainEffect() {
     );
 
     particleMesh.userData = {
-      vy: 0.018 + Math.random() * 0.017,
-      driftX: (Math.random() - 0.5) * 0.014,
-      driftZ: (Math.random() - 0.5) * 0.012,
-      wobbleSpeed: 1.8 + Math.random() * 2.2,
+      vy: 0.020 + Math.random() * 0.018,
+      driftX: (Math.random() - 0.5) * 0.008,
+      driftZ: (Math.random() - 0.5) * 0.008,
+      wobbleSpeed: 2.2 + Math.random() * 2.5,
       wobbleOffset: Math.random() * Math.PI * 2,
-      rotX: (Math.random() - 0.5) * 0.028,
-      rotY: (Math.random() - 0.5) * 0.028,
-      rotZ: (Math.random() - 0.5) * 0.028,
+      rotX: (Math.random() - 0.5) * 0.032,
+      rotY: (Math.random() - 0.5) * 0.032,
+      rotZ: (Math.random() - 0.5) * 0.032,
       restTime: 0
     };
 
@@ -7331,13 +7331,13 @@ function triggerLotusRainEffect() {
 
     const ribbon = new THREE.Mesh(rGeo, ribbonMat);
     ribbon.position.set(
-      (Math.random() - 0.5) * 4.2,
+      (Math.random() - 0.5) * 3.0,
       7.4 + Math.random() * 3.5,
       2.0 + Math.random() * 5.0
     );
     ribbon.userData = {
       vy: 0.014 + Math.random() * 0.011,
-      driftX: (Math.random() - 0.5) * 0.010,
+      driftX: (Math.random() - 0.5) * 0.008,
       driftZ: (Math.random() - 0.5) * 0.008,
       wobbleSpeed: 1.6 + Math.random() * 1.4,
       wobbleOffset: Math.random() * Math.PI * 2,
@@ -7349,6 +7349,76 @@ function triggerLotusRainEffect() {
     scene.add(ribbon);
     petalRainParticles.push(ribbon);
   }
+
+  // 4. Twin Soaring Celestial White Cranes (นกกระเรียนขาวมงคลสวรรค์บินร่อนผ่านน้ำตก)
+  const cranesGroup = new THREE.Group();
+  const craneConfigs = [
+    { startX: -8.0, startY: 7.2, startZ: 2.5, destX: 8.5, destY: 5.8, destZ: 4.2, speed: 0.052, dir: 1 },
+    { startX:  8.5, startY: 6.5, startZ: 3.5, destX: -8.0, destY: 7.5, destZ: 1.8, speed: 0.046, dir: -1 }
+  ];
+  const craneNodes = [];
+  const craneBodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.1 });
+  const craneCrownMat = new THREE.MeshBasicMaterial({ color: 0xff1e40 });
+  const craneBeakMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+
+  craneConfigs.forEach(cfg => {
+    const crane = new THREE.Group();
+    crane.position.set(cfg.startX, cfg.startY, cfg.startZ);
+
+    const cBody = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.72, 8), craneBodyMat);
+    cBody.rotation.x = Math.PI / 2;
+    crane.add(cBody);
+
+    const cNeck = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.06, 0.42, 8), craneBodyMat);
+    cNeck.position.set(0, 0.16, 0.38);
+    cNeck.rotation.x = 0.55;
+    crane.add(cNeck);
+
+    const cCrown = new THREE.Mesh(new THREE.SphereGeometry(0.045, 6, 6), craneCrownMat);
+    cCrown.position.set(0, 0.32, 0.50);
+    crane.add(cCrown);
+
+    const cBeak = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.18, 5), craneBeakMat);
+    cBeak.position.set(0, 0.28, 0.62);
+    cBeak.rotation.x = Math.PI / 2;
+    crane.add(cBeak);
+
+    const wingGeo = new THREE.PlaneGeometry(0.72, 0.32);
+    wingGeo.translate(0.36, 0, 0);
+    const wingL = new THREE.Mesh(wingGeo, craneBodyMat);
+    wingL.position.set(0.08, 0.05, 0.1);
+    const wingR = new THREE.Mesh(wingGeo.clone().scale(-1, 1, 1), craneBodyMat);
+    wingR.position.set(-0.08, 0.05, 0.1);
+    crane.add(wingL);
+    crane.add(wingR);
+
+    crane.rotation.y = cfg.dir > 0 ? -Math.PI / 2 + 0.12 : Math.PI / 2 - 0.12;
+
+    cranesGroup.add(crane);
+    craneNodes.push({ mesh: crane, wingL, wingR, cfg, t: 0 });
+  });
+  scene.add(cranesGroup);
+
+  let craneT = 0;
+  const craneTimer = setInterval(() => {
+    craneT += 0.035;
+    craneNodes.forEach(cn => {
+      cn.t = Math.min(1.0, cn.t + cn.cfg.speed * 0.25);
+      cn.mesh.position.x = THREE.MathUtils.lerp(cn.cfg.startX, cn.cfg.destX, cn.t);
+      cn.mesh.position.y = THREE.MathUtils.lerp(cn.cfg.startY, cn.cfg.destY, cn.t) + Math.sin(craneT * 3.5) * 0.15;
+      cn.mesh.position.z = THREE.MathUtils.lerp(cn.cfg.startZ, cn.cfg.destZ, cn.t);
+
+      // Flap wings smoothly
+      const flap = Math.sin(craneT * 9.5) * 0.42;
+      cn.wingL.rotation.z = flap;
+      cn.wingR.rotation.z = -flap;
+    });
+
+    if (craneT > 5.5) {
+      clearInterval(craneTimer);
+      scene.remove(cranesGroup);
+    }
+  }, 30);
 }
 
 // ── Tier 5: Sacred Imperial Golden Temple Bell, Pavilion Arch & 6-Color Divine Halo (🔔 / 🍊) ──
