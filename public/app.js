@@ -3263,10 +3263,10 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
   function renderPill(avatarImg = null) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Background: Celestial White Jade Porcelain Pill with 24K Gold Filigree
+    // Background: 50% Translucent Dark Glass Pill with 24K Gold Filigree
     const bgGrad = ctx.createLinearGradient(rx, ry, rx + rw, ry + rh);
-    bgGrad.addColorStop(0, 'rgba(255, 255, 255, 0.94)');
-    bgGrad.addColorStop(1, 'rgba(246, 249, 255, 0.96)');
+    bgGrad.addColorStop(0, 'rgba(20, 10, 6, 0.50)');
+    bgGrad.addColorStop(1, 'rgba(35, 14, 8, 0.50)');
     ctx.fillStyle = bgGrad;
     ctx.beginPath();
     ctx.roundRect(rx, ry, rw, rh, radius);
