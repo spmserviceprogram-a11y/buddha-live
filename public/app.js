@@ -10761,6 +10761,40 @@ function updatePrayerCategories(cats) {
   });
 }
 
+function spawnFollowerSparkleBurst() {
+  const layer = document.getElementById('follower-sparkle-layer');
+  if (!layer) return;
+  layer.innerHTML = '';
+  const symbols = ['✨', '🌟', '✦', '🪷', '💛'];
+  const count = 12;
+  for (let i = 0; i < count; i++) {
+    const sp = document.createElement('span');
+    sp.className = 'banner-sparkle-particle';
+    sp.textContent = symbols[i % symbols.length];
+    const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.35;
+    const startX = 50 + Math.cos(angle) * 35;
+    const startY = 50 + Math.sin(angle) * 25;
+    const dist = 16 + Math.random() * 24;
+    const tx = Math.round(Math.cos(angle) * dist);
+    const ty = Math.round(Math.sin(angle) * dist - 6);
+    const rot = Math.round((Math.random() - 0.5) * 140);
+    const size = Math.round(9 + Math.random() * 5);
+    const dur = (0.95 + Math.random() * 0.45).toFixed(2);
+    const delay = (Math.random() * 0.15).toFixed(2);
+
+    sp.style.setProperty('--sx', `${startX}%`);
+    sp.style.setProperty('--sy', `${startY}%`);
+    sp.style.setProperty('--tx', `${tx}px`);
+    sp.style.setProperty('--ty', `${ty}px`);
+    sp.style.setProperty('--rot', `${rot}deg`);
+    sp.style.setProperty('--size', `${size}px`);
+    sp.style.setProperty('--dur', `${dur}s`);
+    sp.style.setProperty('--delay', `${delay}s`);
+    sp.style.setProperty('--sc', '1.1');
+    layer.appendChild(sp);
+  }
+}
+
 function triggerFollowerBanner(name) {
   const banner = document.getElementById('follower-banner');
   const nameEl = document.getElementById('follower-banner-name');
@@ -10771,6 +10805,10 @@ function triggerFollowerBanner(name) {
     banner.classList.remove('pulse');
     void banner.offsetWidth; // re-flow
     banner.classList.add('pulse');
+    spawnFollowerSparkleBurst();
+    if (typeof templeAudio !== 'undefined' && templeAudio.playLotusChime) {
+      templeAudio.playLotusChime();
+    }
     if (banner._timer) clearTimeout(banner._timer);
     banner._timer = setTimeout(() => {
       banner.classList.add('hidden');
@@ -10778,6 +10816,32 @@ function triggerFollowerBanner(name) {
     }, 7000);
   }
 }
+
+// ── Global Testing Hooks for Live Preview (Banners, Seam-Si Cards, Lucky Modals) ──
+window.testBigBanner = function(tier = 'standard') {
+  const dummyGifts = {
+    standard: { name: 'กุหลาบ', icon: '🌹', coins: 1, effectType: 'kowtow', count: 1 },
+    incense: { name: 'เครื่องราง', icon: '🪔', coins: 5, effectType: 'incense', count: 1 },
+    royal: { name: 'ขบวนราชรถ', icon: '☸️', coins: 30, effectType: 'royal_carriage', count: 1 },
+    seamsi: { name: 'รักนะมากๆ', icon: '🎋', coins: 1, effectType: 'seamsi', count: 1 },
+    legend: { name: 'เปิดวิมานทิพย์', icon: '👑', coins: 100, effectType: 'castle', count: 1 },
+    dragon: { name: 'มังกรทองเหิน', icon: '🐉', coins: 299, effectType: 'dragon', count: 1 }
+  };
+  const g = dummyGifts[tier] || dummyGifts.standard;
+  triggerGiftAnnouncementBanner('กัลยาณมิตร', g);
+};
+
+window.testFollowerBanner = function(name = 'ผู้มีจิตศรัทธา') {
+  triggerFollowerBanner(name);
+};
+
+window.testSeamSiCard = function(donor = 'ผู้มีจิตศรัทธา') {
+  showSeamSiFortuneScroll(donor);
+};
+
+window.testLuckyCard = function(donor = 'ผู้มีจิตศรัทธา') {
+  showLuckyNumbersModal(donor);
+};
 
 function updateLeaderboard(list) {
   if (!leaderboardList) return;
