@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ห้องสวดมนต์ บารมีพระแม่กวนอิม - TikTok Live</title>
+  <link rel="stylesheet" href="style.css?v=anti_reproduced_content_v76">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;700;800&family=Sarabun:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/vendor/three/three.module.js"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <!-- 9:16 Aspect Stream Container -->
+  <div id="stream-container">
+
+    <!-- Seamless Looping Sanctuary Video Background (Hardware-Accelerated) -->
+    <video id="bg-video" class="bg-video" src="/background_video.mp4" poster="background.jpg" autoplay loop muted
+      playsinline></video>
+
+    <!-- Sacred Da Bei Zhou Chant (บทสวดไต่ปุยจิ่ว ทิเบต พระแม่กวนอิม - DOM Audio for TikTok LIVE Studio & OBS) -->
+    <audio id="bgm-audio" src="/bgm.mp3" loop preload="auto" playsinline></audio>
+
+    <!-- 3D WebGL Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- Golden Dust & Light Overlay -->
+    <div id="effects-overlay">
+      <div class="golden-dust"></div>
+    </div>
+
+    <!-- Mobile Live Stream Aspect Overlay (TikTok 9:16 layout) -->
+    <div id="live-overlay">
+
+      <!-- Top Header Bar (ชิดขอบบน ปลอดภัยจากบอท TikTok) -->
+      <header class="top-bar">
+        <div class="streamer-info hidden" id="streamer-info" style="display:none;">
+          <div class="avatar-ring">
+            <div class="streamer-avatar">☸️</div>
+          </div>
+          <div class="streamer-text">
+            <div class="name" id="streamer-name">@suphat.060841</div>
+            <div class="likes">❤️ เจริญจิต <span id="like-count">0</span></div>
+          </div>
+        </div>
+
+        <div class="top-stats">
+          <div class="live-clock-pill">
+            <span class="live-badge-red">
+              <span class="pulse-dot-red"></span>
+              <span class="live-tag">LIVE</span>
+            </span>
+            <span class="live-date" id="live-clock-date">--/--</span>
+            <span id="live-clock-time">--:--:--</span>
+          </div>
+          <button class="btn-icon" id="btn-audio-toggle" title="เปิด/ปิดเสียงสมาธิ">🎵</button>
+          <button class="btn-icon" id="btn-toggle-panel" title="แผงควบคุม / ตั้งค่า">⚙️</button>
+        </div>
+      </header>
+
+
+      <!-- Top Follower Blessing Banner (ตรงกลางด้านบน ตามแบบภาพตัวอย่าง) -->
+      <div id="follower-banner" class="follower-banner hidden" style="display:none;">
+        <span class="banner-pray">🙏</span> อนุโมทนาบุญ <span id="follower-banner-name"
+          class="follower-highlight"></span> ที่กดติดตาม
+      </div>
+
+      <!-- Floating Audio Unlock Pill for TikTok LIVE Studio & Browsers with Autoplay Block -->
+      <button id="audio-unlock-pill" class="audio-unlock-pill" style="display:none;" title="แตะเพื่อเปิดเสียงบทสวดมนต์">
+        <span class="unlock-icon">🔔</span>
+        <span class="unlock-text">แตะที่นี่เพื่อเปิดเสียงบทสวดมนต์ (ไต่ปุยจิ่ว)</span>
+        <span class="unlock-sparkle">🎵✨</span>
+      </button>
+
+      <!-- Hidden elements for script backwards-compatibility -->
+      <span id="viewer-count" style="display:none;">0</span>
+      <span id="disciple-count" style="display:none;">0</span>
+      <div id="tribute-guide" style="display:none;"><span id="tribute-guide-text"></span></div>
+      <button id="btn-toggle-leaderboard" style="display:none;"></button>
+      <span id="drawer-arrow" style="display:none;"></span>
+
+      <!-- Left Panel Dock: Stacked Left HUD Cards (คิวถวาย + คำขอพรล่าสุด & ถวายสักการะ) -->
+      <div id="left-panel-dock" class="left-panel-dock">
+        <!-- Top Left: คิวถวาย & คำขอพรล่าสุด (กล่องสีแดงเลือดหมู/ทอง ซ้ายบน) -->
+        <aside id="panel-tribute-queue" class="panel-card panel-left-queue">
+          <div class="panel-header-gold">
+            <span class="header-icon">🙏</span>
+            <span class="header-title">คิวถวาย</span>
+          </div>
+          <div id="tribute-queue-list" class="queue-list">
+            <div class="queue-empty">ยังไม่มีคิวถวาย (ร่วมบุญเป็นท่านแรก)</div>
+          </div>
+          <div class="sub-header-gold">
+            <span>คำขอพรล่าสุด</span>
+          </div>
+          <div id="recent-wishes-stream" class="wishes-stream">
+            <div class="wish-empty">รอรับคำขอพร (ร่วมส่งใจขอพร) ✨</div>
+          </div>
+        </aside>
+
+        <!-- ด้านล่างคิวถวาย: ป้ายอันดับแต้ม TOP 5 สำหรับการร่วมอนุโมทนาบุญ "สาธุ" (สะสมแต้มบารมี) -->
+        <aside id="panel-sadhu-board" class="panel-card panel-left-sadhu">
+          <div class="panel-header-gold">
+            <span class="header-icon">🙏</span>
+            <span class="header-title">TOP 5 อันดับ</span>
+            <span class="sadhu-hint-pill">แต้มบารมี</span>
+          </div>
+          <!-- ป้ายแจ้งเตือนคงที่: ร่วมอนุโมทนาบุญ (ปลอดภัย 100% จากบอท TikTok สแกนจับ Engagement Baiting) -->
+          <div class="sadhu-permanent-notice">
+            <span class="notice-tag">ร่วม</span>
+            <span class="highlight-sadhu">อนุโมทนาบุญ</span>
+            <span class="notice-desc">สาธุบารมี 🙏</span>
+          </div>
+          <!-- Live Activity Ticker: แสดงชื่อผู้ชมที่เพิ่งได้รับแต้มสาธุล่าสุดแบบเรียลไทม์ทันที -->
+          <div id="sadhu-recent-ticker" class="sadhu-recent-ticker">
+            <span class="ticker-dot">●</span>
+            <span id="sadhu-ticker-text" class="ticker-text">อนุโมทนาบุญบารมีสะสม ✨</span>
+          </div>
+          <div id="sadhu-board-list" class="sadhu-board-list">
+            <div class="sadhu-empty">ร่วมอนุโมทนาบุญสาธุ 🙏</div>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- Right Panel Dock: Stacked Right HUD Cards (TOP 5 ผู้ส่งของขวัญ & ถวายสักการะ & กำลังขอพร) -->
+      <div id="right-panel-dock" class="right-panel-dock">
+        <!-- Top Right: กระดานทองบุญ (อันดับ 1-5 ด้านขวาบน) -->
+        <aside id="panel-merit-board" class="panel-card panel-right-merit">
+          <div class="panel-header-gold">
+            <span class="header-icon">🏆</span>
+            <span class="header-title">TOP 5 ผู้ถวายสักการะ</span>
+          </div>
+          <div id="merit-board-list" class="merit-board-list">
+            <div class="merit-empty">รอผู้ร่วมบุญถวายของขวัญ ✨</div>
+          </div>
+          <!-- Alias container for existing JS -->
+          <div id="leaderboard-list" style="display:none;"></div>
+        </aside>
+
+        <!-- Mid-Right: รายการของขวัญ & เอฟเฟกต์มงคล ๑๐ ระดับ (อยู่ด้านบนป้ายกำลังขอพร) -->
+        <aside id="panel-gift-guide" class="panel-card panel-right-guide">
+          <div class="panel-header-gold">
+            <span class="header-icon">🪷</span>
+            <span class="header-title">ถวายสักการะ</span>
+          </div>
+          <div class="gift-guide-list">
+            <!-- 1 (กุหลาบ -> กราบเบญจางคประดิษฐ์) -->
+            <div class="guide-item" title="กุหลาบ">
+              <span class="guide-icon"><img src="rose.png?v=4" class="gift-tiktok-img" alt="กุหลาบ"
+                  onerror="this.outerHTML='🌹'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">กราบเบญจางคประดิษฐ์</span>
+            </div>
+            <!-- 2 (รักนะมากๆ -> เสี่ยงเซียมซีมหาโชค 1 เหรียญ) -->
+            <div class="guide-item" title="รักนะมากๆ (เสี่ยงเซียมซีมหาโชค 1 เหรียญ)">
+              <span class="guide-icon"><img src="seamsi.png?v=6" class="gift-tiktok-img" alt="รักนะมากๆ (เซียมซี)"
+                  onerror="this.outerHTML='🎋'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">เสี่ยงเซียมซีมหาโชค</span>
+            </div>
+            <!-- 3 (เครื่องราง -> จุดประทีปบูชาธูปทอง) -->
+            <div class="guide-item" title="เครื่องราง">
+              <span class="guide-icon"><img src="omamori.png?v=4" class="gift-tiktok-img" alt="เครื่องราง"
+                  onerror="this.outerHTML='🫰'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">จุดประทีปบูชาธูปทอง</span>
+            </div>
+            <!-- 4 (Lucky 9 -> สระดอกบัวทิพย์) -->
+            <div class="guide-item" title="Lucky 9">
+              <span class="guide-icon"><img src="lucky_9.png?v=4" class="gift-tiktok-img" alt="Lucky 9"
+                  onerror="this.outerHTML='9️⃣'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">สระดอกบัวทิพย์</span>
+            </div>
+            <!-- 5 (กุหลาบ ๙๙ -> โปรยบุปผามงคล) -->
+            <div class="guide-item" title="กุหลาบ ๙๙">
+              <span class="guide-icon"><img src="rose_99.png?v=4" class="gift-tiktok-img" alt="กุหลาบ ๙๙"
+                  onerror="this.outerHTML='🌹'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">โปรยบุปผามงคล</span>
+            </div>
+            <!-- 6 (พวงมาลัย -> สั่นระฆังทอง) -->
+            <div class="guide-item" title="พวงมาลัย">
+              <span class="guide-icon"><img src="garland.png?v=4" class="gift-tiktok-img" alt="พวงมาลัย"
+                  onerror="this.outerHTML='📿'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">สั่นระฆังทอง</span>
+            </div>
+            <!-- 7 (โคโลญจน์ -> ธารน้ำพุมณี) -->
+            <div class="guide-item" title="โคโลญจน์">
+              <span class="guide-icon"><img src="cologne.png?v=4" class="gift-tiktok-img" alt="โคโลญจน์"
+                  onerror="this.outerHTML='🎁'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">ธารน้ำพุมณี</span>
+            </div>
+            <!-- 8 (โดนัท -> ขบวนราชรถ) -->
+            <div class="guide-item" title="โดนัท">
+              <span class="guide-icon"><img src="donut.png?v=4" class="gift-tiktok-img" alt="โดนัท"
+                  onerror="this.outerHTML='🍩'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">ขบวนราชรถ</span>
+            </div>
+            <!-- 9 (หัวใจ 4 ดวง -> พลุเพลิงบุญ) -->
+            <div class="guide-item vip-guide-item" title="หัวใจ 4 ดวง">
+              <span class="guide-icon"><img src="four_hearts.png?v=4" class="gift-tiktok-img" alt="หัวใจ 4 ดวง"
+                  onerror="this.outerHTML='🕊️'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">พลุเพลิงบุญ</span>
+            </div>
+            <!-- 10 (ประตูมิติ -> เปิดวิมานทิพย์) -->
+            <div class="guide-item vip-guide-item" title="ประตูมิติ">
+              <span class="guide-icon"><img src="portal.png?v=4" class="gift-tiktok-img" alt="ประตูมิติ"
+                  onerror="this.outerHTML='🧨'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">เปิดวิมานทิพย์</span>
+            </div>
+            <!-- 11 (มังกรแฟนตาซี -> มังกรทองเหิน) -->
+            <div class="guide-item supreme-guide-item" title="มังกรแฟนตาซี">
+              <span class="guide-icon"><img src="dragon.png?v=4" class="gift-tiktok-img" alt="มังกรแฟนตาซี"
+                  onerror="this.outerHTML='🐉'" loading="lazy" decoding="async" /></span>
+              <span class="guide-action">มังกรทองเหิน</span>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- Live Gift Float Badges Container (ลอยขึ้นฝั่งซ้ายล่างเหนือแชท เหมือน TikTok จริง) -->
+      <div id="live-gift-float-container" class="live-gift-float-container"></div>
+
+      <!-- Live Event Toast Notification (ชิดขวา ใต้ TOP ผู้ถวาย) -->
+      <div id="toast-container" class="toast-container"></div>
+
+      <!-- Active Big Gift Effect Banner (ป้ายอวยพรของขวัญมงคลระดับจักรพรรดิ ขอบบน ไม่บังพระพักตร์) -->
+      <div id="effect-banner" class="effect-banner tier-standard hidden" style="display:none;">
+        <div class="effect-aura-backdrop"></div>
+        <div class="effect-shimmer-sweep"></div>
+        <div class="effect-crown-ornament">☸️</div>
+        <div class="effect-wing effect-wing-left"></div>
+        <div class="effect-wing effect-wing-right"></div>
+        <div class="effect-sparkle-layer" id="effect-sparkle-layer"></div>
+
+        <div class="effect-icon-badge" id="effect-icon-badge">
+          <div class="effect-icon-halo"></div>
+          <div class="effect-icon-ring"></div>
+          <img id="effect-icon-img" class="effect-icon-img" src="/rose.png" alt="ของขวัญ"
+            onerror="this.style.display='none'; document.getElementById('effect-icon').style.display='inline-block';" />
+          <span class="effect-icon" id="effect-icon" style="display:none;">🪷</span>
+        </div>
+        <div class="effect-info">
+          <div class="effect-name" id="effect-title">อนุโมทนาบุญคุณ ...</div>
+          <div class="effect-donor" id="effect-subtitle">ร่วมถวายของขวัญมงคล ขอให้ร่ำรวย โชคลาภเงินทอง</div>
+        </div>
+        <div class="effect-combo" id="effect-combo" style="display:none;">x1</div>
+      </div>
+
+      <!-- Royal Imperial Seam-Si Fortune Modal (เซียมซีมหาโชค - ตรงตามแบบฉบับพัดชำระรูปที่ 2) -->
+      <div id="seamsi-fortune-card" class="seamsi-fortune-card hidden" style="display:none;">
+        <div class="seamsi-sparkle-layer" id="seamsi-sparkle-layer"></div>
+
+        <div class="seamsi-parchment-frame">
+          <!-- Top Header Plaque docked on Frame Top Rail (พัดชำระ) -->
+          <div class="seamsi-top-pill">พัดชำระ</div>
+
+          <div class="seamsi-parchment-sheet">
+            <!-- Delicate Double Inner Border & Corner Filigrees -->
+            <div class="seamsi-inner-border"></div>
+            <div class="seamsi-sheet-corner corner-tl"></div>
+            <div class="seamsi-sheet-corner corner-tr"></div>
+            <div class="seamsi-sheet-corner corner-bl"></div>
+            <div class="seamsi-sheet-corner corner-br"></div>
+
+            <!-- Soft Luminous Moon Halo behind Title -->
+            <div class="seamsi-title-halo"></div>
+
+            <!-- Main Title & Stick Number (เซียมซี / เลขที่ 8) -->
+            <h2 class="seamsi-main-title">เซียมซี</h2>
+            <div class="seamsi-stick-title" id="seamsi-stick-number">เลขที่ 8</div>
+
+            <!-- Ornamental Botanical Scroll Divider (ลวดลายเถาไม้ขาวนวลตามต้นฉบับ) -->
+            <div class="seamsi-ornament-divider">
+              <svg width="268" height="32" viewBox="0 0 268 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Left Botanical Scroll Curls -->
+                <path d="M22 6C14 6 10 12 14 18C18 23 28 24 38 22C28 20 22 14 26 9C29 6 36 8 39 13" stroke="#fffaf0" stroke-width="1.6" stroke-linecap="round" opacity="0.92"/>
+                <path d="M12 14C6 16 6 23 13 25C20 27 32 26 48 25" stroke="#e5d1b3" stroke-width="1.3" stroke-linecap="round"/>
+                <!-- Right Botanical Scroll Curls -->
+                <path d="M246 6C254 6 258 12 254 18C250 23 240 24 230 22C240 20 246 14 242 9C239 6 232 8 229 13" stroke="#fffaf0" stroke-width="1.6" stroke-linecap="round" opacity="0.92"/>
+                <path d="M256 14C262 16 262 23 255 25C248 27 236 26 220 25" stroke="#e5d1b3" stroke-width="1.3" stroke-linecap="round"/>
+                <!-- Horizontal Connecting Filigree Line -->
+                <line x1="36" y1="24" x2="232" y2="24" stroke="#fff8eb" stroke-width="1.5" opacity="0.9"/>
+                <line x1="48" y1="26.5" x2="220" y2="26.5" stroke="#c9ad86" stroke-width="0.9" opacity="0.75"/>
+                <!-- Center Pearl Accent -->
+                <circle cx="134" cy="24" r="3" fill="#fffaf0" stroke="#b99668" stroke-width="1"/>
+                <circle cx="118" cy="24" r="1.6" fill="#fffaf0"/>
+                <circle cx="150" cy="24" r="1.6" fill="#fffaf0"/>
+              </svg>
+            </div>
+
+            <!-- Poetic Fortune Verse Box (บทกลอน 6 บรรทัด สละสลวย) -->
+            <div class="seamsi-verse-container">
+              <div class="seamsi-verse-text" id="seamsi-verse-text">
+                หากชีวิตเจอคลื่นลม<br />
+                ขอให้ใจมั่นไม่หวั่นไหว<br />
+                อดทนอีกเพียงสักนิด<br />
+                ฟ้าหลังฝนจะสดใส<br />
+                มีคนดีช่วยประคอง<br />
+                ขอพบฝั่งแห่งสุข
+              </div>
+            </div>
+
+            <!-- Bottom Peony / Lotus Floral Watermark & Scroll Flourish (ดอกโบตั๋นและลายเถาไม้มงคลด้านล่าง) -->
+            <div class="seamsi-bottom-flourish">
+              <svg width="268" height="54" viewBox="0 0 268 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Left & Right Scroll Vines -->
+                <path d="M18 44C28 44 38 40 52 38C66 36 82 40 96 40" stroke="#fffaf0" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+                <path d="M14 36C10 42 16 48 26 47C36 46 44 40 36 34" stroke="#fffaf0" stroke-width="1.4" stroke-linecap="round" opacity="0.85"/>
+                <path d="M250 44C240 44 230 40 216 38C202 36 186 40 172 40" stroke="#fffaf0" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+                <path d="M254 36C258 42 252 48 242 47C232 46 224 40 232 34" stroke="#fffaf0" stroke-width="1.4" stroke-linecap="round" opacity="0.85"/>
+                <!-- Center Blooming Lotus / Peony Emblem -->
+                <g transform="translate(134, 28)">
+                  <path d="M0 -18C7 -12 9 -3 0 6C-9 -3 -7 -12 0 -18Z" fill="#fffaf2" stroke="#bca077" stroke-width="1"/>
+                  <path d="M-2 -14C-12 -13 -17 -4 -8 5C-3 2 -1 -6 -2 -14Z" fill="#fffaf2" stroke="#bca077" stroke-width="1"/>
+                  <path d="M2 -14C12 -13 17 -4 8 5C3 2 1 -6 2 -14Z" fill="#fffaf2" stroke="#bca077" stroke-width="1"/>
+                  <path d="M-7 -7C-19 -6 -24 3 -12 9C-6 7 -4 0 -7 -7Z" fill="#f7ecda" stroke="#bca077" stroke-width="1"/>
+                  <path d="M7 -7C19 -6 24 3 12 9C6 7 4 0 7 -7Z" fill="#f7ecda" stroke="#bca077" stroke-width="1"/>
+                  <path d="M-12 8C-22 12 -26 20 -14 19C-6 18 -4 12 -12 8Z" fill="#eee0c9" stroke="#bca077" stroke-width="0.9"/>
+                  <path d="M12 8C22 12 26 20 14 19C6 18 4 12 12 8Z" fill="#eee0c9" stroke="#bca077" stroke-width="0.9"/>
+                  <circle cx="0" cy="-2" r="3.2" fill="#d8ba8c"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Action Dismiss Button docked on Frame Bottom Rail (ปิดคำทำนาย) -->
+          <button class="btn-seamsi-dismiss" id="btn-seamsi-close" type="button">
+            ปิดคำทำนาย
+          </button>
+        </div>
+      </div>
+
+      <!-- Royal 3-Digit Lucky Number Modal (เลขนำโชค 3 ตัว สุ่มใหม่ทุกครั้ง - ตรงตามแบบฉบับรูปที่ 3) -->
+      <div id="seamsi-lucky-card" class="seamsi-lucky-card hidden" style="display:none;">
+        <div class="seamsi-lucky-sparkles" id="seamsi-lucky-sparkles"></div>
+        <div class="seamsi-lucky-body">
+          <div class="seamsi-lucky-header">เลขนำโชค</div>
+          <div class="seamsi-lucky-donor" id="seamsi-lucky-donor-name">🌿 คุณผู้มีจิตศรัทธา 🌿</div>
+
+          <!-- 3 Golden 3D Blocks [ 1 ] [ 7 ] [ 2 ] -->
+          <div class="seamsi-lucky-cards-row">
+            <div class="lucky-digit-card">
+              <span class="lucky-digit-val" id="lucky-d1">1</span>
+            </div>
+            <div class="lucky-digit-card">
+              <span class="lucky-digit-val" id="lucky-d2">7</span>
+            </div>
+            <div class="lucky-digit-card">
+              <span class="lucky-digit-val" id="lucky-d3">2</span>
+            </div>
+          </div>
+
+          <!-- Action Dismiss Button (ปิดคำทำนาย) -->
+          <button class="btn-lucky-dismiss" id="btn-lucky-close" type="button">
+            ปิดคำทำนาย
+          </button>
+        </div>
+      </div>
+
+      <!-- Spacer: เปิดพื้นที่ตรงกลางจอ 100% ให้เห็นพระและคนเดินเข้ามาทำบุญ -->
+      <div class="center-stage-spacer"></div>
+
+      <!-- Clean Unobstructed Bottom Area (ลบกระดานล่างออก 100% ตามต้นฉบับ) -->
+      <div id="chat-stream" class="chat-stream" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Control & Test Panel (Collapsible Drawer) -->
+  <aside id="control-panel" class="control-panel">
+    <div class="panel-header">
+      <h3>แผงควบคุม &amp; จำลองระบบ</h3>
+      <button id="btn-close-panel" class="btn-close">&times;</button>
+    </div>
+
+    <div class="panel-body">
+      <!-- TikTok Live Connection Section -->
+      <section class="panel-section">
+        <h4>1. เชื่อมต่อ TikTok LIVE</h4>
+        <div class="input-group">
+          <span class="prefix">@</span>
+          <input type="text" id="tiktok-user-input" value="suphat.060841"
+            placeholder="พิมพ์ชื่อผู้ใช้ TikTok (เช่น @username)" />
+        </div>
+        <div class="input-group" style="margin-top: 8px;">
+          <span class="prefix" title="EulerStream Sign API Key">🔑</span>
+          <input type="password" id="euler-api-key-input" placeholder="EulerStream API Key (ปลดล็อก Rate Limit ฟรี)" />
+        </div>
+        <div style="font-size: 11px; color: #facc15; margin: 4px 0 8px 2px; line-height: 1.4;">
+          💡 <em>หากขึ้น Rate Limited รับ API Key ฟรีได้ที่ <a href="https://www.eulerstream.com/pricing"
+              target="_blank" style="color: #67e8f9; text-decoration: underline;">eulerstream.com/pricing</a></em>
+        </div>
+        <div class="btn-group">
+          <button id="btn-connect" class="btn btn-primary">เชื่อมต่อ</button>
+          <button id="btn-disconnect" class="btn btn-secondary">ตัดการเชื่อมต่อ</button>
+        </div>
+        <div id="conn-status" class="conn-status status-offline">ยังไม่ได้เชื่อมต่อ</div>
+      </section>
+
+      <!-- Simulation & Test Section -->
+      <section class="panel-section">
+        <h4>2. จำลองระบบ (ทดสอบโดยไม่ต้องเปิด LIVE)</h4>
+        <div
+          style="margin-bottom: 12px; padding: 10px; background: rgba(0, 0, 0, 0.35); border-radius: 8px; border: 1px solid rgba(255, 215, 0, 0.25);">
+          <div
+            style="font-size: 12px; color: #fde68a; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+            <span>👥</span> จำนวนบอทในวิหาร (ปรับแต่งสด):
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button id="btn-bots-0" class="btn btn-secondary" style="flex: 1; padding: 5px 6px; font-size: 10.5px;">0 คน
+              (ปิด)</button>
+            <button id="btn-bots-8" class="btn btn-secondary" style="flex: 1; padding: 5px 6px; font-size: 10.5px;">8
+              คน</button>
+            <button id="btn-bots-16" class="btn btn-secondary" style="flex: 1; padding: 5px 6px; font-size: 10.5px;">16
+              คน</button>
+            <button id="btn-bots-22" class="btn btn-primary" style="flex: 1; padding: 5px 6px; font-size: 10.5px;">22 คน
+              (เต็มลาน)</button>
+          </div>
+        </div>
+        <div class="test-buttons-grid">
+          <button id="sim-multi-disciples" class="btn btn-test">
+            <span class="emoji">👥</span> +1 ผู้ชมใหม่เข้ามานั่งสมาธิ (Join)
+          </button>
+          <button id="sim-follow" class="btn btn-test">
+            <span class="emoji">🙏</span> +1 กดติดตาม รับพรอภิวาทน์ (Follow)
+          </button>
+          <button id="sim-gift-1" class="btn btn-test">
+            <span class="emoji"><img src="rose.png?v=3"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🌹'" /></span> กุหลาบ (กราบเบญจางคประดิษฐ์ - ๑ เหรียญ)
+          </button>
+          <button id="sim-gift-seamsi" class="btn btn-test"
+            style="border-color: rgba(239, 68, 68, 0.75); background: linear-gradient(90deg, rgba(120, 20, 20, 0.65), rgba(40, 20, 10, 0.65));">
+            <span class="emoji"><img src="seamsi.png?v=6"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🎋'" /></span> รักนะมากๆ (เสี่ยงเซียมซีมหาโชค - ๑ เหรียญ)
+          </button>
+          <button id="sim-gift-5" class="btn btn-test">
+            <span class="emoji"><img src="omamori.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🫰'" /></span> เครื่องราง (จุดประทีปบูชาธูปทอง - ๕ เหรียญ)
+          </button>
+          <button id="sim-gift-9" class="btn btn-test">
+            <span class="emoji"><img src="lucky_9.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='9️⃣'" /></span> Lucky 9 (สระดอกบัวทิพย์ - ๙ เหรียญ)
+          </button>
+          <button id="sim-gift-10" class="btn btn-test">
+            <span class="emoji"><img src="rose_99.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🌹'" /></span> กุหลาบ ๙๙ (โปรยบุปผามงคล - ๑๐ เหรียญ)
+          </button>
+          <button id="sim-gift-15" class="btn btn-test">
+            <span class="emoji"><img src="garland.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='📿'" /></span> พวงมาลัย (สั่นระฆังทอง - ๑๕ เหรียญ)
+          </button>
+          <button id="sim-gift-20" class="btn btn-test">
+            <span class="emoji"><img src="cologne.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🎁'" /></span> โคโลญจน์ (ธารน้ำพุมณี - ๒๐ เหรียญ)
+          </button>
+          <button id="sim-gift-30" class="btn btn-test">
+            <span class="emoji"><img src="donut.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🍩'" /></span> โดนัท (ขบวนราชรถ - ๓๐ เหรียญ)
+          </button>
+          <button id="sim-gift-99" class="btn btn-test">
+            <span class="emoji"><img src="four_hearts.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🕊️'" /></span> หัวใจ 4 ดวง (พลุเพลิงบุญ - ๙๙ เหรียญ)
+          </button>
+          <button id="sim-gift-100" class="btn btn-test">
+            <span class="emoji"><img src="portal.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🧨'" /></span> ประตูมิติ (เปิดวิมานทิพย์ - ๑๐๐ เหรียญ)
+          </button>
+          <button id="sim-gift-299" class="btn btn-test">
+            <span class="emoji"><img src="dragon.png?v=4"
+                style="width:18px;height:18px;vertical-align:middle;display:inline-block;object-fit:contain;"
+                onerror="this.outerHTML='🐉'" /></span> มังกรแฟนตาซี (มังกรทองเหิน - ๒๙๙ เหรียญ)
+          </button>
+          <button id="sim-chat" class="btn btn-test">
+            <span class="emoji">💬</span> พิมพ์ "สาธุ" (Chat)
+          </button>
+        </div>
+      </section>
+
+      <!-- Audio & Setting Section -->
+      <section class="panel-section">
+        <h4>3. เสียงสมาธิ &amp; AI พระแม่กวนอิม</h4>
+        <div class="toggle-row">
+          <label for="chk-voice">เสียง AI พระแม่กวนอิม ทักทาย &amp; ให้พร:</label>
+          <input type="checkbox" id="chk-voice" checked />
+        </div>
+        <div class="toggle-row">
+          <label for="chk-chat-voice">เสียง AI อ่านคำขอพร &amp; ให้พรผู้ชมในแชท:</label>
+          <input type="checkbox" id="chk-chat-voice" checked />
+        </div>
+        <div class="toggle-row">
+          <label for="chk-audio">เสียงระฆัง &amp; ระฆังทิเบต (SFX):</label>
+          <input type="checkbox" id="chk-audio" checked />
+        </div>
+        <div class="toggle-row">
+          <label for="chk-ambient">เสียงบทสวดไต่ปุยจิ่ว ทิเบต (大悲咒 BGM):</label>
+          <input type="checkbox" id="chk-ambient" checked />
+        </div>
+        <div class="slider-row">
+          <label for="volume-slider">ระดับเสียงสมาธิ:</label>
+          <input type="range" id="volume-slider" min="0" max="100" value="85" />
+        </div>
+        <button id="btn-reset-scene" class="btn btn-danger">รีเซ็ตสถานะทั้งหมด (Reset)</button>
+      </section>
+    </div>
+  </aside>
+
+  <!-- Main Application Logic (ES Module) -->
+  <script type="module" src="app.js?v=anti_reproduced_content_v76"></script>
+</body>
+
+</html>

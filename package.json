@@ -1,0 +1,20 @@
+{
+  "name": "buddha-tiktok-live",
+  "version": "1.0.0",
+  "description": "Interactive Buddhist Prayer TikTok Live Stream System",
+  "main": "server.js",
+  "scripts": {
+    "build": "pip install --break-system-packages edge-tts || pip3 install edge-tts || python3 -m pip install edge-tts || echo 'build finished'",
+    "start": "node server.js",
+    "test": "node test/verify.js",
+    "deploy": "git add . && git commit -m \"update\" && git push origin main",
+    "watch": "node auto-push.js",
+    "dev": "start node auto-push.js && node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "three": "^0.187.0",
+    "tiktok-live-connector": "^2.5.0"
+  }
+}

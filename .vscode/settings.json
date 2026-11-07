@@ -1,0 +1,10 @@
+{
+    "files.encoding": "utf8",
+    "files.autoGuessEncoding": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "security.workspace.trust.startupPrompt": "never",
+    "security.workspace.trust.banner": "never",
+    "terminal.integrated.allowChaining": true,
+    "terminal.integrated.confirmOnExit": "never"
+}
+
