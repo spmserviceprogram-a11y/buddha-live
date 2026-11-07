@@ -23,6 +23,17 @@ class TempleAudio {
     this.bgmBufferGain = null;
     this.userMuted = false;
     this.isStartingBgm = false;
+    this.soundMode = 'zen_original'; // 'zen_original' (100% Original 432Hz Zen - Defeats Content ID) | 'chanting_file'
+    try {
+      const savedMode = localStorage.getItem('buddha_sound_mode');
+      if (savedMode) this.soundMode = savedMode;
+    } catch (_) {}
+    this.zenMasterGain = null;
+    this.zenOscs = [];
+    this.zenTimer = null;
+    this.zenBreathInterval = null;
+    this._currentZenVol = this.volume;
+    this._isDucked = false;
 
     // Sacred Zen Pentatonic Scale (Hz) based on 432Hz tuning
     this.scale = [216, 256.8, 288, 324, 384, 432, 513.6, 576, 648];
