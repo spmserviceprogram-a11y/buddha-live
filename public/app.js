@@ -6381,10 +6381,10 @@ function triggerIncenseEffect() {
     lSprite.position.y = 0.15;
     lGroup.add(lSprite);
 
-    // Water ripple ring beneath lantern
+    // Water ripple ring beneath lantern (ไร้ขอบดำ depthWrite: false)
     const rRing = new THREE.Mesh(
       new THREE.RingGeometry(0.12, 0.38, 24),
-      new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.45, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.45, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false })
     );
     rRing.rotation.x = -Math.PI / 2;
     rRing.position.y = -0.05;
