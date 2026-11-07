@@ -7472,6 +7472,7 @@ function getBellHaloTexture() {
 
 function triggerGoldenBellEffect() {
   templeAudio.playBell(108, 6.5);
+  templeAudio.playBell(216, 5.8);
   templeAudio.playBell(432, 5.5);
 
   if (activeGoldenBell) {
