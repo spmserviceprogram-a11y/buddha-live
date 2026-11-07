@@ -690,7 +690,7 @@ class TempleAudio {
   }
 
   toggleAmbient() {
-    const isPlaying = (this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) || Boolean(this.bgmBufferSource);
+    const isPlaying = Boolean(this.zenMasterGain) || (this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) || Boolean(this.bgmBufferSource) || this.ambientPlaying;
     if (isPlaying) {
       this.userMuted = true;
       this.stopAmbient();
