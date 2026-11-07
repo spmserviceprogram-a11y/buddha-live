@@ -168,6 +168,9 @@ app.get(['/background.jpg', '/heavenly_paradise.jpg'], (req, res) => {
 // High-efficiency range streaming for TikTok Live & OBS Studio
 // ---------------------------------------------------------------------
 const BG_VIDEO_SOURCE_CANDIDATES = [
+  'C:/Users/BINARY/Desktop/พื้นหลัง.mp4',
+  'c:/Users/BINARY/Desktop/พื้นหลัง.mp4',
+  path.join(process.env.USERPROFILE || 'C:/Users/BINARY', 'Desktop', 'พื้นหลัง.mp4'),
   'C:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
   'c:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
   path.join(process.env.USERPROFILE || 'C:/Users/BINARY', 'Desktop', 'พื้นหลังใหม่.mp4'),
@@ -175,6 +178,7 @@ const BG_VIDEO_SOURCE_CANDIDATES = [
 ];
 const BG_VIDEO_DEST = path.join(__dirname, 'public', 'background_video.mp4');
 const BG_VIDEO_ALT_DEST = path.join(__dirname, 'public', 'bg-video.mp4');
+const BG_VIDEO_THAI_DEST = path.join(__dirname, 'public', 'background.mp4');
 
 function getActiveBgVideoSource() {
   for (const src of BG_VIDEO_SOURCE_CANDIDATES) {
