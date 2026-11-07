@@ -1071,6 +1071,12 @@ class GuanYinDivineVoice {
       audio.playbackRate = 1.15; // Brisk, rapid, fluent Thai speech pace
       audio.volume = Math.min(1.0, this.volume * 1.15);
       this.currentAudio = audio;
+      this.isSpeaking = true;
+      this.lastSpokenAt = Date.now();
+
+      if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+        smartMicRouter.prepareVoiceAudio(audio, url);
+      }
 
       let hasEnded = false;
       const endPlayback = () => {
@@ -1078,6 +1084,11 @@ class GuanYinDivineVoice {
         hasEnded = true;
         clearTimeout(timeout);
         this.currentAudio = null;
+        this.isSpeaking = false;
+        this.lastSpokenAt = Date.now();
+        if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+          smartMicRouter.onVoiceEnd();
+        }
         // Smoothly restore BGM when speech finishes
         if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
           templeAudio.duckBgm(false, 400);
@@ -1120,11 +1131,22 @@ class GuanYinDivineVoice {
         templeAudio.playBell(513.6, 2.8);
       }
 
+      this.isSpeaking = true;
+      this.lastSpokenAt = Date.now();
+      if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+        smartMicRouter.onVoiceStart();
+      }
+
       let done = false;
       const endTTS = () => {
         if (done) return;
         done = true;
         clearTimeout(timeout);
+        this.isSpeaking = false;
+        this.lastSpokenAt = Date.now();
+        if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+          smartMicRouter.onVoiceEnd();
+        }
         // Smoothly restore BGM
         if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
           templeAudio.duckBgm(false, 400);
@@ -1387,6 +1409,459 @@ class GuanYinDivineVoice {
 }
 const guanYinVoice = new GuanYinDivineVoice();
 window.guanYinVoice = guanYinVoice;
+
+// ---------------------------------------------------------------------
+// 1.8 Smart Live Mic Router & Natural Condenser-Mic Acoustics Engine
+// Routes AI Voice & Natural Room-Tone Presence into TikTok LIVE Studio Mic Input
+// ---------------------------------------------------------------------
+class SmartLiveMicRouter {
+  constructor(audioEngine, voiceEngine) {
+    this.templeAudio = audioEngine;
+    this.voiceEngine = voiceEngine;
+    this.mode = 'stereo_mix'; // 'stereo_mix' | 'voice_split' | 'all_to_mic'
+    this.sinkId = 'default';
+    this.acousticsEnabled = true;
+    this.keepAliveEnabled = true;
+    this.dualMonitorEnabled = true;
+    this.isTransmittingSpeech = false;
+    this.monitorAudio = null;
+    this.micCtx = null;
+    this.roomToneSource = null;
+    this.roomToneGain = null;
+    this.lastKeepAliveIdx = -1;
+    this.nextKeepAliveMs = 52000 + Math.floor(Math.random() * 14000);
+
+    this.keepAlivePhrases = [
+      'ยินดีต้อนรับกัลยาณมิตรทุกท่านเข้าสู่ลานธรรมพระแม่กวนอิม ขอให้จิตใจสงบร่มเย็นและมีความสุขนะคะ',
+      'ขอพระแม่กวนอิมประทานพรให้ทุกท่านที่รับชมอยู่ มีโชคลาภเงินทองไหลมาเทมา สุขภาพแข็งแรงนะคะ',
+      'อนุโมทนาบุญกับกัลยาณมิตรทุกท่านที่มาร่วมเจริญสติและรับพลังบุญดีๆ ไปด้วยกันนะคะ',
+      'ขอให้วันนี้เป็นวันที่ราบรื่น สมหวังในสิ่งที่ตั้งใจ และพบเจอแต่กัลยาณมิตรที่ดีนะคะ',
+      'ท่านที่เพิ่งเข้ามาใหม่ สามารถร่วมอนุโมทนาบุญหรือตั้งจิตอธิษฐานขอพรหน้าองค์พระแม่ได้เลยนะคะ',
+      'ขอรัศมีแห่งความเมตตาคุ้มครองทุกท่านให้แคล้วคลาดปลอดภัย มั่งคั่งร่ำรวยตลอดไปนะคะ',
+      'ยินดีต้อนรับทุกท่านสู่ห้องสวดมนต์ไต่ปุยจิ่ว ขอให้เสียงบทสวดนำพาความร่มเย็นมาสู่ครอบครัวนะคะ',
+      'ขอให้ทุกท่านที่ร่วมรับฟังบทสวดมนต์ มีจิตใจผ่องใส การงานการเงินคล่องตัวทุกประการนะคะ'
+    ];
+
+    this.restoreSettings();
+    this.init();
+  }
+
+  restoreSettings() {
+    try {
+      const savedMode = localStorage.getItem('buddha_mic_mode');
+      if (savedMode && ['stereo_mix', 'voice_split', 'all_to_mic'].includes(savedMode)) {
+        this.mode = savedMode;
+      }
+      const savedSink = localStorage.getItem('buddha_mic_sink_id');
+      if (savedSink) this.sinkId = savedSink;
+      const savedAcoustics = localStorage.getItem('buddha_mic_acoustics');
+      if (savedAcoustics !== null) this.acousticsEnabled = (savedAcoustics !== 'false');
+      const savedKeepAlive = localStorage.getItem('buddha_mic_keepalive');
+      if (savedKeepAlive !== null) this.keepAliveEnabled = (savedKeepAlive !== 'false');
+      const savedMonitor = localStorage.getItem('buddha_mic_dual_monitor');
+      if (savedMonitor !== null) this.dualMonitorEnabled = (savedMonitor !== 'false');
+    } catch (_) {}
+  }
+
+  saveSettings() {
+    try {
+      localStorage.setItem('buddha_mic_mode', this.mode);
+      localStorage.setItem('buddha_mic_sink_id', this.sinkId);
+      localStorage.setItem('buddha_mic_acoustics', this.acousticsEnabled ? 'true' : 'false');
+      localStorage.setItem('buddha_mic_keepalive', this.keepAliveEnabled ? 'true' : 'false');
+      localStorage.setItem('buddha_mic_dual_monitor', this.dualMonitorEnabled ? 'true' : 'false');
+    } catch (_) {}
+  }
+
+  init() {
+    this.startVuMeterLoop();
+    this.startKeepAliveWatchdog();
+    setTimeout(() => {
+      this.bindUIControls();
+      this.refreshDeviceList(false);
+    }, 350);
+
+    // Unlock Mic Acoustics AudioContext on any user interaction or automatic audio start
+    const unlockMicCtx = () => {
+      this.ensureMicAcousticsContext();
+    };
+    window.addEventListener('pointerdown', unlockMicCtx, { once: true, passive: true });
+    window.addEventListener('mousemove', unlockMicCtx, { once: true, passive: true });
+    setTimeout(unlockMicCtx, 1800);
+  }
+
+  ensureMicAcousticsContext() {
+    try {
+      if (!this.micCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        this.micCtx = new AudioCtx();
+        this.applySinkToContext(this.micCtx);
+        this.startRoomToneEngine();
+      }
+      if (this.micCtx && this.micCtx.state === 'suspended') {
+        this.micCtx.resume().catch(() => {});
+      }
+    } catch (_) {}
+  }
+
+  // Creates an authentic condenser-microphone room tone floor (-48 dB warm filtered pink noise + slow breathing LFO)
+  // Prevents 0.0000 digital silence that TikTok's automated stream detector flags as pre-recorded/bot audio
+  startRoomToneEngine() {
+    if (!this.micCtx || this.roomToneSource) return;
+    try {
+      const sampleRate = this.micCtx.sampleRate || 44100;
+      const durationSec = 5;
+      const bufferSize = sampleRate * durationSec;
+      const noiseBuffer = this.micCtx.createBuffer(1, bufferSize, sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+
+      // Paul Kellet's Pink/Warm Room Noise Approximation
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.035;
+        b6 = white * 0.115926;
+      }
+
+      const source = this.micCtx.createBufferSource();
+      source.buffer = noiseBuffer;
+      source.loop = true;
+
+      // Condenser microphone vocal bandpass (120 Hz - 1900 Hz)
+      const bandpass = this.micCtx.createBiquadFilter();
+      bandpass.type = 'bandpass';
+      bandpass.frequency.setValueAtTime(420, this.micCtx.currentTime);
+      bandpass.Q.setValueAtTime(0.7, this.micCtx.currentTime);
+
+      const gain = this.micCtx.createGain();
+      const baseFloor = this.acousticsEnabled ? 0.0042 : 0.0001;
+      gain.gain.setValueAtTime(baseFloor, this.micCtx.currentTime);
+
+      source.connect(bandpass);
+      bandpass.connect(gain);
+      gain.connect(this.micCtx.destination);
+      source.start(0);
+
+      this.roomToneSource = source;
+      this.roomToneGain = gain;
+    } catch (_) {}
+  }
+
+  // Subtle 130ms condenser-mic inhale & chest warmth before AI speaks
+  triggerPreSpeechBreath() {
+    if (!this.acousticsEnabled) return;
+    this.ensureMicAcousticsContext();
+    if (!this.micCtx || this.micCtx.state !== 'running') return;
+
+    try {
+      const now = this.micCtx.currentTime;
+      if (this.roomToneGain) {
+        this.roomToneGain.gain.cancelScheduledValues(now);
+        this.roomToneGain.gain.setValueAtTime(0.0042, now);
+        this.roomToneGain.gain.linearRampToValueAtTime(0.011, now + 0.09);
+        this.roomToneGain.gain.linearRampToValueAtTime(0.0055, now + 0.22);
+      }
+    } catch (_) {}
+  }
+
+  async applySinkToContext(ctx) {
+    if (!ctx || typeof ctx.setSinkId !== 'function') return;
+    const targetSink = (this.mode === 'stereo_mix' || !this.sinkId || this.sinkId === 'default') ? '' : this.sinkId;
+    try {
+      await ctx.setSinkId(targetSink);
+    } catch (err) {
+      console.warn('[SmartMicRouter] AudioContext.setSinkId fallback to default:', err?.message);
+    }
+  }
+
+  async applyGlobalRouting() {
+    this.ensureMicAcousticsContext();
+    await this.applySinkToContext(this.micCtx);
+
+    // If mode is 'all_to_mic', also route BGM and TempleAudio to the selected virtual mic cable
+    const bgmTargetSink = (this.mode === 'all_to_mic' && this.sinkId && this.sinkId !== 'default') ? this.sinkId : '';
+    if (this.templeAudio?.bgmAudio && typeof this.templeAudio.bgmAudio.setSinkId === 'function') {
+      try {
+        await this.templeAudio.bgmAudio.setSinkId(bgmTargetSink);
+      } catch (_) {}
+    }
+    if (this.templeAudio?.ctx && typeof this.templeAudio.ctx.setSinkId === 'function') {
+      try {
+        await this.templeAudio.ctx.setSinkId(bgmTargetSink);
+      } catch (_) {}
+    }
+    this.updateStatusText();
+  }
+
+  prepareVoiceAudio(audioEl, url) {
+    this.isTransmittingSpeech = true;
+    this.triggerPreSpeechBreath();
+    this.stopMonitorAudio();
+
+    const useCustomSink = (this.mode === 'voice_split' || this.mode === 'all_to_mic') && this.sinkId && this.sinkId !== 'default';
+    if (useCustomSink && audioEl && typeof audioEl.setSinkId === 'function') {
+      audioEl.setSinkId(this.sinkId).catch(err => {
+        console.warn('[SmartMicRouter] HTMLAudioElement.setSinkId fallback:', err?.message);
+      });
+
+      // Dual Monitor: play a synchronized copy on default speakers so the user also hears the voice locally
+      if (this.mode === 'voice_split' && this.dualMonitorEnabled && url) {
+        try {
+          const mon = new Audio(url);
+          mon.playbackRate = audioEl.playbackRate || 1.15;
+          mon.volume = Math.min(1.0, (audioEl.volume || 0.95) * 0.85);
+          this.monitorAudio = mon;
+          mon.play().catch(() => {});
+        } catch (_) {}
+      }
+    }
+    this.updateStatusText();
+  }
+
+  stopMonitorAudio() {
+    if (this.monitorAudio) {
+      try {
+        this.monitorAudio.pause();
+        this.monitorAudio.src = '';
+      } catch (_) {}
+      this.monitorAudio = null;
+    }
+  }
+
+  onVoiceStart() {
+    this.isTransmittingSpeech = true;
+    this.triggerPreSpeechBreath();
+    this.updateStatusText();
+  }
+
+  onVoiceEnd() {
+    this.isTransmittingSpeech = false;
+    this.stopMonitorAudio();
+    if (this.roomToneGain && this.micCtx && this.micCtx.state === 'running') {
+      try {
+        const now = this.micCtx.currentTime;
+        this.roomToneGain.gain.cancelScheduledValues(now);
+        this.roomToneGain.gain.linearRampToValueAtTime(this.acousticsEnabled ? 0.0042 : 0.0001, now + 0.35);
+      } catch (_) {}
+    }
+    this.updateStatusText();
+  }
+
+  startVuMeterLoop() {
+    setInterval(() => {
+      const fillEl = document.getElementById('mic-vu-fill');
+      const dotEl = document.getElementById('mic-router-dot');
+      if (!fillEl) return;
+
+      if (this.isTransmittingSpeech) {
+        // Dynamic human speech syllable envelope (45% - 94%)
+        const pct = 48 + Math.floor(Math.random() * 46);
+        fillEl.style.width = `${pct}%`;
+        if (dotEl) dotEl.classList.add('speaking');
+      } else {
+        // Subtle organic room tone floor (8% - 15% when acoustics enabled, 3% when disabled)
+        const basePct = this.acousticsEnabled ? (8 + Math.floor(Math.random() * 7)) : 3;
+        fillEl.style.width = `${basePct}%`;
+        if (dotEl) dotEl.classList.remove('speaking');
+      }
+    }, 130);
+  }
+
+  // Ensures TikTok Microphone VAD never sees >60 seconds of dead silence when chat is quiet
+  startKeepAliveWatchdog() {
+    setInterval(() => {
+      if (!this.keepAliveEnabled) return;
+      if (!this.voiceEngine || !this.voiceEngine.enabled) return;
+      if (this.voiceEngine.isSpeaking || this.voiceEngine.isProcessing || this.voiceEngine.queue.length > 0) return;
+
+      const lastSpoken = this.voiceEngine.lastSpokenAt || 0;
+      const idleMs = Date.now() - lastSpoken;
+      if (idleMs >= this.nextKeepAliveMs) {
+        this.voiceEngine.lastSpokenAt = Date.now();
+        this.nextKeepAliveMs = 48000 + Math.floor(Math.random() * 18000); // Random 48s - 66s
+
+        let idx = Math.floor(Math.random() * this.keepAlivePhrases.length);
+        if (idx === this.lastKeepAliveIdx) {
+          idx = (idx + 1) % this.keepAlivePhrases.length;
+        }
+        this.lastKeepAliveIdx = idx;
+        const phrase = this.keepAlivePhrases[idx];
+        this.voiceEngine.speak(phrase, 4);
+      }
+    }, 8000);
+  }
+
+  async refreshDeviceList(requestPermission = false) {
+    const selectEl = document.getElementById('select-mic-device');
+    if (!selectEl || !navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+
+    if (requestPermission && navigator.mediaDevices.getUserMedia) {
+      try {
+        const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        tempStream.getTracks().forEach(t => t.stop());
+      } catch (_) {}
+    }
+
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const outputs = devices.filter(d => d.kind === 'audiooutput');
+
+      selectEl.innerHTML = '';
+      const defaultOpt = document.createElement('option');
+      defaultOpt.value = 'default';
+      defaultOpt.textContent = '🔊 อุปกรณ์เสียงหลักของเครื่อง (Default / Stereo Mix)';
+      selectEl.appendChild(defaultOpt);
+
+      let autoDetectedVirtualId = null;
+
+      outputs.forEach((dev, i) => {
+        if (!dev.deviceId || dev.deviceId === 'default' || dev.deviceId === 'communications') return;
+        const label = dev.label || `ช่องสัญญาณเสียง #${i + 1}`;
+        const lower = label.toLowerCase();
+        const isVirtualMic = lower.includes('cable') || lower.includes('vb-audio') || lower.includes('voicemeeter') || lower.includes('virtual') || lower.includes('stereo mix');
+
+        const opt = document.createElement('option');
+        opt.value = dev.deviceId;
+        opt.textContent = isVirtualMic ? `🎙️ [สายไมค์จำลอง] ${label}` : `🔊 ${label}`;
+        selectEl.appendChild(opt);
+
+        if (isVirtualMic && !autoDetectedVirtualId) {
+          autoDetectedVirtualId = dev.deviceId;
+        }
+      });
+
+      // If user explicitly scanned and a virtual cable was found, auto-select it
+      if (requestPermission && autoDetectedVirtualId && this.sinkId === 'default') {
+        this.sinkId = autoDetectedVirtualId;
+        if (this.mode === 'stereo_mix') {
+          this.mode = 'voice_split';
+          const modeEl = document.getElementById('select-mic-mode');
+          if (modeEl) modeEl.value = 'voice_split';
+        }
+        this.saveSettings();
+      }
+
+      if ([...selectEl.options].some(o => o.value === this.sinkId)) {
+        selectEl.value = this.sinkId;
+      } else {
+        selectEl.value = 'default';
+      }
+      this.applyGlobalRouting();
+    } catch (err) {
+      console.warn('[SmartMicRouter] Could not enumerate audio devices:', err?.message);
+    }
+  }
+
+  updateStatusText() {
+    const statusEl = document.getElementById('mic-router-status-text');
+    if (!statusEl) return;
+
+    if (this.isTransmittingSpeech) {
+      statusEl.textContent = '🎙️ กำลังส่งคลื่นเสียงพูดพระแม่เข้าช่องไมค์ (Speaking)';
+      statusEl.style.color = '#fde047';
+      return;
+    }
+
+    if (this.mode === 'voice_split') {
+      statusEl.textContent = '🟢 แยกเฉพาะเสียงพูด AI ➔ ช่องไมค์จำลอง (พร้อมทำงาน)';
+    } else if (this.mode === 'all_to_mic') {
+      statusEl.textContent = '🟢 ส่งเสียงทั้งหมด (เพลง+เสียงพูด) ➔ ช่องไมค์';
+    } else {
+      statusEl.textContent = '🟢 โหมด Stereo Mix + คลื่นไมค์คนพูดจริง (Active)';
+    }
+    statusEl.style.color = '#bbf7d0';
+  }
+
+  bindUIControls() {
+    const modeSelect = document.getElementById('select-mic-mode');
+    const deviceSelect = document.getElementById('select-mic-device');
+    const scanBtn = document.getElementById('btn-scan-mic-devices');
+    const chkAcoustics = document.getElementById('chk-mic-acoustics');
+    const chkKeepAlive = document.getElementById('chk-mic-keepalive');
+    const chkMonitor = document.getElementById('chk-mic-dual-monitor');
+    const testBtn = document.getElementById('btn-test-mic-router');
+
+    if (modeSelect) {
+      modeSelect.value = this.mode;
+      modeSelect.addEventListener('change', (e) => {
+        this.mode = e.target.value;
+        this.saveSettings();
+        this.applyGlobalRouting();
+      });
+    }
+
+    if (deviceSelect) {
+      deviceSelect.addEventListener('change', (e) => {
+        this.sinkId = e.target.value;
+        this.saveSettings();
+        this.applyGlobalRouting();
+      });
+    }
+
+    if (scanBtn) {
+      scanBtn.addEventListener('click', async () => {
+        scanBtn.textContent = '⏳ กำลังสแกน...';
+        await this.refreshDeviceList(true);
+        scanBtn.textContent = '✅ สแกนสำเร็จ';
+        setTimeout(() => {
+          scanBtn.textContent = '🔍 สแกนหาช่องไมค์';
+        }, 2000);
+      });
+    }
+
+    if (chkAcoustics) {
+      chkAcoustics.checked = this.acousticsEnabled;
+      chkAcoustics.addEventListener('change', (e) => {
+        this.acousticsEnabled = e.target.checked;
+        this.saveSettings();
+        this.ensureMicAcousticsContext();
+        if (this.roomToneGain && this.micCtx) {
+          try {
+            this.roomToneGain.gain.setValueAtTime(this.acousticsEnabled ? 0.0042 : 0.0001, this.micCtx.currentTime);
+          } catch (_) {}
+        }
+      });
+    }
+
+    if (chkKeepAlive) {
+      chkKeepAlive.checked = this.keepAliveEnabled;
+      chkKeepAlive.addEventListener('change', (e) => {
+        this.keepAliveEnabled = e.target.checked;
+        this.saveSettings();
+      });
+    }
+
+    if (chkMonitor) {
+      chkMonitor.checked = this.dualMonitorEnabled;
+      chkMonitor.addEventListener('change', (e) => {
+        this.dualMonitorEnabled = e.target.checked;
+        this.saveSettings();
+      });
+    }
+
+    if (testBtn) {
+      testBtn.addEventListener('click', () => {
+        this.ensureMicAcousticsContext();
+        if (this.voiceEngine) {
+          this.voiceEngine.enabled = true;
+          this.voiceEngine.speak('ทดสอบสัญญาณไมโครโฟน ขอพระแม่กวนอิมประทานพรให้ทุกท่านโชคดีมีสุข ร่ำรวยเงินทองนะคะ', 1);
+        }
+      });
+    }
+
+    this.updateStatusText();
+  }
+}
+
+const smartMicRouter = new SmartLiveMicRouter(templeAudio, guanYinVoice);
+window.smartMicRouter = smartMicRouter;
 
 // 2. Three.js Scene Setup (Static Calm Meditative Sanctuary Overview)
 // ---------------------------------------------------------------------
