@@ -10487,6 +10487,12 @@ const onGiftEvent = (gift) => {
   } else if (eff === 'incense') {
     performStageAction('incense', donor, gift.wish, giftInfo);
   } else if (eff === 'seamsi') {
+    const popupEl = document.getElementById('seamsi-highlight-popup');
+    if (popupEl) {
+      popupEl.classList.remove('seamsi-popup-burst');
+      void popupEl.offsetWidth;
+      popupEl.classList.add('seamsi-popup-burst');
+    }
     const seamWish = seamsiFortune ? `🎋 เสี่ยงเซียมซีมหาโชค • รับคำทำนายมงคล` : gift.wish;
     performStageAction('seamsi', donor, seamWish, giftInfo);
   } else {
@@ -10498,6 +10504,25 @@ socket.on('action_gift', onGiftEvent);
 socket.on('gift-event', onGiftEvent);
 socket.on('gift_event', onGiftEvent);
 socket.on('gift', onGiftEvent);
+
+// Click-to-Preview on Featured Seam-Si Highlight Popup Card
+const seamsiHighlightPopupEl = document.getElementById('seamsi-highlight-popup');
+if (seamsiHighlightPopupEl) {
+  seamsiHighlightPopupEl.addEventListener('click', () => {
+    seamsiHighlightPopupEl.classList.remove('seamsi-popup-burst');
+    void seamsiHighlightPopupEl.offsetWidth;
+    seamsiHighlightPopupEl.classList.add('seamsi-popup-burst');
+    onGiftEvent({
+      nickname: 'ผู้มีจิตศรัทธา',
+      uniqueId: `seamsi_${Math.floor(Math.random() * 900 + 100)}`,
+      giftName: 'รักนะมากๆ',
+      giftIcon: '🎋',
+      effectType: 'seamsi',
+      totalDiamonds: 1,
+      repeatCount: 1
+    });
+  });
+}
 
 const onLeaderboard = (list) => {
   updateLeaderboard(list);
