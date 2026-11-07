@@ -1772,9 +1772,30 @@ app.get('/api/status', (req, res) => {
       topSadhu: state.topSadhu,
       tributeQueue: state.tributeQueue,
       recentWishes: state.recentWishes,
-      prayerCategories: state.prayerCategories
+      prayerCategories: state.prayerCategories,
+      micRouterConfig: state.micRouterConfig
     }
   });
+});
+
+app.get('/api/mic-router/config', (req, res) => {
+  res.json({ success: true, config: state.micRouterConfig });
+});
+
+app.post('/api/mic-router/config', (req, res) => {
+  const incoming = req.body || {};
+  if (incoming.mode && ['stereo_mix', 'voice_split', 'all_to_mic'].includes(incoming.mode)) {
+    state.micRouterConfig.mode = incoming.mode;
+  }
+  if (typeof incoming.sinkId === 'string') state.micRouterConfig.sinkId = incoming.sinkId;
+  if (typeof incoming.deviceName === 'string') state.micRouterConfig.deviceName = incoming.deviceName;
+  if (typeof incoming.acousticsEnabled === 'boolean') state.micRouterConfig.acousticsEnabled = incoming.acousticsEnabled;
+  if (typeof incoming.keepAliveEnabled === 'boolean') state.micRouterConfig.keepAliveEnabled = incoming.keepAliveEnabled;
+  if (typeof incoming.dualMonitorEnabled === 'boolean') state.micRouterConfig.dualMonitorEnabled = incoming.dualMonitorEnabled;
+  state.micRouterConfig.updatedAt = Date.now();
+
+  io.emit('mic_router_sync', state.micRouterConfig);
+  res.json({ success: true, config: state.micRouterConfig });
 });
 
 app.post('/api/connect', async (req, res) => {
