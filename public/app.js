@@ -9853,27 +9853,27 @@ function triggerDragonDescentEffect() {
   // ── Parametric 3D Serpentine Flight Path Evaluator (Exact Spine Curve, Zero Bunching) ──
   function evalDragonSpinePoint(tau, segIndex = 0) {
     const progress = THREE.MathUtils.clamp(tau / 8.0, 0.0, 1.0);
-    // Grand figure-8 spiral descending from upper heavens, coiling past the altar, then ascending
-    const angle = tau * 2.15;
-    const orbitR = 1.95 + Math.sin(tau * 1.5) * 0.55;
+    // Serpentine figure-8 trajectory calibrated to the white marble bridge and twin ponds
+    const angle = tau * 1.95;
+    const orbitR = 2.45 + Math.sin(tau * 1.4) * 0.85;
 
     // Travelling serpentine S-wave undulation along the body (increases from neck to tail)
-    const waveAmp = Math.min(1.0, segIndex / 8.0) * (0.22 + (segIndex / segCount) * 0.16);
-    const lateralWave = Math.sin(tau * 7.4 - segIndex * 0.12) * waveAmp;
-    const verticalWave = Math.cos(tau * 7.4 - segIndex * 0.12) * (waveAmp * 0.65);
+    const waveAmp = Math.min(1.0, segIndex / 8.0) * (0.24 + (segIndex / segCount) * 0.18);
+    const lateralWave = Math.sin(tau * 7.2 - segIndex * 0.12) * waveAmp;
+    const verticalWave = Math.cos(tau * 7.2 - segIndex * 0.12) * (waveAmp * 0.65);
 
     const tangentX = -Math.sin(angle);
     const tangentZ = Math.cos(angle);
     const perpX = tangentZ;
     const perpZ = -tangentX;
 
-    // High sky entrance (tau < 0.8) and celestial ascent exit (tau > 7.2)
-    const entryLift = Math.max(0, 1.0 - tau / 0.9) * 2.4;
-    const exitLift = Math.max(0, (tau - 7.1) / 1.3) * 3.2;
+    // High celestial waterfall entrance (tau < 1.0) and ascent exit (tau > 7.0)
+    const entryLift = Math.max(0, 1.0 - tau / 1.0) * 3.2;
+    const exitLift = Math.max(0, (tau - 6.8) / 1.4) * 4.2;
 
     const x = Math.cos(angle) * orbitR + perpX * lateralWave;
-    const z = THREE.MathUtils.lerp(8.2, 2.0, progress) + Math.sin(tau * 1.55) * 1.35 + perpZ * lateralWave;
-    const y = 3.45 + Math.sin(tau * 2.85) * 1.15 + verticalWave + entryLift + exitLift;
+    const z = THREE.MathUtils.lerp(8.5, 1.8, progress) + Math.sin(tau * 1.4) * 1.6 + perpZ * lateralWave;
+    const y = 3.6 + Math.sin(tau * 2.6) * 1.25 + verticalWave + entryLift + exitLift;
     return new THREE.Vector3(x, y, z);
   }
 
