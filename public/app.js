@@ -1445,7 +1445,28 @@ class SmartLiveMicRouter {
     ];
 
     this.restoreSettings();
+    this.fetchServerConfig();
     this.init();
+  }
+
+  async fetchServerConfig() {
+    try {
+      const res = await fetch('/api/mic-router/config');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.config) {
+          const cfg = json.config;
+          if (cfg.mode) this.mode = cfg.mode;
+          if (typeof cfg.acousticsEnabled === 'boolean') this.acousticsEnabled = cfg.acousticsEnabled;
+          if (typeof cfg.keepAliveEnabled === 'boolean') this.keepAliveEnabled = cfg.keepAliveEnabled;
+          if (typeof cfg.dualMonitorEnabled === 'boolean') this.dualMonitorEnabled = cfg.dualMonitorEnabled;
+          this.saveSettings();
+          const modeEl = document.getElementById('select-mic-mode');
+          if (modeEl) modeEl.value = this.mode;
+          await this.refreshDeviceList(true);
+        }
+      }
+    } catch (_) {}
   }
 
   restoreSettings() {
@@ -1472,6 +1493,19 @@ class SmartLiveMicRouter {
       localStorage.setItem('buddha_mic_acoustics', this.acousticsEnabled ? 'true' : 'false');
       localStorage.setItem('buddha_mic_keepalive', this.keepAliveEnabled ? 'true' : 'false');
       localStorage.setItem('buddha_mic_dual_monitor', this.dualMonitorEnabled ? 'true' : 'false');
+
+      // Persist to server so TikTok LIVE Studio CEF inherits settings without Chrome open
+      fetch('/api/mic-router/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: this.mode,
+          sinkId: this.sinkId,
+          acousticsEnabled: this.acousticsEnabled,
+          keepAliveEnabled: this.keepAliveEnabled,
+          dualMonitorEnabled: this.dualMonitorEnabled
+        })
+      }).catch(() => {});
     } catch (_) {}
   }
 
