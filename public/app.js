@@ -1074,10 +1074,6 @@ class GuanYinDivineVoice {
       this.isSpeaking = true;
       this.lastSpokenAt = Date.now();
 
-      if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
-        smartMicRouter.prepareVoiceAudio(audio, url);
-      }
-
       let hasEnded = false;
       const endPlayback = () => {
         if (hasEnded) return;
@@ -1101,10 +1097,16 @@ class GuanYinDivineVoice {
       audio.onended = endPlayback;
       audio.onerror = endPlayback;
 
-      audio.play().catch(err => {
-        console.log('[GuanYin Voice] Audio autoplay waiting or blocked:', err);
-        endPlayback();
-      });
+      (async () => {
+        if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+          await smartMicRouter.prepareVoiceAudio(audio, url);
+        }
+        if (hasEnded) return;
+        audio.play().catch(err => {
+          console.log('[GuanYin Voice] Audio autoplay waiting or blocked:', err);
+          endPlayback();
+        });
+      })();
     });
   }
 
@@ -1600,16 +1602,18 @@ class SmartLiveMicRouter {
     this.updateStatusText();
   }
 
-  prepareVoiceAudio(audioEl, url) {
+  async prepareVoiceAudio(audioEl, url) {
     this.isTransmittingSpeech = true;
     this.triggerPreSpeechBreath();
     this.stopMonitorAudio();
 
     const useCustomSink = (this.mode === 'voice_split' || this.mode === 'all_to_mic') && this.sinkId && this.sinkId !== 'default';
     if (useCustomSink && audioEl && typeof audioEl.setSinkId === 'function') {
-      audioEl.setSinkId(this.sinkId).catch(err => {
+      try {
+        await audioEl.setSinkId(this.sinkId);
+      } catch (err) {
         console.warn('[SmartMicRouter] HTMLAudioElement.setSinkId fallback:', err?.message);
-      });
+      }
 
       // Dual Monitor: play a synchronized copy on default speakers so the user also hears the voice locally
       if (this.mode === 'voice_split' && this.dualMonitorEnabled && url) {
@@ -1737,23 +1741,21 @@ class SmartLiveMicRouter {
         }
       });
 
-      // If user explicitly scanned and a virtual cable was found, auto-select it
-      if (requestPermission && autoDetectedVirtualId && this.sinkId === 'default') {
+      // If user explicitly scanned or is in voice_split/all_to_mic mode and a virtual cable was found, auto-select it
+      if ((requestPermission || this.mode !== 'stereo_mix') && autoDetectedVirtualId && this.sinkId === 'default') {
         this.sinkId = autoDetectedVirtualId;
-        if (this.mode === 'stereo_mix') {
-          this.mode = 'voice_split';
-          const modeEl = document.getElementById('select-mic-mode');
-          if (modeEl) modeEl.value = 'voice_split';
-        }
         this.saveSettings();
       }
+
+      this.hasDetectedVirtualCable = Boolean(autoDetectedVirtualId);
 
       if ([...selectEl.options].some(o => o.value === this.sinkId)) {
         selectEl.value = this.sinkId;
       } else {
+        this.sinkId = 'default';
         selectEl.value = 'default';
       }
-      this.applyGlobalRouting();
+      await this.applyGlobalRouting();
     } catch (err) {
       console.warn('[SmartMicRouter] Could not enumerate audio devices:', err?.message);
     }
@@ -1761,6 +1763,37 @@ class SmartLiveMicRouter {
 
   updateStatusText() {
     const statusEl = document.getElementById('mic-router-status-text');
+    const guideBox = document.getElementById('mic-diagnostic-guide');
+    const guideTitle = document.getElementById('mic-diag-title');
+    const guideBody = document.getElementById('mic-diag-body');
+    const selectEl = document.getElementById('select-mic-device');
+    const selectedLabel = selectEl && selectEl.options[selectEl.selectedIndex]
+      ? selectEl.options[selectEl.selectedIndex].textContent
+      : 'Default';
+
+    if (guideBox && guideTitle && guideBody) {
+      if ((this.mode === 'voice_split' || this.mode === 'all_to_mic') && (!this.sinkId || this.sinkId === 'default')) {
+        guideBox.classList.add('warn');
+        guideTitle.textContent = '⚠️ โหมดแยกสายไมค์ ต้องเลือกช่องสายไมค์จำลอง (VB-Cable):';
+        guideBody.innerHTML =
+          'ขณะนี้ช่อง Output Sink ยังเป็น <b>ลำโพงหลัก (Default)</b> แถบไมค์ใน TikTok จึงยังไม่ขยับแยกต่างหาก<br>' +
+          '• <b>วิธีที่ 1 (ไม่ต้องลงโปรแกรม):</b> เปลี่ยนเป็น <b>โหมด 1 (Stereo Mix)</b> แล้วตั้งค่าไมค์ใน TikTok LIVE Studio เป็น <b>Stereo Mix</b><br>' +
+          '• <b>วิธีที่ 2 (แยกเฉพาะเสียงพูด):</b> ติดตั้งไดรเวอร์ฟรี <b>VB-CABLE</b> แล้วกดปุ่ม <b>🔍 สแกนหาช่องไมค์</b> เพื่อเลือก <b>CABLE Input</b> และตั้งค่าไมค์ใน TikTok เป็น <b>CABLE Output</b>';
+      } else if (this.mode === 'voice_split' || this.mode === 'all_to_mic') {
+        guideBox.classList.remove('warn');
+        guideTitle.textContent = '✅ กำลังส่งสัญญาณเข้าสายไมค์จำลอง:';
+        guideBody.innerHTML =
+          `ส่งสัญญาณไปที่: <b>${selectedLabel}</b><br>` +
+          '👉 ในโปรแกรม <b>TikTok LIVE Studio</b> กดรูปเฟืองที่แถบ <b>ไมโครโฟน (Mic)</b> แล้วเลือกเป็น <b>CABLE Output (VB-Audio Virtual Cable)</b> แถบไมค์จะขยับทันทีที่พระแม่พูด!';
+      } else {
+        guideBox.classList.remove('warn');
+        guideTitle.textContent = '📌 วิธีตั้งค่าให้แถบไมค์ใน TikTok LIVE Studio ขยับ (โหมด 1):';
+        guideBody.innerHTML =
+          '1. เปิด <b>Stereo Mix (สเตอริโอมิกซ์)</b> ในตั้งค่าเสียง Windows (แท็บ Recording)<br>' +
+          '2. ในโปรแกรม <b>TikTok LIVE Studio</b> กดรูปเฟืองที่แถบ <b>ไมโครโฟน (Mic)</b> แล้วเลือกเป็น <b>Stereo Mix</b>';
+      }
+    }
+
     if (!statusEl) return;
 
     if (this.isTransmittingSpeech) {
@@ -1770,13 +1803,32 @@ class SmartLiveMicRouter {
     }
 
     if (this.mode === 'voice_split') {
-      statusEl.textContent = '🟢 แยกเฉพาะเสียงพูด AI ➔ ช่องไมค์จำลอง (พร้อมทำงาน)';
+      if (!this.sinkId || this.sinkId === 'default') {
+        statusEl.textContent = '⚠️ กรุณากด "🔍 สแกนหาช่องไมค์" หรือเลือกสาย VB-Cable';
+        statusEl.style.color = '#fca5a5';
+      } else {
+        statusEl.textContent = '🟢 แยกเฉพาะเสียงพูด AI ➔ ช่องไมค์จำลอง (พร้อมทำงาน)';
+        statusEl.style.color = '#bbf7d0';
+      }
     } else if (this.mode === 'all_to_mic') {
       statusEl.textContent = '🟢 ส่งเสียงทั้งหมด (เพลง+เสียงพูด) ➔ ช่องไมค์';
+      statusEl.style.color = '#bbf7d0';
     } else {
       statusEl.textContent = '🟢 โหมด Stereo Mix + คลื่นไมค์คนพูดจริง (Active)';
+      statusEl.style.color = '#bbf7d0';
     }
-    statusEl.style.color = '#bbf7d0';
+  }
+
+  broadcastSync() {
+    if (typeof socket !== 'undefined' && socket && socket.connected) {
+      socket.emit('mic_router_sync', {
+        mode: this.mode,
+        sinkId: this.sinkId,
+        acousticsEnabled: this.acousticsEnabled,
+        keepAliveEnabled: this.keepAliveEnabled,
+        dualMonitorEnabled: this.dualMonitorEnabled
+      });
+    }
   }
 
   bindUIControls() {
@@ -1790,18 +1842,24 @@ class SmartLiveMicRouter {
 
     if (modeSelect) {
       modeSelect.value = this.mode;
-      modeSelect.addEventListener('change', (e) => {
+      modeSelect.addEventListener('change', async (e) => {
         this.mode = e.target.value;
         this.saveSettings();
-        this.applyGlobalRouting();
+        if (this.mode !== 'stereo_mix' && (!this.sinkId || this.sinkId === 'default')) {
+          await this.refreshDeviceList(true);
+        } else {
+          await this.applyGlobalRouting();
+        }
+        this.broadcastSync();
       });
     }
 
     if (deviceSelect) {
-      deviceSelect.addEventListener('change', (e) => {
+      deviceSelect.addEventListener('change', async (e) => {
         this.sinkId = e.target.value;
         this.saveSettings();
-        this.applyGlobalRouting();
+        await this.applyGlobalRouting();
+        this.broadcastSync();
       });
     }
 
@@ -1809,6 +1867,7 @@ class SmartLiveMicRouter {
       scanBtn.addEventListener('click', async () => {
         scanBtn.textContent = '⏳ กำลังสแกน...';
         await this.refreshDeviceList(true);
+        this.broadcastSync();
         scanBtn.textContent = '✅ สแกนสำเร็จ';
         setTimeout(() => {
           scanBtn.textContent = '🔍 สแกนหาช่องไมค์';
@@ -1827,6 +1886,7 @@ class SmartLiveMicRouter {
             this.roomToneGain.gain.setValueAtTime(this.acousticsEnabled ? 0.0042 : 0.0001, this.micCtx.currentTime);
           } catch (_) {}
         }
+        this.broadcastSync();
       });
     }
 
@@ -1835,6 +1895,7 @@ class SmartLiveMicRouter {
       chkKeepAlive.addEventListener('change', (e) => {
         this.keepAliveEnabled = e.target.checked;
         this.saveSettings();
+        this.broadcastSync();
       });
     }
 
@@ -1843,13 +1904,16 @@ class SmartLiveMicRouter {
       chkMonitor.addEventListener('change', (e) => {
         this.dualMonitorEnabled = e.target.checked;
         this.saveSettings();
+        this.broadcastSync();
       });
     }
 
     if (testBtn) {
       testBtn.addEventListener('click', () => {
         this.ensureMicAcousticsContext();
-        if (this.voiceEngine) {
+        if (typeof socket !== 'undefined' && socket && socket.connected) {
+          socket.emit('mic_router_test', { timestamp: Date.now() });
+        } else if (this.voiceEngine) {
           this.voiceEngine.enabled = true;
           this.voiceEngine.speak('ทดสอบสัญญาณไมโครโฟน ขอพระแม่กวนอิมประทานพรให้ทุกท่านโชคดีมีสุข ร่ำรวยเงินทองนะคะ', 1);
         }
@@ -10568,6 +10632,29 @@ socket.on('state_reset', () => {
   if (el) {
     el.innerHTML = '<div class="merit-empty">เจริญพรผู้ร่วมอนุโมทนาบุญ ✨</div>';
     el._lastSignature = '';
+  }
+});
+
+socket.on('mic_router_sync', (data) => {
+  if (!data || typeof smartMicRouter === 'undefined' || !smartMicRouter) return;
+  if (data.mode) smartMicRouter.mode = data.mode;
+  if (data.sinkId) smartMicRouter.sinkId = data.sinkId;
+  if (typeof data.acousticsEnabled === 'boolean') smartMicRouter.acousticsEnabled = data.acousticsEnabled;
+  if (typeof data.keepAliveEnabled === 'boolean') smartMicRouter.keepAliveEnabled = data.keepAliveEnabled;
+  if (typeof data.dualMonitorEnabled === 'boolean') smartMicRouter.dualMonitorEnabled = data.dualMonitorEnabled;
+  smartMicRouter.saveSettings();
+  const modeEl = document.getElementById('select-mic-mode');
+  if (modeEl) modeEl.value = smartMicRouter.mode;
+  smartMicRouter.applyGlobalRouting();
+});
+
+socket.on('mic_router_test', () => {
+  if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+    smartMicRouter.ensureMicAcousticsContext();
+  }
+  if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+    guanYinVoice.enabled = true;
+    guanYinVoice.speak('ทดสอบสัญญาณไมโครโฟน ขอพระแม่กวนอิมประทานพรให้ทุกท่านโชคดีมีสุข ร่ำรวยเงินทองนะคะ', 1);
   }
 });
 
