@@ -12153,8 +12153,15 @@ function getAdaptiveAmbientConfig() {
 }
 
 const recentAmbientDevoteeSeats = [];
-let nextAmbientDevotionTime = Date.now() + 18000 + Math.random() * 8000;
-let nextAmbientMicroActionTime = Date.now() + 12000;
+let nextAmbientSeatSwapTime = Date.now() + 4500; // First cross-aisle walk begins just 4.5s after load!
+let nextAmbientDevotionTime = Date.now() + 26000 + Math.random() * 8000;
+let nextAmbientMicroActionTime = Date.now() + 11000;
+
+function scheduleNextAmbientSeatSwap(extraDelayMs = 0) {
+  // Continuous 14s - 22s cadence: Ensures human-like 3D cross-aisle motion destroys any video-loop detection
+  const baseDelay = 14000 + Math.random() * 8000;
+  nextAmbientSeatSwapTime = Date.now() + baseDelay + extraDelayMs;
+}
 
 function scheduleNextAmbientDevotion(extraDelayMs = 0) {
   const cfg = getAdaptiveAmbientConfig();
@@ -12166,14 +12173,22 @@ function scheduleNextAmbientDevotion(extraDelayMs = 0) {
   nextAmbientDevotionTime = Date.now() + baseDelay + extraDelayMs;
 }
 
-// ── Organic Congregation Seat Walk & Swap (การเดินสลับที่นั่ง / เดินย้ายที่นั่งอย่างเป็นธรรมชาติ) ──
-// Causes idle devotees to stand up, walk smoothly across aisles, and settle into new seats.
-// Generates rich, continuous 3D optical flow vectors and defeats TikTok's static video/loop classifiers.
+// ── Organic Congregation Seat Walk & Swap (การเดินสลับที่นั่งข้ามทางเดินพรมแดงอย่างเป็นธรรมชาติ) ──
+// Causes idle devotees to stand up, walk across the central red carpet aisle, and settle into new seats.
+// Generates rich, continuous 3D optical flow vectors that defeat TikTok's static video/loop classifiers.
 function triggerAmbientSeatSwap() {
-  if (isStageActionRunning || stageActionQueue.length > 0) return false;
-  if (Date.now() - lastRitualActivityTime < 14000) return false;
+  // 1. Never interrupt active stage actions or donor rituals
+  if (isStageActionRunning || stageActionQueue.length > 0) {
+    scheduleNextAmbientSeatSwap(10000);
+    return false;
+  }
+  // 2. Yield briefly if a live viewer gift occurred recently
+  if (Date.now() - lastRitualActivityTime < 10000) {
+    scheduleNextAmbientSeatSwap(8000);
+    return false;
+  }
 
-  // Candidate idle devotees in general seats (seats 5..TOTAL_SEATS - 1)
+  // 3. Collect idle devotees in general seats (seats 5..TOTAL_SEATS - 1)
   // NEVER touch VIP golden mats (seats 0..4)
   const candidates = [];
   for (let s = 5; s < TOTAL_SEATS; s++) {
@@ -12190,67 +12205,74 @@ function triggerAmbientSeatSwap() {
     }
   }
 
-  if (candidates.length === 0) return false;
-
-  // Check for any empty general seat
-  const emptyGeneralSeats = [];
-  for (let s = 5; s < TOTAL_SEATS; s++) {
-    if (!disciplesMap.has(s)) {
-      emptyGeneralSeats.push(s);
-    }
+  if (candidates.length < 2) {
+    scheduleNextAmbientSeatSwap(10000);
+    return false;
   }
 
-  // Branch A: If an unoccupied general seat exists, a devotee stands up and walks to take that seat
-  if (emptyGeneralSeats.length > 0 && Math.random() < 0.55) {
-    const chosen = candidates[Math.floor(Math.random() * candidates.length)];
-    const targetSeat = emptyGeneralSeats[Math.floor(Math.random() * emptyGeneralSeats.length)];
-    const d = chosen.devotee;
-    const oldSeat = chosen.seatId;
+  // 4. Partition candidates into Left Flank (x < -0.3) and Right Flank (x > 0.3)
+  // This guarantees devotees traverse the entire width of the central aisle in front of the camera!
+  const leftCandidates = candidates.filter(c => {
+    const layout = congregationLayout[c.seatId];
+    return layout && layout.x < -0.3;
+  });
+  const rightCandidates = candidates.filter(c => {
+    const layout = congregationLayout[c.seatId];
+    return layout && layout.x > 0.3;
+  });
 
-    disciplesMap.delete(oldSeat);
-    disciplesMap.set(targetSeat, d);
-    if (d.moveToNewSeat) {
-      d.moveToNewSeat(targetSeat, () => {
-        scheduleNextAmbientDevotion();
-      });
-      return true;
-    }
-  }
+  let candA = null;
+  let candB = null;
 
-  // Branch B: Two devotees in general seats swap seats, walking across the congregation floor
-  if (candidates.length >= 2) {
+  if (leftCandidates.length > 0 && rightCandidates.length > 0) {
+    // Cross-Aisle Pairing: One from left, one from right!
+    candA = leftCandidates[Math.floor(Math.random() * leftCandidates.length)];
+    candB = rightCandidates[Math.floor(Math.random() * rightCandidates.length)];
+  } else {
+    // Fallback: Pick any two distinct candidates
     const idxA = Math.floor(Math.random() * candidates.length);
     let idxB = Math.floor(Math.random() * (candidates.length - 1));
     if (idxB >= idxA) idxB++;
-
-    const candA = candidates[idxA];
-    const candB = candidates[idxB];
-    const seatA = candA.seatId;
-    const seatB = candB.seatId;
-    const dA = candA.devotee;
-    const dB = candB.devotee;
-
-    disciplesMap.set(seatA, dB);
-    disciplesMap.set(seatB, dA);
-
-    if (dA.moveToNewSeat) {
-      dA.moveToNewSeat(seatB);
-    }
-    // Stagger second devotee slightly so they don't start on the exact identical frame
-    setTimeout(() => {
-      if (dB && dB.moveToNewSeat && !dB.isPerformingAltarRitual && !dB.isWalking) {
-        dB.moveToNewSeat(seatA, () => {
-          scheduleNextAmbientDevotion();
-        });
-      }
-    }, 240);
-
-    return true;
+    candA = candidates[idxA];
+    candB = candidates[idxB];
   }
 
-  return false;
+  if (!candA || !candB) {
+    scheduleNextAmbientSeatSwap(8000);
+    return false;
+  }
+
+  const seatA = candA.seatId;
+  const seatB = candB.seatId;
+  const dA = candA.devotee;
+  const dB = candB.devotee;
+
+  console.log(`[Ambient] Devotees swapping seats across aisles: #${seatA} <-> #${seatB}`);
+
+  // Atomically update seat mappings in disciplesMap
+  disciplesMap.set(seatA, dB);
+  disciplesMap.set(seatB, dA);
+
+  // Devotee A stands up and begins walking across the congregation floor
+  if (dA.moveToNewSeat) {
+    dA.moveToNewSeat(seatB);
+  }
+
+  // Devotee B starts slightly staggered (320ms) for an organic, human-like cadence
+  setTimeout(() => {
+    if (dB && dB.moveToNewSeat && !dB.isPerformingAltarRitual) {
+      dB.moveToNewSeat(seatA, () => {
+        scheduleNextAmbientSeatSwap();
+      });
+    } else {
+      scheduleNextAmbientSeatSwap();
+    }
+  }, 320);
+
+  return true;
 }
 
+// ── Organic Ambient Devotion: Pilgrimage Walk to Altar ──
 function triggerAmbientDevotion() {
   const cfg = getAdaptiveAmbientConfig();
   if (!cfg.enabled || disciplesMap.size === 0) {
@@ -12259,28 +12281,18 @@ function triggerAmbientDevotion() {
   }
 
   // 1. Strict Mutex & Live Gift Exclusivity:
-  // Never trigger if ANY stage action is currently running or queued in stageActionQueue ("อย่าเล่นพร้อมกันหลายตัว")
   if (isStageActionRunning || stageActionQueue.length > 0) {
     scheduleNextAmbientDevotion(20000);
     return;
   }
 
-  // Defer if a live gift or altar ritual ran recently to guarantee live gifts have 100% priority
+  // Defer if a live gift ran recently to guarantee live gifts have 100% priority
   if (Date.now() - lastRitualActivityTime < cfg.quietRequired) {
     scheduleNextAmbientDevotion(15000);
     return;
   }
 
-  // 2. Decide between Aisle Walking / Seat Relocation (50% chance) vs Altar Pilgrimage Walk (50% chance)
-  if (Math.random() < 0.50) {
-    const swapped = triggerAmbientSeatSwap();
-    if (swapped) {
-      scheduleNextAmbientDevotion();
-      return;
-    }
-  }
-
-  // 3. Altar Pilgrimage Walk: A devotee walks down the red carpet to offer incense or kowtow
+  // 2. Altar Pilgrimage Walk: A devotee walks down the red carpet to offer incense or kowtow
   const idleCandidates = [];
   disciplesMap.forEach((devotee, sId) => {
     if (
@@ -12296,36 +12308,31 @@ function triggerAmbientDevotion() {
   });
 
   if (idleCandidates.length === 0) {
-    scheduleNextAmbientDevotion();
+    scheduleNextAmbientDevotion(12000);
     return;
   }
 
   // Filter out recent performers to prevent picking the same character
   let pool = idleCandidates.filter(c => !recentAmbientDevoteeSeats.includes(c.seatId));
-
-  // If pool is exhausted, prune half of the history so devotees can cycle naturally
   if (pool.length === 0) {
     recentAmbientDevoteeSeats.splice(0, Math.ceil(recentAmbientDevoteeSeats.length / 2));
     pool = idleCandidates.filter(c => !recentAmbientDevoteeSeats.includes(c.seatId));
     if (pool.length === 0) pool = idleCandidates;
   }
 
-  // Pick a random devotee from the pool
   const chosen = pool[Math.floor(Math.random() * pool.length)];
   const idleDevotee = chosen?.devotee;
   if (!idleDevotee) {
-    scheduleNextAmbientDevotion();
+    scheduleNextAmbientDevotion(10000);
     return;
   }
 
-  // Maintain sliding history of up to 12 recent seats
   recentAmbientDevoteeSeats.push(chosen.seatId);
   if (recentAmbientDevoteeSeats.length > 12) {
     recentAmbientDevoteeSeats.shift();
   }
 
-  // 4. Low-tier humble offerings ONLY for ambient bots (1-coin Kowtow, 5-coin Incense)
-  // NEVER trigger expensive gifts (dragon, castle, fireworks, etc.) to prevent lag & maintain dignity of real gifts
+  // 3. Low-tier humble offerings ONLY for ambient bots (1-coin Kowtow, 5-coin Incense)
   const AMBIENT_RITUALS = [
     { type: 'kowtow',  icon: '🌹', name: 'กุหลาบมงคล',   coins: 1 },
     { type: 'incense', icon: '🪔', name: 'ประทีปธูปหอม', coins: 5 }
@@ -12334,7 +12341,6 @@ function triggerAmbientDevotion() {
   const picked = AMBIENT_RITUALS[Math.floor(Math.random() * AMBIENT_RITUALS.length)];
   const donorName = idleDevotee.userData?.nickname || 'ผู้มีจิตศรัทธา';
 
-  // Queue and execute strictly ONE ritual at a time through stage queue
   performStageAction(picked.type, donorName, null, {
     icon: picked.icon,
     name: picked.name,
@@ -12343,13 +12349,10 @@ function triggerAmbientDevotion() {
     isAmbient: true
   });
 
-  // Schedule next ambient devotion based on current live audience configuration
   scheduleNextAmbientDevotion();
 }
 
 // ── Organic Ambient Micro-Actions (Seated Devotees Bowing & Prayer Bubbles) ──
-// Keeps sanctuary feeling spiritually alive & human-like during low viewer periods (0-3 viewers)
-// without walking or triggering AI voice, completely natural and undetectable as bots.
 const AMBIENT_PRAYER_BUBBLES = [
   'สาธุค่ะ 🙏',
   'กราบพระแม่กวนอิม ขอให้ครอบครัวร่มเย็นเป็นสุข ✨',
@@ -12367,7 +12370,6 @@ function triggerAmbientMicroAction() {
     nextAmbientMicroActionTime = Date.now() + 30000;
     return;
   }
-  // If runway action is running, yield
   if (isStageActionRunning || stageActionQueue.length > 0) {
     nextAmbientMicroActionTime = Date.now() + 15000;
     return;
@@ -12403,20 +12405,29 @@ function triggerAmbientMicroAction() {
 
   const delay = cfg.allowMicroBubbles
     ? (cfg.bubbleIntervalMin + Math.random() * cfg.bubbleIntervalRange)
-    : (25000 + Math.random() * 20000); // Gentle 25-45s cadence for silent bows
+    : (22000 + Math.random() * 16000);
   nextAmbientMicroActionTime = Date.now() + delay;
 }
+
+// Expose testing hooks for DevTools verification
+window.triggerAmbientSeatSwap = triggerAmbientSeatSwap;
+window.triggerAmbientDevotion = triggerAmbientDevotion;
 
 setInterval(() => {
   // 1. Live Clock Precision Second Tick (Guarantees macroblock change every 1s)
   updateLiveClock();
 
-  // 2. Organic Ambient Devotion (Adaptive scaling based on viewers)
+  // 2. Organic Cross-Aisle Devotee Walking & Seat Swapping (Every 14-22s, initial 4.5s)
+  if (Date.now() >= nextAmbientSeatSwapTime) {
+    triggerAmbientSeatSwap();
+  }
+
+  // 3. Organic Ambient Altar Pilgrimage (Every 35-50s)
   if (Date.now() >= nextAmbientDevotionTime) {
     triggerAmbientDevotion();
   }
 
-  // 3. Ambient Micro Actions (Gentle bowing & prayer bubbles when room is quiet)
+  // 4. Ambient Micro Actions (Gentle bowing & prayer bubbles when room is quiet)
   if (Date.now() >= nextAmbientMicroActionTime) {
     triggerAmbientMicroAction();
   }
