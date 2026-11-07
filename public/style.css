@@ -3158,8 +3158,10 @@ body {
 }
 
 .gift-item {
-  background: rgba(45, 22, 12, 0.85);
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: rgba(45, 22, 12, 0.50);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 215, 0, 0.35);
   border-radius: 10px;
   padding: 6px 2px 4px;
   text-align: center;
@@ -3175,8 +3177,8 @@ body {
 .gift-item:hover {
   transform: translateY(-2px);
   border-color: #ffd700;
-  background: rgba(75, 38, 20, 0.95);
-  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.25);
+  background: rgba(75, 38, 20, 0.65);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.45);
 }
 
 .gift-icon {
@@ -3186,15 +3188,18 @@ body {
 
 .gift-badge {
   font-size: 9.5px;
-  font-weight: 500;
+  font-weight: 700;
   color: #ffd700;
   white-space: nowrap;
+  text-shadow: 0 1px 2px #000;
 }
 
 .gift-req {
   font-size: 8.5px;
-  color: #e5d2b0;
-  opacity: 0.85;
+  color: #ffffff;
+  font-weight: 600;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px #000;
 }
 
 /* Footer */
