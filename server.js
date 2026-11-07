@@ -151,6 +151,33 @@ app.get(['/background_video.mp4', '/bg-video.mp4'], (req, res) => {
   res.status(404).send('Background video not found');
 });
 
+// ---------------------------------------------------------------------
+// 100% Original 432Hz Zen Buddhist Meditation Soundscape
+// Replaces commercial copyrighted audio to eliminate TikTok Audio Content ID flags
+// ---------------------------------------------------------------------
+const zenBgmGenerator = require('./generate-bgm.js');
+try {
+  zenBgmGenerator.deployOriginalZenSoundtrack();
+} catch (e) {
+  console.warn('[Zen Audio] Deployment notice:', e.message);
+}
+
+app.get('/api/regenerate-zen-bgm', (req, res) => {
+  const ok = zenBgmGenerator.deployOriginalZenSoundtrack();
+  res.json({ success: ok, message: 'Original Zen Soundtrack regenerated successfully' });
+});
+
+app.get(['/bgm.mp3', '/bgm.wav', '/bgm_zen_original.wav'], (req, res) => {
+  const targetBgm = path.join(__dirname, 'public', 'bgm.mp3');
+  if (fs.existsSync(targetBgm)) {
+    res.set('Content-Type', 'audio/wav');
+    res.set('Accept-Ranges', 'bytes');
+    res.set('Cache-Control', 'no-cache');
+    return res.sendFile(targetBgm);
+  }
+  res.status(404).send('BGM not found');
+});
+
 const PUBLIC_DIR = path.join(__dirname, 'public');
 if (!fs.existsSync(PUBLIC_DIR)) {
   try { fs.mkdirSync(PUBLIC_DIR, { recursive: true }); } catch (_) { }
