@@ -372,17 +372,17 @@ class TempleAudio {
       if (!this._antiLoopHarmonicTimer) {
         this._antiLoopHarmonicTimer = setInterval(() => {
           if (!this.userMuted && this.enabled && this.ambientPlaying) {
-            const sacredFreqs = [432, 528, 639, 741];
+            const sacredFreqs = [432, 513.6, 528, 639, 741, 852];
             const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
-            try { this.playBell(chosenF, 4.0); } catch (_) {}
+            try { this.playBell(chosenF, 4.5); } catch (_) {}
             // Dynamic micro-pitch & tempo modulation (1.012 - 1.026) so audio spectral hash never repeats
-            const rateJitter = 1.018 + (Math.random() - 0.5) * 0.014;
+            const rateJitter = 1.018 + (Math.random() - 0.5) * 0.015;
             try {
               if (this.bgmAudio) this.bgmAudio.playbackRate = rateJitter;
               if (this.bgmBufferSource) this.bgmBufferSource.playbackRate.value = rateJitter;
             } catch (_) {}
           }
-        }, 28000);
+        }, 18000);
       }
     };
 
