@@ -7640,6 +7640,13 @@ function triggerGoldenBellEffect() {
   waveRing2.position.set(0, -0.20, -0.30);
   bellGroup.add(waveRing2);
 
+  const waveRing3 = new THREE.Mesh(
+    new THREE.RingGeometry(0.60, 3.85, 48),
+    new THREE.MeshBasicMaterial({ color: 0xff66b2, side: THREE.DoubleSide, transparent: true, opacity: 0.52, blending: THREE.AdditiveBlending, depthWrite: false })
+  );
+  waveRing3.position.set(0, -0.22, -0.35);
+  bellGroup.add(waveRing3);
+
   // Horizontal Acoustic Shockwave Ring expanding outward from Bell Lip
   const sonicRing = new THREE.Mesh(
     new THREE.RingGeometry(0.55, 0.72, 48),
