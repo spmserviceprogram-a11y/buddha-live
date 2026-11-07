@@ -2322,36 +2322,45 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 container.appendChild(renderer.domElement);
 
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffeedd, 1.25);
+// Lighting: Celestial Daylight & Heavenly Garden Warmth
+const ambientLight = new THREE.AmbientLight(0xfff8ee, 1.45);
 scene.add(ambientLight);
 
-const carpetLight = new THREE.PointLight(0xffbe6b, 3.2, 22);
+const carpetLight = new THREE.PointLight(0xffe4a0, 3.5, 22);
 carpetLight.position.set(0, 4.0, 5.5);
 scene.add(carpetLight);
 
-const altarGlow = new THREE.PointLight(0xffa028, 2.8, 16);
+const altarGlow = new THREE.PointLight(0xffa028, 3.0, 16);
 altarGlow.position.set(0, 2.2, 1.8);
 scene.add(altarGlow);
 
 // ---------------------------------------------------------------------
-// 2.1 Dynamic Temple Warm Ambiance (100% Clean Buddha Altar & Face)
+// 2.1 Dynamic Temple Warm Ambiance & Twin Lotus Pond Radiance
 // ---------------------------------------------------------------------
-const altarSoftLight = new THREE.PointLight(0xfff3a8, 1.8, 14);
+const altarSoftLight = new THREE.PointLight(0xfff3a8, 2.0, 14);
 altarSoftLight.position.set(0, 3.8, 1.2);
 scene.add(altarSoftLight);
 
 // Subtle Jade Radiance (Guan Yin Sacred Willow Water Vase)
-const jadeWillowLight = new THREE.PointLight(0x6ee7b7, 0.85, 8);
+const jadeWillowLight = new THREE.PointLight(0x6ee7b7, 0.95, 8);
 jadeWillowLight.position.set(0, 3.6, 1.0);
 scene.add(jadeWillowLight);
 
-// Pillar Lanterns Warm Candlelight Glow (โคมไฟซ้าย-ขวาวูบวาบ)
-const leftLanternLight = new THREE.PointLight(0xff9933, 1.6, 12);
+// Twin Lotus Pond Ambient Glow (แสงเรืองรองสระบัวทิพย์สีชมพูสองฝั่งสะพานหยกขาว)
+const leftLotusLight = new THREE.PointLight(0xff69b4, 1.25, 14);
+leftLotusLight.position.set(-4.8, 2.2, 4.0);
+scene.add(leftLotusLight);
+
+const rightLotusLight = new THREE.PointLight(0xff69b4, 1.25, 14);
+rightLotusLight.position.set(4.8, 2.2, 4.0);
+scene.add(rightLotusLight);
+
+// Marble Bridge Lotus Lanterns Glow (โคมไฟบัวหยกขาว ซ้าย-ขวา)
+const leftLanternLight = new THREE.PointLight(0xffb347, 1.6, 12);
 leftLanternLight.position.set(-4.5, 4.8, 3.5);
 scene.add(leftLanternLight);
 
-const rightLanternLight = new THREE.PointLight(0xff9933, 1.6, 12);
+const rightLanternLight = new THREE.PointLight(0xffb347, 1.6, 12);
 rightLanternLight.position.set(4.5, 4.8, 3.5);
 scene.add(rightLanternLight);
 
