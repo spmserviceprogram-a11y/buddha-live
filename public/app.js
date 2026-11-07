@@ -6284,7 +6284,49 @@ function triggerIncenseEffect() {
 
   // 1. Ornate 3D Imperial Bronze-Gold Dragon Tripod Censer, Lotus Lamps & Omamori Plaque
   const censer = new THREE.Group();
-  censer.position.set(0, 1.48, 1.05);
+  censer.position.set(0, 1.15, 2.0);
+
+  // Twin Lotus Pond Floating Water Lanterns (โคมประทีปบัวลอยน้ำในสระสวรรค์ 2 ฝั่ง)
+  const pondLanterns = [];
+  const lanternTex = getFloatingLanternTexture();
+  const lanternMat = new THREE.SpriteMaterial({
+    map: lanternTex,
+    color: 0xffb703,
+    transparent: true,
+    opacity: 0.90,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  const pondCoords = [
+    { x: -4.5, y: 0.18, z: 3.2, phase: 0 },
+    { x: -3.8, y: 0.18, z: 4.8, phase: 1.2 },
+    { x: -4.8, y: 0.18, z: 6.2, phase: 2.4 },
+    { x:  4.5, y: 0.18, z: 3.2, phase: 0.8 },
+    { x:  3.8, y: 0.18, z: 4.8, phase: 2.0 },
+    { x:  4.8, y: 0.18, z: 6.2, phase: 3.1 }
+  ];
+  pondCoords.forEach(pc => {
+    const lGroup = new THREE.Group();
+    lGroup.position.set(pc.x, pc.y, pc.z);
+
+    // Glowing flame sprite
+    const lSprite = new THREE.Sprite(lanternMat.clone());
+    lSprite.scale.set(0.95, 0.95, 1);
+    lSprite.position.y = 0.15;
+    lGroup.add(lSprite);
+
+    // Water ripple ring beneath lantern
+    const rRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.12, 0.38, 24),
+      new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.45, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+    );
+    rRing.rotation.x = -Math.PI / 2;
+    rRing.position.y = -0.05;
+    lGroup.add(rRing);
+
+    scene.add(lGroup);
+    pondLanterns.push({ group: lGroup, baseY: pc.y, phase: pc.phase, sprite: lSprite });
+  });
 
   const bronzeGoldMat = new THREE.MeshStandardMaterial({
     color: 0xffd24c,
