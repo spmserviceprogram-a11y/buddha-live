@@ -3265,11 +3265,18 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
   function renderPill(avatarImg = null) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Background: plain pill, 50% transparent black, no border / no shadow
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    // Background: Celestial White Jade Porcelain Pill with 24K Gold Filigree
+    const bgGrad = ctx.createLinearGradient(rx, ry, rx + rw, ry + rh);
+    bgGrad.addColorStop(0, 'rgba(255, 255, 255, 0.94)');
+    bgGrad.addColorStop(1, 'rgba(246, 249, 255, 0.96)');
+    ctx.fillStyle = bgGrad;
     ctx.beginPath();
     ctx.roundRect(rx, ry, rw, rh, radius);
     ctx.fill();
+
+    ctx.strokeStyle = isVip ? '#f59e0b' : '#ffd700';
+    ctx.lineWidth = isVip ? 3.5 : 2.5;
+    ctx.stroke();
 
     // 4. Circular Profile Avatar on Left
     ctx.save();
@@ -3318,13 +3325,20 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
     }
     ctx.restore();
 
-    // 5. Razor-Sharp Typography on Right (White with dark stroke outline)
+    // 24K Gold Ring around avatar
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 2.0;
+    ctx.beginPath();
+    ctx.arc(avatarCx, avatarCy, avatarRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 5. Razor-Sharp Typography on Right (Dark Imperial Sapphire for 100% Mobile Contrast)
     ctx.font = fontStyle;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     const textCy = avatarCy; // optical baseline center
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = isVip ? '#b45309' : '#0f172a';
     ctx.fillText(label, textX, textCy);
   }
 
