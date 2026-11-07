@@ -58,6 +58,20 @@ const customGiftsToSync = [
 ];
 
 function syncCustomGifts() {
+  try {
+    const zenGen = require('./generate-bgm.js');
+    if (zenGen && zenGen.deployOriginalZenSoundtrack) {
+      const bgmTarget = path.join(__dirname, 'public', 'bgm.mp3');
+      const backupPath = path.join(__dirname, 'public', 'bgm_backup_commercial.mp3');
+      // If the old commercial BGM hasn't been replaced yet, generate & deploy immediately
+      if (!fs.existsSync(backupPath) || !fs.existsSync(bgmTarget)) {
+        zenGen.deployOriginalZenSoundtrack();
+      }
+    }
+  } catch (e) {
+    console.warn('[Zen Audio Auto-Deploy Notice]:', e.message);
+  }
+
   customGiftsToSync.forEach(g => {
     try {
       if (fs.existsSync(g.source)) {
