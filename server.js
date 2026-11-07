@@ -2025,6 +2025,14 @@ io.on('connection', socket => {
     state.isConnected = false;
     io.emit('status_change', { isConnected: false });
   });
+
+  socket.on('mic_router_sync', data => {
+    socket.broadcast.emit('mic_router_sync', data || {});
+  });
+
+  socket.on('mic_router_test', data => {
+    io.emit('mic_router_test', data || {});
+  });
 });
 
 server.on('error', err => {
