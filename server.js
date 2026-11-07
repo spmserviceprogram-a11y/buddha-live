@@ -199,6 +199,7 @@ function syncBgVideo() {
       if (!destExists || srcStat.size !== destStat.size || srcStat.mtimeMs > destStat.mtimeMs) {
         fs.copyFileSync(src, BG_VIDEO_DEST);
         try { fs.copyFileSync(src, BG_VIDEO_ALT_DEST); } catch (_) {}
+        try { fs.copyFileSync(src, BG_VIDEO_THAI_DEST); } catch (_) {}
         console.log(`[Video] Synced new background video from ${src} to ${BG_VIDEO_DEST} (${srcStat.size} bytes)`);
       }
     } catch (e) {
@@ -216,7 +217,7 @@ app.get('/api/sync-bg-video', (req, res) => {
   res.json({ success: true, activeSrc, exists, size });
 });
 
-app.get(['/background_video.mp4', '/bg-video.mp4', '/video.mp4'], (req, res) => {
+app.get(['/background_video.mp4', '/bg-video.mp4', '/video.mp4', '/background.mp4'], (req, res) => {
   try {
     syncBgVideo();
   } catch (_) { }
