@@ -125,6 +125,40 @@ customGifts.forEach(g => {
 });
 
 // ---------------------------------------------------------------------
+// Heavenly Paradise Sanctuary Background (สวนสวรรค์ พระแม่กวนอิม)
+// Direct image deployment from user upload
+// ---------------------------------------------------------------------
+const CELESTIAL_BG_SOURCE = 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg';
+const CELESTIAL_BG_DEST = path.join(__dirname, 'public', 'background.jpg');
+const CELESTIAL_BG_PARADISE = path.join(__dirname, 'public', 'heavenly_paradise.jpg');
+
+function syncCelestialBackground() {
+  try {
+    if (fs.existsSync(CELESTIAL_BG_SOURCE)) {
+      fs.copyFileSync(CELESTIAL_BG_SOURCE, CELESTIAL_BG_DEST);
+      fs.copyFileSync(CELESTIAL_BG_SOURCE, CELESTIAL_BG_PARADISE);
+      console.log('[Background] Heavenly Paradise background synced successfully to public/background.jpg');
+    }
+  } catch (err) {
+    console.warn('[Background Sync Notice]:', err.message);
+  }
+}
+syncCelestialBackground();
+
+app.get(['/background.jpg', '/heavenly_paradise.jpg'], (req, res) => {
+  syncCelestialBackground();
+  if (fs.existsSync(CELESTIAL_BG_DEST)) {
+    res.set('Cache-Control', 'no-cache');
+    return res.sendFile(CELESTIAL_BG_DEST);
+  }
+  if (fs.existsSync(CELESTIAL_BG_SOURCE)) {
+    res.set('Cache-Control', 'no-cache');
+    return res.sendFile(CELESTIAL_BG_SOURCE);
+  }
+  res.status(404).send('Background image not found');
+});
+
+// ---------------------------------------------------------------------
 // Background Video Route (gemini_generated_video_e3c530b7.mp4)
 // High-efficiency range streaming for TikTok Live & OBS Studio
 // ---------------------------------------------------------------------
