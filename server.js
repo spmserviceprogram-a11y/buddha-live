@@ -145,6 +145,11 @@ function syncCelestialBackground() {
 }
 syncCelestialBackground();
 
+app.get('/api/sync-paradise-bg', (req, res) => {
+  syncCelestialBackground();
+  res.json({ success: true, message: 'Heavenly Paradise background synced!' });
+});
+
 app.get(['/background.jpg', '/heavenly_paradise.jpg'], (req, res) => {
   syncCelestialBackground();
   if (fs.existsSync(CELESTIAL_BG_DEST)) {
