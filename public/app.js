@@ -1608,7 +1608,7 @@ class SmartLiveMicRouter {
     this.roomToneSource = null;
     this.roomToneGain = null;
     this.lastKeepAliveIdx = -1;
-    this.nextKeepAliveMs = 52000 + Math.floor(Math.random() * 14000);
+    this.nextKeepAliveMs = 22000 + Math.floor(Math.random() * 8000); // 22s - 30s initial presence on stream start
 
     this.keepAlivePhrases = [
       'ยินดีต้อนรับกัลยาณมิตรทุกท่านเข้าสู่ลานธรรมพระแม่กวนอิม ขอให้จิตใจสงบร่มเย็นและมีความสุขนะคะ',
