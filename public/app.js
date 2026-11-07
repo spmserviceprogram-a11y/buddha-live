@@ -1460,10 +1460,10 @@ class SmartLiveMicRouter {
           if (typeof cfg.acousticsEnabled === 'boolean') this.acousticsEnabled = cfg.acousticsEnabled;
           if (typeof cfg.keepAliveEnabled === 'boolean') this.keepAliveEnabled = cfg.keepAliveEnabled;
           if (typeof cfg.dualMonitorEnabled === 'boolean') this.dualMonitorEnabled = cfg.dualMonitorEnabled;
-          this.saveSettings();
+          this.saveLocalSettings();
           const modeEl = document.getElementById('select-mic-mode');
           if (modeEl) modeEl.value = this.mode;
-          await this.refreshDeviceList(true);
+          await this.refreshDeviceList(false);
         }
       }
     } catch (_) {}
@@ -1486,15 +1486,19 @@ class SmartLiveMicRouter {
     } catch (_) {}
   }
 
-  saveSettings() {
+  saveLocalSettings() {
     try {
       localStorage.setItem('buddha_mic_mode', this.mode);
       localStorage.setItem('buddha_mic_sink_id', this.sinkId);
       localStorage.setItem('buddha_mic_acoustics', this.acousticsEnabled ? 'true' : 'false');
       localStorage.setItem('buddha_mic_keepalive', this.keepAliveEnabled ? 'true' : 'false');
       localStorage.setItem('buddha_mic_dual_monitor', this.dualMonitorEnabled ? 'true' : 'false');
+    } catch (_) {}
+  }
 
-      // Persist to server so TikTok LIVE Studio CEF inherits settings without Chrome open
+  pushServerConfig() {
+    this.saveLocalSettings();
+    try {
       fetch('/api/mic-router/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
