@@ -6289,6 +6289,7 @@ function getOmamoriPlaqueTexture() {
   canvas.width = 256;
   canvas.height = 384;
   const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, 256, 384);
 
   // Crimson-and-Gold Imperial Brocade Amulet Pouch
   const bg = ctx.createLinearGradient(0, 0, 256, 384);
