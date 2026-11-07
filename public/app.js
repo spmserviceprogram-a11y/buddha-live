@@ -10679,7 +10679,7 @@ socket.on('mic_router_sync', (data) => {
   if (typeof data.acousticsEnabled === 'boolean') smartMicRouter.acousticsEnabled = data.acousticsEnabled;
   if (typeof data.keepAliveEnabled === 'boolean') smartMicRouter.keepAliveEnabled = data.keepAliveEnabled;
   if (typeof data.dualMonitorEnabled === 'boolean') smartMicRouter.dualMonitorEnabled = data.dualMonitorEnabled;
-  smartMicRouter.saveSettings();
+  smartMicRouter.saveLocalSettings();
   const modeEl = document.getElementById('select-mic-mode');
   if (modeEl) modeEl.value = smartMicRouter.mode;
   smartMicRouter.applyGlobalRouting();
