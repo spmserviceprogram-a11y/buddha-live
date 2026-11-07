@@ -1222,11 +1222,11 @@ body {
   white-space: nowrap;
   font-weight: 700;
   font-size: 8.5px;
-  color: #ffffff;
+  color: #0f172a;
 }
 
 .queue-row.active .q-name {
-  color: #ffd700;
+  color: #92400e;
   font-weight: 800;
 }
 
@@ -1234,22 +1234,21 @@ body {
   font-size: 7px;
   font-weight: 800;
   color: #ffffff;
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-  border: 1px solid rgba(255, 215, 0, 0.65);
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  border: 1px solid #ffd700;
   padding: 0.5px 3px;
   border-radius: 2.5px;
   white-space: nowrap;
   flex-shrink: 0;
   letter-spacing: 0.1px;
-  text-shadow: 0 1px 2px #000;
 }
 
 .queue-row .q-status-waiting {
   font-size: 7px;
   font-weight: 700;
-  color: #fff8dc;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: #475569;
+  background: rgba(241, 245, 249, 0.9);
+  border: 1px solid rgba(217, 119, 6, 0.35);
   padding: 0.5px 3px;
   border-radius: 2.5px;
   white-space: nowrap;
@@ -1267,20 +1266,19 @@ body {
 .queue-row .q-combo {
   font-size: 8px;
   font-weight: 800;
-  color: #ffd700;
-  text-shadow: 0 1px 2px #000;
+  color: #b45309;
 }
 
 .sub-header-gold {
   font-size: 9.5px;
   font-family: 'Kanit', 'Sarabun', sans-serif;
   font-weight: 700;
-  color: #ffd700;
+  color: #9d174d;
   padding: 2px 5px;
-  background: linear-gradient(90deg, rgba(95, 26, 12, 0.72), rgba(32, 10, 5, 0.62));
-  border-top: 1px solid rgba(255, 215, 0, 0.42);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.42);
-  text-shadow: 0 1px 3px #000, 0 0 2px #000;
+  background: linear-gradient(90deg, rgba(254, 242, 242, 0.95), rgba(254, 243, 199, 0.95));
+  border-top: 1px solid rgba(255, 215, 0, 0.45);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.45);
+  text-shadow: none;
 }
 
 .wishes-stream {
@@ -1318,26 +1316,26 @@ body {
   align-items: center;
   gap: 2.5px;
   font-size: 8.5px;
-  color: #ffffff;
-  background: linear-gradient(90deg, rgba(44, 16, 10, 0.72), rgba(20, 7, 4, 0.62));
-  border: 1px solid rgba(255, 215, 0, 0.45);
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(217, 119, 6, 0.38);
   border-radius: 4px;
   padding: 1.5px 3.5px;
   flex-shrink: 0;
   min-height: 18px;
   line-height: 1.2;
   box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .wish-item .w-icon {
-  color: #ffd700;
+  color: #db2777;
   font-size: 8px;
   flex-shrink: 0;
-  text-shadow: 0 1px 2px #000;
 }
 
 .wish-item .w-name {
-  color: #ffd700;
+  color: #b45309;
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1345,18 +1343,16 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 8.5px;
-  text-shadow: 0 1px 3px #000, 0 0 2px #000;
 }
 
 .wish-item .w-text {
-  color: #ffffff;
+  color: #1e293b;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
   font-size: 8.5px;
-  text-shadow: 0 1px 3px #000, 0 0 2px #000;
 }
 
 .wish-item-old {
