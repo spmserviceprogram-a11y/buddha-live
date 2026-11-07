@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ห้องสวดมนต์ บารมีพระแม่กวนอิม - TikTok Live</title>
-  <link rel="stylesheet" href="style.css?v=anti_reproduced_content_v83">
+  <link rel="stylesheet" href="style.css?v=anti_reproduced_content_v84">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -545,13 +545,61 @@
           <label for="volume-slider">ระดับเสียงสมาธิ:</label>
           <input type="range" id="volume-slider" min="0" max="100" value="85" />
         </div>
+      </section>
+
+      <!-- Section 4: Smart Live Mic Router (ส่งเสียงเข้าช่องไมค์ ป้องกัน TikTok ปิดกั้นการมองเห็น) -->
+      <section class="panel-section mic-router-section">
+        <h4>4. 🎙️ Smart Live Mic Router (ส่งเสียงเข้าไมค์)</h4>
+        <div class="mic-router-status-box">
+          <div class="mic-status-header">
+            <span id="mic-router-dot" class="mic-status-dot active"></span>
+            <span id="mic-router-status-text" class="mic-status-text">กำลังจำลองคลื่นไมค์คนพูดจริง (Active)</span>
+          </div>
+          <div class="mic-vu-meter" title="ระดับสัญญาณเสียงที่ส่งเข้าช่องไมโครโฟน">
+            <div id="mic-vu-fill" class="mic-vu-fill"></div>
+          </div>
+        </div>
+
+        <div class="mic-field-group">
+          <label for="select-mic-mode">โหมดส่งสัญญาณเข้าไมค์ TikTok:</label>
+          <select id="select-mic-mode" class="mic-select">
+            <option value="stereo_mix">1. โหมด Stereo Mix / ลำโพงหลัก + คลื่นไมค์จริง (แนะนำ)</option>
+            <option value="voice_split">2. แยกเฉพาะเสียงพูดพระแม่เข้าสายไมค์จำลอง (VB-Cable)</option>
+            <option value="all_to_mic">3. ส่งเสียงทั้งหมด (เพลง+เสียงพูด) เข้าสายไมค์จำลอง</option>
+          </select>
+        </div>
+
+        <div class="mic-field-group">
+          <div class="mic-device-label-row">
+            <label for="select-mic-device">ช่องอุปกรณ์เสียงปลายทาง (Output Sink):</label>
+            <button id="btn-scan-mic-devices" type="button" class="btn-mic-scan" title="สแกนหาสายไมค์จำลอง CABLE Input / Stereo Mix">🔍 สแกนหาช่องไมค์</button>
+          </div>
+          <select id="select-mic-device" class="mic-select">
+            <option value="default">🔊 อุปกรณ์เสียงหลักของเครื่อง (Default / Stereo Mix)</option>
+          </select>
+        </div>
+
+        <div class="toggle-row">
+          <label for="chk-mic-acoustics" title="ผสมคลื่นบรรยากาศห้องและจังหวะลมหายใจอ่อนๆ ก่อนพูดให้เหมือนไมค์คนจริง">คลื่นไมค์ห้องธรรมชาติ &amp; ลมหายใจก่อนพูด:</label>
+          <input type="checkbox" id="chk-mic-acoustics" checked />
+        </div>
+        <div class="toggle-row">
+          <label for="chk-mic-keepalive" title="หากไม่มีคนพิมพ์แชทนานเกิน 50 วินาที พระแม่จะพูดเจริญพรสั้นๆ กระตุ้นแถบไมค์อัตโนมัติ">พูดกระตุ้นไมค์อัตโนมัติเมื่อห้องเงียบ (ทุก ~55 วิ):</label>
+          <input type="checkbox" id="chk-mic-keepalive" checked />
+        </div>
+        <div class="toggle-row">
+          <label for="chk-mic-dual-monitor" title="ให้ได้ยินเสียงพูดพระแม่ทางลำโพงหลักด้วยเมื่อแยกสายไมค์">ฟังเสียงพูดออกลำโพงหลักควบคู่ด้วย (Monitor):</label>
+          <input type="checkbox" id="chk-mic-dual-monitor" checked />
+        </div>
+
+        <button id="btn-test-mic-router" type="button" class="btn btn-mic-test">🎙️ ทดสอบส่งเสียงพูดเข้าช่องไมค์ทันที</button>
         <button id="btn-reset-scene" class="btn btn-danger">รีเซ็ตสถานะทั้งหมด (Reset)</button>
       </section>
     </div>
   </aside>
 
   <!-- Main Application Logic (ES Module) -->
-  <script type="module" src="app.js?v=anti_reproduced_content_v83"></script>
+  <script type="module" src="app.js?v=anti_reproduced_content_v84"></script>
 </body>
 
 </html>
