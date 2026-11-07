@@ -257,7 +257,22 @@ app.get('/api/avatar-proxy', async (req, res) => {
 // High-Definition Neural AI Voice (Google Neural TTS + Edge-TTS Multi-Tier)
 // ---------------------------------------------------------------------
 const CACHE_DIR = path.join(__dirname, 'public', 'audio_cache');
-if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+if (!fs.existsSync(CACHE_DIR)) {
+  fs.mkdirSync(CACHE_DIR, { recursive: true });
+} else {
+  // Purge dynamic cache files (preserving default_* files) so Edge-TTS generates fresh authentic voice
+  try {
+    const files = fs.readdirSync(CACHE_DIR);
+    for (const f of files) {
+      if (!f.startsWith('default_') && f.endsWith('.mp3')) {
+        try { fs.unlinkSync(path.join(CACHE_DIR, f)); } catch (_) {}
+      }
+    }
+    console.log('[TTS Cache] Cleaned stale dynamic audio cache for authentic Edge-TTS regeneration');
+  } catch (err) {
+    console.warn('[TTS Cache Clean Error]:', err.message);
+  }
+}
 
 function getFallbackAudioUrl(action = '') {
   const act = (action || '').toLowerCase();
@@ -385,7 +400,7 @@ function synthesizeEdgeTTS(clean, filename) {
   });
 }
 
-// Main Dynamic Neural TTS Orchestrator
+// Main Dynamic Neural TTS Orchestrator (Original Studio-Grade Bodhisattva Guan Yin Voice)
 async function getAudioUrlForText(text, callback, action = '') {
   const clean = (text || '').trim();
   if (!clean) return callback(null, getFallbackAudioUrl(action));
@@ -398,27 +413,36 @@ async function getAudioUrlForText(text, callback, action = '') {
     return callback(null, `/audio_cache/${filename}`);
   }
 
-  // Tier 1: Google Translate Neural Thai TTS (Direct Node.js, ultra-reliable 200ms, speaks viewer name)
-  try {
-    const googleUrl = await synthesizeGoogleTTS(clean, filename);
-    if (googleUrl) return callback(null, googleUrl);
-  } catch (err) {
-    console.warn('[Google TTS Failed, falling back to Edge TTS]:', err.message);
-  }
-
-  // Tier 2: Edge TTS via Python subprocess
+  // Tier 1: Authentic Maternal Edge-TTS (th-TH-PremwadeeNeural via tts_worker.py)
   try {
     const edgeUrl = await synthesizeEdgeTTS(clean, filename);
     if (edgeUrl) return callback(null, edgeUrl);
   } catch (err) {
-    console.warn('[Edge TTS Failed]:', err.message);
+    console.warn('[Edge TTS Primary Notice, falling back to secondary]:', err.message);
   }
 
-  // Tier 3: If dynamic synthesis fails, DO NOT fake personalized voice with generic name-less audio!
-  // Return null so client knows dynamic TTS failed and falls back to browser SpeechSynthesis (Web Speech API)
+  // Tier 2: Google Translate Neural Thai TTS (Direct Node.js Fallback)
+  try {
+    const googleUrl = await synthesizeGoogleTTS(clean, filename);
+    if (googleUrl) return callback(null, googleUrl);
+  } catch (err) {
+    console.warn('[Google TTS Fallback Notice]:', err.message);
+  }
+
+  // Tier 3: If server synthesis is unavailable, return null so client speaks via Web Speech API
   console.warn(`[TTS Engine] Dynamic audio unavailable for: "${clean.slice(0, 30)}...". Delegating to client speech.`);
   return callback(null, null);
 }
+
+// Dedicated TTS generation endpoint
+app.post('/api/tts', (req, res) => {
+  const text = (req.body?.text || '').trim();
+  if (!text) return res.status(400).json({ success: false, error: 'Text required' });
+  getAudioUrlForText(text, (err, url) => {
+    if (err || !url) return res.json({ success: false, url: null });
+    res.json({ success: true, url });
+  });
+});
 
 // Explicit route to serve index.html (with root fallback if uploaded flat on GitHub)
 app.get('/', (req, res) => {

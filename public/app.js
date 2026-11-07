@@ -23,10 +23,9 @@ class TempleAudio {
     this.bgmBufferGain = null;
     this.userMuted = false;
     this.isStartingBgm = false;
-    this.soundMode = 'zen_original'; // 'zen_original' (100% Original 432Hz Zen - Defeats Content ID) | 'chanting_file'
+    this.soundMode = 'chanting_file'; // 'chanting_file' (Authentic Sacred Da Bei Zhou MP3)
     try {
-      const savedMode = localStorage.getItem('buddha_sound_mode');
-      if (savedMode) this.soundMode = savedMode;
+      localStorage.setItem('buddha_sound_mode', 'chanting_file');
     } catch (_) {}
     this.zenMasterGain = null;
     this.zenOscs = [];
@@ -512,7 +511,6 @@ class TempleAudio {
       audioCoordinator.claimMaster();
     }
 
-    // Default to 100% Original 432Hz Zen Soundscape (Defeats Content ID completely)
     if (this.soundMode === 'zen_original') {
       this.startOriginalZenSoundscape(withBell);
       return;
@@ -1193,7 +1191,7 @@ class GuanYinDivineVoice {
       }
 
       const audio = new Audio(url);
-      audio.playbackRate = 1.15; // Brisk, rapid, fluent Thai speech pace
+      audio.playbackRate = 1.0; // Play generated Edge-TTS at authentic neural speed (preserves warm maternal timbre)
       audio.volume = Math.min(1.0, this.volume * 1.15);
       this.currentAudio = audio;
       this.isSpeaking = true;
