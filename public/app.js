@@ -11687,47 +11687,13 @@ function animate() {
   // Note: 350ms continuous smoke/ember instantiation removed to eliminate Garbage Collection stutter (กระตุกเป็นช่วงๆ)
   // Ritual incense effects remain 100% active via triggerIncenseEffect() when gifts arrive!
 
-  // ── Cinematic Multi-Angle Living Camera (Prevents TikTok Unoriginal / Looping Content Detection) ──
-  // Smoothly shifts 3D parallax and camera perspective every 32 seconds across 4 grand temple angles
-  const camTime = time * 0.42;
-  const cinematicCycle = (time * 0.031) % 4; // changes angle smoothly every ~32 seconds
-  const anglePhase = Math.floor(cinematicCycle);
-  const angleAlpha = (cinematicCycle - anglePhase); // 0.0 to 1.0 within phase
-  const smoothBlend = (1 - Math.cos(angleAlpha * Math.PI)) / 2; // smooth cosine ease-in-out
-
-  const cameraAngles = [
-    // Angle 0: Center Grand Altar Aisle (มุมกลางวิหาร สง่างาม มองตรงสู่พระพักตร์)
-    { pos: new THREE.Vector3(0, 5.15, 15.3), target: new THREE.Vector3(0, -0.28, 0) },
-    // Angle 1: Gentle Right-Wing Parallax (มุมเฉียงขวา คารวะองค์พระแม่และลานบุญ)
-    { pos: new THREE.Vector3(1.75, 4.85, 14.8), target: new THREE.Vector3(-0.25, 0.15, 0) },
-    // Angle 2: Majestic Devotional Low-Angle (มุมเงยบูชาบารมีองค์พระแม่)
-    { pos: new THREE.Vector3(0, 4.35, 14.2), target: new THREE.Vector3(0, 0.55, 0) },
-    // Angle 3: Gentle Left-Wing Parallax (มุมเฉียงซ้าย เสริมมิติพารัลแลกซ์รอบทิศ)
-    { pos: new THREE.Vector3(-1.75, 4.85, 14.8), target: new THREE.Vector3(0.25, 0.15, 0) }
-  ];
-
-  const currentCamSetup = cameraAngles[anglePhase];
-  const nextCamSetup = cameraAngles[(anglePhase + 1) % cameraAngles.length];
-
-  // Natural organic handheld drift (ensures zero repeating pixel hashes per second)
-  const driftX = Math.sin(camTime * 0.19) * 0.12 + Math.cos(camTime * 0.31) * 0.06;
-  const driftY = Math.cos(camTime * 0.23) * 0.07 + Math.sin(camTime * 0.37) * 0.03;
-  const driftZ = Math.sin(camTime * 0.17) * 0.14;
-
-  const baseCamX = THREE.MathUtils.lerp(currentCamSetup.pos.x, nextCamSetup.pos.x, smoothBlend) + driftX;
-  const baseCamY = THREE.MathUtils.lerp(currentCamSetup.pos.y, nextCamSetup.pos.y, smoothBlend) + driftY;
-  const baseCamZ = THREE.MathUtils.lerp(currentCamSetup.pos.z, nextCamSetup.pos.z, smoothBlend) + driftZ;
-
-  const targetLookX = THREE.MathUtils.lerp(currentCamSetup.target.x, nextCamSetup.target.x, smoothBlend) + driftX * 0.25;
-  const targetLookY = THREE.MathUtils.lerp(currentCamSetup.target.y, nextCamSetup.target.y, smoothBlend) + driftY * 0.20;
-  const targetLookZ = THREE.MathUtils.lerp(currentCamSetup.target.z, nextCamSetup.target.z, smoothBlend);
-
-  const targetDolly = (isStageActionRunning && activeStageActor) ? -0.40 : 0.0;
+  // ── Original Dignified Altar Overview Camera (มุมมองตรงกลาง สงบ มั่นคง สู่พระพักตร์) ──
+  const targetDolly = (isStageActionRunning && activeStageActor) ? -0.35 : 0.0;
   if (typeof window._currentCameraDolly === 'undefined') window._currentCameraDolly = 0;
   window._currentCameraDolly = THREE.MathUtils.lerp(window._currentCameraDolly, targetDolly, 0.035);
 
-  camera.position.set(baseCamX, baseCamY, baseCamZ + window._currentCameraDolly);
-  camera.lookAt(targetLookX, targetLookY, targetLookZ);
+  camera.position.set(0, 5.2, 15.5 + window._currentCameraDolly);
+  camera.lookAt(0, -0.3, 0);
 
   renderer.render(scene, camera);
 }
