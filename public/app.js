@@ -10775,6 +10775,17 @@ function handleInitialState(data) {
   if (data.tributeQueue) updateTributeQueue(data.tributeQueue);
   if (data.recentWishes) updateRecentWishes(data.recentWishes);
   if (data.prayerCategories) updatePrayerCategories(data.prayerCategories);
+  if (data.micRouterConfig && typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+    const cfg = data.micRouterConfig;
+    if (cfg.mode) smartMicRouter.mode = cfg.mode;
+    if (typeof cfg.acousticsEnabled === 'boolean') smartMicRouter.acousticsEnabled = cfg.acousticsEnabled;
+    if (typeof cfg.keepAliveEnabled === 'boolean') smartMicRouter.keepAliveEnabled = cfg.keepAliveEnabled;
+    if (typeof cfg.dualMonitorEnabled === 'boolean') smartMicRouter.dualMonitorEnabled = cfg.dualMonitorEnabled;
+    smartMicRouter.saveLocalSettings();
+    const modeEl = document.getElementById('select-mic-mode');
+    if (modeEl) modeEl.value = smartMicRouter.mode;
+    smartMicRouter.applyGlobalRouting();
+  }
 }
 
 socket.on('initial_state', handleInitialState);
