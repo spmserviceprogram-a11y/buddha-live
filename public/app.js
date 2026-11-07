@@ -8001,6 +8001,42 @@ function triggerCrystalFountainEffect() {
     bflies.push(bGroup);
   }
 
+  // 5. Twin Crystal Water Geysers & Arched Rainbow Water Bridge (น้ำพุคู่จากสระสองฝั่งเชื่อมสะพานรุ้ง)
+  const rainbowBridgeGroup = new THREE.Group();
+  const rainbowGeo = new THREE.TorusGeometry(4.2, 0.12, 12, 48, Math.PI);
+  const rainbowMat = new THREE.MeshBasicMaterial({
+    color: 0x96fff2,
+    transparent: true,
+    opacity: 0.75,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide
+  });
+  const rainbowArc = new THREE.Mesh(rainbowGeo, rainbowMat);
+  rainbowArc.position.set(0, 0.15, 3.5);
+  rainbowBridgeGroup.add(rainbowArc);
+
+  const rainbowInnerMat = new THREE.MeshBasicMaterial({
+    color: 0xff66b2,
+    transparent: true,
+    opacity: 0.50,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide
+  });
+  const rainbowInner = new THREE.Mesh(new THREE.TorusGeometry(4.0, 0.08, 10, 48, Math.PI), rainbowInnerMat);
+  rainbowInner.position.set(0, 0.15, 3.5);
+  rainbowBridgeGroup.add(rainbowInner);
+
+  [-4.2, 4.2].forEach(gx => {
+    const pRipple = new THREE.Mesh(
+      new THREE.RingGeometry(0.25, 1.25, 32),
+      new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.65, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+    );
+    pRipple.rotation.x = -Math.PI / 2;
+    pRipple.position.set(gx, 0.16, 3.5);
+    rainbowBridgeGroup.add(pRipple);
+  });
+  fountainGroup.add(rainbowBridgeGroup);
+
   const fLight = new THREE.PointLight(0x00f5d4, 4.0, 8.5);
   fLight.position.y = 1.35;
   fountainGroup.add(fLight);
@@ -8017,6 +8053,9 @@ function triggerCrystalFountainEffect() {
       vaseGroup.position.y = 1.48 + Math.sin(ft * 3.5) * 0.04;
       coreStream.scale.x = 0.9 + Math.sin(ft * 9.0) * 0.15;
       coreStream.scale.z = 0.9 + Math.cos(ft * 9.0) * 0.15;
+
+      rainbowArc.rotation.z = Math.sin(ft * 2.5) * 0.02;
+      rainbowInner.rotation.z = -Math.sin(ft * 2.5) * 0.02;
 
       // Animate parabolic cascading water streams from top bowl to bottom pool
       waterBeads.forEach(wb => {
