@@ -28,9 +28,13 @@
   <!-- 9:16 Aspect Stream Container -->
   <div id="stream-container">
 
-    <!-- Heavenly Paradise Sanctuary Container (สวนสวรรค์ พระแม่กวนอิม) -->
+    <!-- Live Motion Sanctuary Background (พื้นหลังใหม่.mp4) -->
     <div id="celestial-paradise-wrap" class="celestial-paradise-wrap">
-      <img id="bg-paradise-img" class="bg-paradise-img" src="/background.jpg?v=heavenly_paradise_v102" alt="สวนสวรรค์ พระแม่กวนอิม" />
+      <video id="bg-video" class="bg-video" autoplay loop muted playsinline webkit-playsinline preload="auto">
+        <source src="/background_video.mp4?v=scene_mp4_v1" type="video/mp4">
+        <source src="/bg-video.mp4?v=scene_mp4_v1" type="video/mp4">
+      </video>
+      <img id="bg-paradise-img" class="bg-paradise-img" src="/background.jpg" alt="พระแม่กวนอิม" style="display:none;" />
       <div class="celestial-godrays"></div>
       <div class="celestial-mist celestial-mist-1"></div>
       <div class="celestial-mist celestial-mist-2"></div>
@@ -41,9 +45,6 @@
         <div class="celestial-crane crane-2"></div>
       </div>
     </div>
-
-    <!-- Video tag kept hidden unless explicitly activated -->
-    <video id="bg-video" class="bg-video" style="display:none;" muted playsinline></video>
 
     <!-- Sacred Da Bei Zhou Chant (บทสวดไต่ปุยจิ่ว ทิเบต พระแม่กวนอิม - DOM Audio for TikTok LIVE Studio & OBS) -->
     <audio id="bgm-audio" src="/bgm.mp3" autoplay loop preload="auto" playsinline></audio>
