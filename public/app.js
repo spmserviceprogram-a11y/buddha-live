@@ -6637,21 +6637,21 @@ function triggerIncenseEffect() {
 
     const innerFlame = new THREE.Mesh(
       new THREE.ConeGeometry(0.022, 0.09, 10),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false })
     );
     innerFlame.position.y = 0.03;
     flamePivot.add(innerFlame);
 
     const outerFlame = new THREE.Mesh(
       new THREE.ConeGeometry(0.038, 0.15, 12),
-      new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false })
     );
     outerFlame.position.y = 0.045;
     flamePivot.add(outerFlame);
 
     const fGlow = new THREE.Mesh(
       new THREE.SphereGeometry(0.095, 10, 10),
-      new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.58, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.58, blending: THREE.AdditiveBlending, depthWrite: false })
     );
     fGlow.position.y = 0.04;
     flamePivot.add(fGlow);
@@ -6709,7 +6709,8 @@ function triggerIncenseEffect() {
       color: (i % 2 === 0) ? 0xffea70 : 0xffaa00,
       transparent: true,
       opacity: 0.95,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     });
     const ember = new THREE.Mesh(emberGeo, sMat);
     ember.position.set(
