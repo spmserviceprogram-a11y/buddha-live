@@ -3330,14 +3330,21 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
     ctx.arc(avatarCx, avatarCy, avatarRadius, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 5. Razor-Sharp Typography on Right (Dark Imperial Sapphire for 100% Mobile Contrast)
+    // 5. Razor-Sharp Typography on Right (Crisp Gold / White with Drop Shadow for 100% Mobile Contrast)
+    ctx.save();
     ctx.font = fontStyle;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     const textCy = avatarCy; // optical baseline center
 
-    ctx.fillStyle = isVip ? '#b45309' : '#0f172a';
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 4;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+
+    ctx.fillStyle = isVip ? '#ffd700' : '#ffffff';
     ctx.fillText(label, textX, textCy);
+    ctx.restore();
   }
 
   // Initial render (uses cached avatar if already available, else fallback)
