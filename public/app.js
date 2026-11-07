@@ -9272,7 +9272,28 @@ function triggerHeavenlyPortalEffect() {
   });
   portalGroup.add(bridgeGroup);
 
-  const pLight = new THREE.PointLight(0xffb700, 2.6, 9.0);
+  // 8. Colossal Vertical Divine Light Pillar (เสาแสงสวรรค์สีทองสาดส่องลงสู่สะพานหยกขาว)
+  const lightPillarGeo = new THREE.CylinderGeometry(1.6, 2.8, 8.5, 32, 1, true);
+  const lightPillarMat = new THREE.MeshBasicMaterial({
+    color: 0xfff6c2,
+    transparent: true,
+    opacity: 0.35,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  const lightPillar = new THREE.Mesh(lightPillarGeo, lightPillarMat);
+  lightPillar.position.set(0, -2.4, 0.4);
+  portalGroup.add(lightPillar);
+
+  const innerBeam = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.65, 1.2, 8.5, 24, 1, true),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false })
+  );
+  innerBeam.position.set(0, -2.4, 0.4);
+  portalGroup.add(innerBeam);
+
+  const pLight = new THREE.PointLight(0xffb700, 4.5, 12.0);
   pLight.position.set(0, 0.2, 0.6);
   portalGroup.add(pLight);
 
@@ -9295,6 +9316,12 @@ function triggerHeavenlyPortalEffect() {
       wheelGroup.rotation.z += 0.024;
       rayGroup.rotation.z += 0.006;
       cosmicPortal.rotation.z -= 0.014;
+
+      // Pulse and rotate colossal vertical divine light pillar
+      lightPillar.rotation.y += 0.015;
+      lightPillar.material.opacity = 0.28 + Math.sin(pt * 4.0) * 0.12;
+      innerBeam.rotation.y -= 0.022;
+      innerBeam.material.opacity = 0.45 + Math.sin(pt * 5.0) * 0.15;
 
       hangingLanterns.forEach(lan => {
         lan.rotation.z = Math.sin(pt * 3.2 + lan.userData.phase) * 0.14;
