@@ -13121,6 +13121,7 @@ function updateLiveClock() {
   }
 }
 updateLiveClock();
+setInterval(updateLiveClock, 1000);
 
 // ── Organic Ambient Devotion & Performance Auto-Tuning Engine ────────
 // Dynamically balances bot behavior, stage pacing, and render load based on real-time audience size:
@@ -13440,6 +13441,7 @@ window.triggerAmbientDevotion = triggerAmbientDevotion;
 setInterval(() => {
   // 1. Live Clock Precision Second Tick (Guarantees macroblock change every 1s)
   updateLiveClock();
+setInterval(updateLiveClock, 1000);
 
   // 2. Organic Cross-Aisle Devotee Walking & Seat Swapping (Every 14-22s, initial 4.5s)
   if (Date.now() >= nextAmbientSeatSwapTime) {
