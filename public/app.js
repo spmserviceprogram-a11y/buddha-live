@@ -4949,7 +4949,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
       if (Math.hypot(startX - targetX, startZ - targetZ) < 0.1) {
         this.root.position.set(targetX, targetLayout.y, targetZ);
         const finalPose = targetLayout.standing ? 'walk' : 'kneel';
-        this.smoothPoseTransition(finalPose, 220, () => {
+        this.smoothPoseTransition(finalPose, 110, () => {
           this.isWalking = false;
           this.isMovingSeat = false;
           if (onComplete) onComplete();
@@ -4957,13 +4957,13 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
         return;
       }
 
-      // Smooth walk transition to new VIP golden mat / seat
+      // Fast & Snappy Walk Transition to new seat (ปรับการเคลื่อนไหวสลับที่นั่งให้ไวขึ้น)
       this.isWalking = true;
       this.isMovingSeat = true;
       this._hasCrossedCenterCarpet = false;
-      this.smoothPoseTransition('walk', 220, () => {
+      this.smoothPoseTransition('walk', 110, () => {
         let t = 0;
-        const dur = 3.0; // Serene, dignified walking duration across aisles
+        const dur = 1.25; // Brisk 1.25s walking duration across aisles (was 3.0s)
         this.walkPhaseTime = 0;
         const rWalk = (spriteRatios[this.typeKey] || spriteRatios.female_buns).walk || 0.45;
         const baseWalkH = POSE_H.walk * CHIBI_SCALE;
@@ -4974,12 +4974,12 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           const ease = p * p * (3 - 2 * p);
           const env = Math.sin(p * Math.PI);
 
-          const phase = this.walkPhaseTime * 5.6;
+          const phase = this.walkPhaseTime * 9.6; // Rapid, agile stride cadence matching brisk 1.25s speed
           const cycle = 0.5 - 0.5 * Math.cos(phase * 2.0);
-          this.charSprite.position.y = 0.05 + cycle * 0.014 * (0.3 + 0.7 * env);
-          this.charSprite.material.rotation = Math.sin(phase) * 0.016 * env;
+          this.charSprite.position.y = 0.05 + cycle * 0.016 * (0.3 + 0.7 * env);
+          this.charSprite.material.rotation = Math.sin(phase) * 0.018 * env;
 
-          const stretch = 1.0 + (cycle - 0.5) * 0.020 * env;
+          const stretch = 1.0 + (cycle - 0.5) * 0.022 * env;
           this.charSprite.scale.set(baseWalkH * rWalk * (2.0 - stretch), baseWalkH * stretch, 1);
 
           const curX = THREE.MathUtils.lerp(startX, targetX, ease);
@@ -5002,7 +5002,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
             this.charSprite.position.y = 0.05;
             this.root.position.set(targetX, targetLayout.y, targetZ);
             const finalPose = targetLayout.standing ? 'walk' : 'kneel';
-            this.smoothPoseTransition(finalPose, 260, () => {
+            this.smoothPoseTransition(finalPose, 120, () => {
               this.isWalking = false;
               this.isMovingSeat = false;
               if (onComplete) onComplete();
