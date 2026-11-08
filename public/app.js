@@ -13121,7 +13121,6 @@ function updateLiveClock() {
   }
 }
 updateLiveClock();
-setInterval(updateLiveClock, 1000);
 
 // ── Organic Ambient Devotion & Performance Auto-Tuning Engine ────────
 // Dynamically balances bot behavior, stage pacing, and render load based on real-time audience size:
