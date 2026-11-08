@@ -39,6 +39,10 @@ process.on('unhandledRejection', (reason) => {
 
 
 app.use(express.json());
+app.get('/api/client-boot', (req, res) => {
+  console.log(`[CLIENT BOOT ${new Date().toISOString()}] Client browser successfully booted and running!`);
+  res.json({ ok: true });
+});
 app.post('/api/client-error', (req, res) => {
   const errData = req.body || {};
   const line = `[CLIENT ERROR ${new Date().toISOString()}] ${errData.message} at ${errData.filename}:${errData.lineno}:${errData.colno}\nSTACK: ${errData.stack || 'none'}\n\n`;
