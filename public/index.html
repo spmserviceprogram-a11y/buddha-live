@@ -670,16 +670,42 @@
 
   <!-- Global Error Boundary Shield (ดักจับ Syntax / Runtime Error ไม่ให้เว็บค้างเงียบ) -->
   <script>
+    function reportAndDisplayError(msg, src, line, col, err) {
+      try {
+        fetch('/api/client-error', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: msg, filename: src, lineno: line, colno: col, stack: err ? err.stack : null })
+        }).catch(function(){});
+      } catch (_) {}
+
+      try {
+        var box = document.getElementById('fatal-error-banner');
+        if (!box) {
+          box = document.createElement('div');
+          box.id = 'fatal-error-banner';
+          box.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999999;background:rgba(220,20,60,0.95);color:#fff;padding:16px 20px;font-family:sans-serif;font-size:14px;line-height:1.5;box-shadow:0 4px 20px rgba(0,0,0,0.5);border-bottom:3px solid #ffeb3b;';
+          document.body.appendChild(box);
+        }
+        var detail = (err && err.stack) ? ('<pre style="margin:8px 0 0;font-size:11px;max-height:150px;overflow:auto;background:rgba(0,0,0,0.3);padding:6px;">' + err.stack + '</pre>') : '';
+        box.innerHTML = '<b style="font-size:16px;">⚠️ ข้อผิดพลาด:</b> ' + msg + '<br><small>' + (src || '') + ':' + (line || '') + ':' + (col || '') + '</small>' + detail;
+      } catch (_) {}
+    }
+
     window.addEventListener('error', function(e) {
-      console.warn('[Error Shield]:', e.message, 'at', e.filename, 'line:', e.lineno);
+      console.error('[Error Shield]:', e.message, 'at', e.filename, 'line:', e.lineno);
+      reportAndDisplayError(e.message, e.filename, e.lineno, e.colno, e.error);
     });
     window.addEventListener('unhandledrejection', function(e) {
-      console.warn('[Unhandled Rejection Shield]:', e.reason);
+      console.error('[Unhandled Rejection Shield]:', e.reason);
+      var reason = e.reason;
+      var msg = reason ? (reason.message || String(reason)) : 'Unknown rejection';
+      reportAndDisplayError('Promise Rejection: ' + msg, '', '', '', reason);
     });
   </script>
 
   <!-- Main Application Logic (ES Module) -->
-  <script type="module" src="app.js?v=paradise_v19"></script>
+  <script type="module" src="app.js?v=paradise_v20"></script>
 </body>
 
 </html>
