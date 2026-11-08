@@ -1619,14 +1619,15 @@ function formatNaturalSpeakerName(rawName) {
 
 // Gemini AI Divine Guan Yin Blessing Generator
 app.post('/api/gemini/bless', async (req, res) => {
-  const { name, action, wish, giftName, effectName, effectType, coins, isGift, count } = req.body || {};
-  const spokenName = formatNaturalSpeakerName(name);
-  const cleanAction = String(action || 'กราบสักการะ').trim().slice(0, 60);
-  const cleanWish = String(wish || '').trim().slice(0, 100);
-  const cleanGift = String(giftName || '').trim() ||
-    (cleanAction.includes('ถวาย') || cleanAction.includes('ร่วมบุญ') ? cleanAction.replace(/^(ถวาย|ร่วมบุญ)/, '').trim() : '');
-  const isGiftAction = Boolean(isGift || effectName || effectType || cleanGift || cleanAction.includes('ถวาย') || cleanAction.includes('ร่วมบุญ') || cleanAction.includes('gift'));
-  const cleanEffectType = String(effectType || '').trim();
+  try {
+    const { name, action, wish, giftName, effectName, effectType, coins, isGift, count } = req.body || {};
+    const spokenName = formatNaturalSpeakerName(name);
+    const cleanAction = String(action || 'กราบสักการะ').trim().slice(0, 60);
+    const cleanWish = String(wish || '').trim().slice(0, 100);
+    const cleanGift = String(giftName || '').trim() ||
+      (cleanAction.includes('ถวาย') || cleanAction.includes('ร่วมบุญ') ? cleanAction.replace(/^(ถวาย|ร่วมบุญ)/, '').trim() : '');
+    const isGiftAction = Boolean(isGift || effectName || effectType || cleanGift || cleanAction.includes('ถวาย') || cleanAction.includes('ร่วมบุญ') || cleanAction.includes('gift'));
+    const cleanEffectType = String(effectType || '').trim();
 
   // Always resolve to the canonical 10-Tier Devotional Effect Name (never speak raw TikTok gift names)
   let spokenEffectName = String(effectName || '').trim();
