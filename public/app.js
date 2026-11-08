@@ -100,11 +100,9 @@ class TempleAudio {
       });
 
       this.bgmAudio.addEventListener('error', () => {
-        console.warn('[TempleAudio] bgmAudio playback error:', this.bgmAudio.error);
         this.ambientPlaying = false;
         this.isStartingBgm = false;
         this.syncUIState(false);
-        this.startProceduralDroneFallback();
       });
     }
 
