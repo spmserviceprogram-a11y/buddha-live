@@ -4022,34 +4022,34 @@ const CROWD_Z_NEAR = 9.2;          // bottom edge of the 9:16 frame
 const CROWD_AISLE_HALF = 0.50;     // centre carpet aisle is properly proportioned and unobstructed
 
 const congregationLayout = [
-  // ── แถวใน (INNER COLUMN 1: Seats 0..11) ติดริมพรมแดง ฝั่งละ 6 คน นั่งคุกเข่าสง่างาม ──
+  // ── แถวใน (INNER COLUMN 1: Seats 0..11) ชิดริมพรมแดง ฝั่งละ 6 คน นั่งคุกเข่าสง่างาม ──
   // TOP 5 VIP FRONT ROWS (Seats 0..4 on Golden Mats / อาสนะพรมทอง)
-  { x: -0.68, y: 0.05, z: 4.20, standing: false, isVip: true,  vipRank: 1 }, // Seat 0: Left Inner Row 1 (VIP 1)
-  { x:  0.68, y: 0.05, z: 4.20, standing: false, isVip: true,  vipRank: 2 }, // Seat 1: Right Inner Row 1 (VIP 2)
-  { x: -0.70, y: 0.05, z: 5.10, standing: false, isVip: true,  vipRank: 3 }, // Seat 2: Left Inner Row 2 (VIP 3)
-  { x:  0.70, y: 0.05, z: 5.10, standing: false, isVip: true,  vipRank: 4 }, // Seat 3: Right Inner Row 2 (VIP 4)
-  { x: -0.72, y: 0.05, z: 6.00, standing: false, isVip: true,  vipRank: 5 }, // Seat 4: Left Inner Row 3 (VIP 5)
-  { x:  0.72, y: 0.05, z: 6.00, standing: false, isVip: false },             // Seat 5: Right Inner Row 3 (Reserve VIP)
+  { x: -0.58, y: 0.05, z: 4.20, standing: false, isVip: true,  vipRank: 1 }, // Seat 0: Left Inner Row 1 (VIP 1)
+  { x:  0.58, y: 0.05, z: 4.20, standing: false, isVip: true,  vipRank: 2 }, // Seat 1: Right Inner Row 1 (VIP 2)
+  { x: -0.60, y: 0.05, z: 5.10, standing: false, isVip: true,  vipRank: 3 }, // Seat 2: Left Inner Row 2 (VIP 3)
+  { x:  0.60, y: 0.05, z: 5.10, standing: false, isVip: true,  vipRank: 4 }, // Seat 3: Right Inner Row 2 (VIP 4)
+  { x: -0.62, y: 0.05, z: 6.00, standing: false, isVip: true,  vipRank: 5 }, // Seat 4: Left Inner Row 3 (VIP 5)
+  { x:  0.62, y: 0.05, z: 6.00, standing: false, isVip: false },             // Seat 5: Right Inner Row 3 (Reserve VIP)
 
   // Inner Column Remaining Rows (All Kneeling Reverently)
-  { x: -0.74, y: 0.05, z: 6.90, standing: false, isVip: false },             // Seat 6: Left Inner Row 4
-  { x:  0.74, y: 0.05, z: 6.90, standing: false, isVip: false },             // Seat 7: Right Inner Row 4
-  { x: -0.76, y: 0.05, z: 7.80, standing: false, isVip: false },             // Seat 8: Left Inner Row 5
-  { x:  0.76, y: 0.05, z: 7.80, standing: false, isVip: false },             // Seat 9: Right Inner Row 5
-  { x: -0.78, y: 0.05, z: 8.70, standing: false, isVip: false },             // Seat 10: Left Inner Row 6
-  { x:  0.78, y: 0.05, z: 8.70, standing: false, isVip: false },             // Seat 11: Right Inner Row 6
+  { x: -0.63, y: 0.05, z: 6.90, standing: false, isVip: false },             // Seat 6: Left Inner Row 4
+  { x:  0.63, y: 0.05, z: 6.90, standing: false, isVip: false },             // Seat 7: Right Inner Row 4
+  { x: -0.64, y: 0.05, z: 7.80, standing: false, isVip: false },             // Seat 8: Left Inner Row 5
+  { x:  0.64, y: 0.05, z: 7.80, standing: false, isVip: false },             // Seat 9: Right Inner Row 5
+  { x: -0.65, y: 0.05, z: 8.70, standing: false, isVip: false },             // Seat 10: Left Inner Row 6
+  { x:  0.65, y: 0.05, z: 8.70, standing: false, isVip: false },             // Seat 11: Right Inner Row 6
 
-  // ── แถวนอก (OUTER COLUMN 2: Seats 12..21) สลับฟันปลาแกน Z ฝั่งละ 5 คน (กึ่งกลางระหว่างแถวใน สลับระยะ Y ป้ายชื่อลอยเหนือแถวใน ไม่ทับซ้อน 100%) ──
-  { x: -1.20, y: 0.05, z: 4.65, standing: true,  isVip: false },             // Seat 12: Left Outer Row 1
-  { x:  1.20, y: 0.05, z: 4.65, standing: true,  isVip: false },             // Seat 13: Right Outer Row 1
-  { x: -1.24, y: 0.05, z: 5.55, standing: false, isVip: false },             // Seat 14: Left Outer Row 2
-  { x:  1.24, y: 0.05, z: 5.55, standing: false, isVip: false },             // Seat 15: Right Outer Row 2
-  { x: -1.28, y: 0.05, z: 6.45, standing: true,  isVip: false },             // Seat 16: Left Outer Row 3
-  { x:  1.28, y: 0.05, z: 6.45, standing: true,  isVip: false },             // Seat 17: Right Outer Row 3
-  { x: -1.32, y: 0.05, z: 7.35, standing: false, isVip: false },             // Seat 18: Left Outer Row 4
-  { x:  1.32, y: 0.05, z: 7.35, standing: false, isVip: false },             // Seat 19: Right Outer Row 4
-  { x: -1.36, y: 0.05, z: 8.25, standing: true,  isVip: false },             // Seat 20: Left Outer Row 5
-  { x:  1.36, y: 0.05, z: 8.25, standing: true,  isVip: false }              // Seat 21: Right Outer Row 5
+  // ── แถวนอก (OUTER COLUMN 2: Seats 12..21) ชิดเข้าหาพรมแดง ไม่ติดขอบราวสะพาน สลับฟันปลาแกน Z ฝั่งละ 5 คน ──
+  { x: -0.96, y: 0.05, z: 4.65, standing: true,  isVip: false },             // Seat 12: Left Outer Row 1
+  { x:  0.96, y: 0.05, z: 4.65, standing: true,  isVip: false },             // Seat 13: Right Outer Row 1
+  { x: -0.98, y: 0.05, z: 5.55, standing: false, isVip: false },             // Seat 14: Left Outer Row 2
+  { x:  0.98, y: 0.05, z: 5.55, standing: false, isVip: false },             // Seat 15: Right Outer Row 2
+  { x: -1.00, y: 0.05, z: 6.45, standing: true,  isVip: false },             // Seat 16: Left Outer Row 3
+  { x:  1.00, y: 0.05, z: 6.45, standing: true,  isVip: false },             // Seat 17: Right Outer Row 3
+  { x: -1.02, y: 0.05, z: 7.35, standing: false, isVip: false },             // Seat 18: Left Outer Row 4
+  { x:  1.02, y: 0.05, z: 7.35, standing: false, isVip: false },             // Seat 19: Right Outer Row 4
+  { x: -1.04, y: 0.05, z: 8.25, standing: true,  isVip: false },             // Seat 20: Left Outer Row 5
+  { x:  1.04, y: 0.05, z: 8.25, standing: true,  isVip: false }              // Seat 21: Right Outer Row 5
 ];
 
 
