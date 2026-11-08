@@ -101,6 +101,8 @@ const gitEnv = {
   GCM_INTERACTIVE: 'never'
 };
 
+const vm = require('vm');
+
 function verifySyntax() {
   const filesToCheck = [
     path.join(__dirname, 'server.js'),
@@ -111,12 +113,13 @@ function verifySyntax() {
   for (const file of filesToCheck) {
     if (fs.existsSync(file)) {
       try {
-        execSync(`node --check "${file}"`, { stdio: 'pipe' });
+        const code = fs.readFileSync(file, 'utf8');
+        const scriptCode = code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import');
+        new vm.Script(scriptCode, { filename: path.basename(file) });
       } catch (err) {
-        const errorMsg = err.stderr ? err.stderr.toString().trim() : err.message;
         console.error(`\n❌ [SYNTAX SHIELD - COMMIT BLOCKED]`);
         console.error(`ไฟล์ ${path.basename(file)} มีข้อผิดพลาดทางไวยากรณ์ (Syntax Error):`);
-        console.error(errorMsg);
+        console.error(err.message);
         console.error(`🚨 ยกเลิกการ Commit และ Push อัตโนมัติ เพื่อป้องกันระบบบน Render/เว็บพัง\n`);
         return false;
       }
