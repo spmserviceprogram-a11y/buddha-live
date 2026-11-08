@@ -1528,6 +1528,10 @@ async function connectToTikTok(username, sessionId, apiKey) {
         isConnectingToTikTok = false;
         const timeoutMsg = `เชื่อมต่อกับ @${username} หมดเวลา (Timeout 25s) กรุณาตรวจสอบสถานะ Live หรือกรอก EulerStream API Key`;
         state.isConnected = false;
+      if (tiktokConnection) {
+        try { tiktokConnection.disconnect(); } catch (_) { }
+        tiktokConnection = null;
+      }
         state.lastError = timeoutMsg;
         io.emit('status_change', { isConnected: false, username, error: timeoutMsg });
         reject(new Error(timeoutMsg));
@@ -1553,6 +1557,10 @@ async function connectToTikTok(username, sessionId, apiKey) {
       isConnectingToTikTok = false;
       clearTimeout(timer);
       state.isConnected = false;
+      if (tiktokConnection) {
+        try { tiktokConnection.disconnect(); } catch (_) { }
+        tiktokConnection = null;
+      }
       let friendlyError = err.message;
       if (err.message.includes('rate_limit') || err.message.includes('Rate Limited') || err.message.includes('rate limit') || err.message.includes('SIGN SERVER MESSAGE')) {
         friendlyError = `[Rate Limited] ติดขีดจำกัดเชื่อมต่อฟรีของ EulerStream แนะนำให้นำ Free API Key จาก https://www.eulerstream.com/pricing มากรอกในช่อง 🔑 API Key เพื่อปลดล็อกทันที`;
