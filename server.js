@@ -1589,28 +1589,6 @@ async function connectToTikTok(username, sessionId, apiKey) {
 }
 
 // REST Endpoints
-
-// Neural AI Voice TTS Endpoint
-app.get('/api/tts', (req, res) => {
-  const text = (typeof req.query.text === 'string' ? req.query.text : '').trim().slice(0, 300);
-  if (!text) return res.status(400).json({ success: false, error: 'Text required' });
-
-  getAudioUrlForText(text, (err, url) => {
-    if (err) return res.status(500).json({ success: false, error: err.message });
-    res.json({ success: true, url });
-  });
-});
-
-app.post('/api/tts', (req, res) => {
-  const text = (typeof req.body?.text === 'string' ? req.body.text : '').trim().slice(0, 300);
-  if (!text) return res.status(400).json({ success: false, error: 'Text required' });
-
-  getAudioUrlForText(text, (err, url) => {
-    if (err) return res.status(500).json({ success: false, error: err.message });
-    res.json({ success: true, url });
-  });
-});
-
 const INAPPROPRIATE_WORDS_REGEX = /(กู|มึง|เย็ด|ควย|เหี้ย|สัส|สัด|จวย|หำ|ห่า|เงี่ยน|แตด|ดอกทอง|ชิบหาย|ชาติชั่ว|หมาบ้า|fuck|shit|bitch|cunt|dick|pussy|porn|sex)/gi;
 
 function formatNaturalSpeakerName(rawName) {
