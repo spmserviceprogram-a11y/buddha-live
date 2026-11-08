@@ -14391,34 +14391,23 @@ function createHeavenlyFX(THREE, scene, camera, opts = {}) {
 
 
 // ---------------------------------------------------------------------
-// 9.1 Wiring: ครอบ trigger ของขวัญทั้ง 10 ระดับ → เล่นเอฟเฟคสวรรค์เสริมทับของเดิม (ไม่แก้ตรรกะเดิม)
+// 9.1 Wiring: Heavenly FX Screen & Particle Layer
 // ---------------------------------------------------------------------
 const heavenlyFX = createHeavenlyFX(THREE, scene, camera);
 window.heavenlyFX = heavenlyFX; // ทดสอบ: heavenlyFX.play('dragon')
 
-function withHeavenlyFX(original, tier) {
-  return function (...args) {
-    let result;
-    try {
-      result = original.apply(this, args);
-    } catch (err) {
-      console.error(`[GiftEffect Error: ${tier}]`, err);
-    }
-    try { heavenlyFX.play(tier); } catch (err) { console.warn('[HeavenlyFX]', tier, err); }
-    return result;
-  };
-}
-triggerKowtowEffect         = withHeavenlyFX(triggerKowtowEffect, 'kowtow');
-triggerIncenseEffect        = withHeavenlyFX(triggerIncenseEffect, 'incense');
-triggerLotusBloomEffect     = withHeavenlyFX(triggerLotusBloomEffect, 'lotus');
-triggerLotusRainEffect      = withHeavenlyFX(triggerLotusRainEffect, 'flowers');
-triggerGoldenBellEffect     = withHeavenlyFX(triggerGoldenBellEffect, 'golden_bell');
-triggerCrystalFountainEffect = withHeavenlyFX(triggerCrystalFountainEffect, 'crystal_fountain');
-triggerRoyalCarriageEffect  = withHeavenlyFX(triggerRoyalCarriageEffect, 'royal_carriage');
-triggerFireworksEffect      = withHeavenlyFX(triggerFireworksEffect, 'fireworks');
-triggerHeavenlyPortalEffect = withHeavenlyFX(triggerHeavenlyPortalEffect, 'castle');
-triggerDragonDescentEffect  = withHeavenlyFX(triggerDragonDescentEffect, 'dragon');
-triggerSeamSiEffect         = withHeavenlyFX(triggerSeamSiEffect, 'seamsi');
+// Expose effect triggers on window for test harness and global availability
+window.triggerKowtowEffect          = triggerKowtowEffect;
+window.triggerIncenseEffect         = triggerIncenseEffect;
+window.triggerLotusBloomEffect      = triggerLotusBloomEffect;
+window.triggerLotusRainEffect       = triggerLotusRainEffect;
+window.triggerGoldenBellEffect      = triggerGoldenBellEffect;
+window.triggerCrystalFountainEffect = triggerCrystalFountainEffect;
+window.triggerRoyalCarriageEffect   = triggerRoyalCarriageEffect;
+window.triggerFireworksEffect       = triggerFireworksEffect;
+window.triggerHeavenlyPortalEffect  = triggerHeavenlyPortalEffect;
+window.triggerDragonDescentEffect   = triggerDragonDescentEffect;
+window.triggerSeamSiEffect          = triggerSeamSiEffect;
 
 // Universal Test Harness for Live Stream Gifts (ทดสอบเอฟเฟกต์ของขวัญทั้ง 10 ระดับ)
 window.testGiftEffect = function(tier) {
