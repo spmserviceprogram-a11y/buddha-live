@@ -100,8 +100,15 @@ function verifySyntax() {
     if (fs.existsSync(file)) {
       try {
         const code = fs.readFileSync(file, 'utf8');
-        const scriptCode = code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import');
-        new vm.Script(scriptCode, { filename: path.basename(file) });
+        if (file.endsWith('app.js')) {
+          if (vm.SourceTextModule) {
+            new vm.SourceTextModule(code, { identifier: path.basename(file) });
+          } else {
+            new vm.Script('"use strict";\n' + code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import'), { filename: path.basename(file) });
+          }
+        } else {
+          new vm.Script(code, { filename: path.basename(file) });
+        }
       } catch (err) {
         console.error(`\n❌ [SYNTAX SHIELD - COMMIT BLOCKED]`);
         console.error(`ไฟล์ ${path.basename(file)} มีข้อผิดพลาดทางไวยากรณ์ (Syntax Error):`);
