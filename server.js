@@ -39,6 +39,15 @@ process.on('unhandledRejection', (reason) => {
 
 
 app.use(express.json());
+app.post('/api/client-error', (req, res) => {
+  const errData = req.body || {};
+  const line = `[CLIENT ERROR ${new Date().toISOString()}] ${errData.message} at ${errData.filename}:${errData.lineno}:${errData.colno}\nSTACK: ${errData.stack || 'none'}\n\n`;
+  console.error(line);
+  try {
+    fs.appendFileSync(path.join(__dirname, 'client-error.log'), line, 'utf8');
+  } catch (_) {}
+  res.json({ ok: true });
+});
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.set('Pragma', 'no-cache');
