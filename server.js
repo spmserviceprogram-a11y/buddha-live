@@ -99,7 +99,7 @@ const customGifts = [
   },
   {
     route: ['/seamsi.png', '/seamsi.webp', '/hari_raya.png', '/love_you.png', '/hug_heart.png'],
-    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1793976636041_08732252.png',
+    source: path.join(__dirname, 'public', 'seamsi.png'),
     dest: path.join(__dirname, 'public', 'seamsi.png')
   }
 ];
