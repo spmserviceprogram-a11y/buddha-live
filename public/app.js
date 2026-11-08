@@ -13136,13 +13136,13 @@ function getAdaptiveAmbientConfig() {
 }
 
 const recentAmbientDevoteeSeats = [];
-let nextAmbientSeatSwapTime = Date.now() + 4500; // First cross-aisle walk begins just 4.5s after load!
+let nextAmbientSeatSwapTime = Date.now() + 2500; // First brisk seat swap begins shortly after load!
 let nextAmbientDevotionTime = Date.now() + 26000 + Math.random() * 8000;
 let nextAmbientMicroActionTime = Date.now() + 11000;
 
 function scheduleNextAmbientSeatSwap(extraDelayMs = 0) {
-  // Continuous 14s - 22s cadence: Ensures human-like 3D cross-aisle motion destroys any video-loop detection
-  const baseDelay = 14000 + Math.random() * 8000;
+  // Brisk, active 7s - 11s cadence: Keeps the congregation lively, agile & dynamic
+  const baseDelay = 7000 + Math.random() * 4000;
   nextAmbientSeatSwapTime = Date.now() + baseDelay + extraDelayMs;
 }
 
