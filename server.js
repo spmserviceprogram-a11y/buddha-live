@@ -1138,7 +1138,7 @@ function extractTikTokGift(data) {
 
   // If giftName was wrapped in describe text like "ส่ง ดอกกุหลาบ x 1" or "user: sent Rose x 1"
   if (rawName) {
-    const cleanMatch = rawName.match(/(?:ส่ง|sent)\s+([^x\d]+)(?:\s+x\s*\d+)?/i);
+    const cleanMatch = rawName.match(/(?:ส่ง|sent)\s+(.*?)(?:\s+x\s*\d+)?$/i);
     if (cleanMatch && cleanMatch[1]) {
       rawName = cleanMatch[1].trim();
     }
