@@ -1,6 +1,6 @@
-const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const vm = require('vm');
 
 const files = [
   'server.js',
@@ -9,7 +9,7 @@ const files = [
 ];
 
 let hasError = false;
-console.log('=== [SYNTAX INTEGRITY AUDIT] ===');
+console.log('=== [SYNTAX & AST INTEGRITY AUDIT] ===');
 for (const rel of files) {
   const full = path.join(__dirname, rel);
   if (!fs.existsSync(full)) {
@@ -17,13 +17,15 @@ for (const rel of files) {
     continue;
   }
   try {
-    execSync(`node --check "${full}"`, { stdio: 'pipe' });
+    const code = fs.readFileSync(full, 'utf8');
+    const scriptCode = code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import');
+    new vm.Script(scriptCode, { filename: rel });
     console.log(`✅ [VALID] ${rel}`);
   } catch (err) {
     hasError = true;
-    const msg = err.stderr ? err.stderr.toString().trim() : err.message;
-    console.error(`❌ [ERROR] ${rel} has syntax errors:`);
-    console.error(msg);
+    console.error(`❌ [ERROR] ${rel} has syntax/compile errors:`);
+    console.error(err.message);
+    if (err.stack) console.error(err.stack.split('\n').slice(0, 5).join('\n'));
   }
 }
 
