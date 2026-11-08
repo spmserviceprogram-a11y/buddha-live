@@ -2351,13 +2351,13 @@ setTimeout(() => {
   }
 }, 3000);
 
-// Auto-Reconnect & Connection Keeper: Keeps live stream connected 24/7
+// Auto-Reconnect & Connection Keeper: Reconnects automatically if a live session drops
 setInterval(() => {
-  if (!state.isConnected && !state.userExplicitlyDisconnected) {
+  if (!state.isConnected && !state.userExplicitlyDisconnected && state.roomId) {
     const target = state.tiktokUsername || bootChannel;
     if (target) {
       connectToTikTok(target, null, bootApiKey).then(room => {
-        console.log(`[TikTok Keeper] Connected to @${target} (Room: ${room?.roomId})`);
+        console.log(`[TikTok Keeper] Reconnected to @${target} (Room: ${room?.roomId})`);
       }).catch(() => {
         // Quietly wait for next cycle
       });
