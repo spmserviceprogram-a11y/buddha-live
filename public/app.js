@@ -568,8 +568,10 @@ class TempleAudio {
               startHarmonicTimer();
               return;
             }
-            // If file playback fails or blocked, gracefully activate 100% Original Zen Soundscape
-            this.startOriginalZenSoundscape(false);
+            // If file playback fails or not found, stay silent until user uploads a new track
+            this.ambientPlaying = false;
+            this.isStartingBgm = false;
+            this.syncUIState(false);
           });
       } else {
         this.isStartingBgm = false;
