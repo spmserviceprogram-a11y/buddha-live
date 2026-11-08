@@ -4384,17 +4384,31 @@ body {
 }
 .seamsi-popup-ribbon {
   background: linear-gradient(90deg, #f2b73a 0%, #fff3b8 50%, #f2b73a 100%);
-  color: #6b0a14;
+  color: #5a0710;
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
   box-shadow: 0 2px 6px rgba(60, 10, 0, 0.6), 0 0 10px rgba(255, 230, 120, 0.95);
 }
 .seamsi-popup-ring {
   background: radial-gradient(circle, rgba(255, 245, 190, 0.55) 0%, rgba(110, 12, 24, 0.92) 78%);
   box-shadow: 0 0 10px rgba(255, 230, 120, 0.9), 0 0 0 1px rgba(63, 209, 163, 0.6), inset 0 0 6px rgba(255, 230, 120, 0.55);
 }
-.seamsi-popup-title { color: var(--hv-gold-hi); text-shadow: 0 1px 3px rgba(40, 0, 0, 0.95), 0 0 8px rgba(255, 216, 107, 0.55); }
+.seamsi-popup-title {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: #fffde6;
+  -webkit-text-fill-color: #fffde6;
+  text-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.95), 0 0 4px #000, 0 0 10px rgba(255, 216, 107, 0.95);
+}
 .seamsi-popup-sub .sub-pill {
-  background: linear-gradient(90deg, rgba(255, 130, 175, 0.8), rgba(214, 60, 120, 0.8));
-  border-color: var(--hv-gold-hi);
+  font-size: 9.2px;
+  font-weight: 800;
+  padding: 2px 7px;
+  background: linear-gradient(90deg, rgba(225, 29, 72, 0.92), rgba(180, 20, 60, 0.92));
+  border-color: #ffd700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000;
 }
 
 @media (prefers-reduced-motion: reduce) {
