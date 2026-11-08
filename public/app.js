@@ -11176,8 +11176,8 @@ function processStageActionQueue() {
   }
 
   if (actor) {
+    actor.stopAllMovement(true);
     activeStageActor = actor;
-    actor.stopAllMovement();
     if (name) {
       if (actor.nameplate) {
         safeDisposeSprite(actor.nameplate);
