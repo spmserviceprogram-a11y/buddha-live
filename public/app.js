@@ -13400,7 +13400,6 @@ try {
 } catch (_) {}
 
 // Celestial Paradise Sanctuary Background Image Engine
-const bgParadiseImg = document.getElementById('bg-paradise-img');
 if (bgParadiseImg) {
   bgParadiseImg.style.display = 'block';
 }
