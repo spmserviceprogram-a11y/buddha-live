@@ -9471,7 +9471,6 @@ function triggerHeavenlyPortalEffect() {
       rayGroup.children.forEach((rm, idx) => {
         rm.material.opacity = 0.04 + Math.sin(pt * 3.5 + idx) * 0.02;
       });
-      });
 
       if (Math.random() < 0.45) {
         spawnBlessingSparks(
