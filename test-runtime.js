@@ -154,10 +154,10 @@ const context = vm.createContext({
   webkitAudioContext: MockAudioContext,
   THREE: THREE,
   console: console,
-  setTimeout: setTimeout,
-  clearTimeout: clearTimeout,
-  setInterval: setInterval,
-  clearInterval: clearInterval
+  setTimeout: () => 1,
+  clearTimeout: () => {},
+  setInterval: () => 1,
+  clearInterval: () => {}
 });
 
 try {
