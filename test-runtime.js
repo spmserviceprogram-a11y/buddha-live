@@ -68,6 +68,33 @@ const mockDoc = {
   removeEventListener: () => {}
 };
 
+class MockAudioContext {
+  constructor() {
+    this.destination = {};
+  }
+  createGain() {
+    return {
+      connect: () => {},
+      gain: { value: 1, setValueAtTime: () => {}, linearRampToValueAtTime: () => {} }
+    };
+  }
+  createBiquadFilter() {
+    return {
+      connect: () => {},
+      frequency: { value: 1000 },
+      Q: { value: 1 }
+    };
+  }
+  createOscillator() {
+    return {
+      connect: () => {},
+      frequency: { value: 440 },
+      start: () => {},
+      stop: () => {}
+    };
+  }
+}
+
 const mockWindow = {
   document: mockDoc,
   location: { href: 'http://localhost:3000', search: '', pathname: '/' },
@@ -100,30 +127,18 @@ const mockWindow = {
     on: () => {},
     emit: () => {}
   }),
+  AudioContext: MockAudioContext,
+  webkitAudioContext: MockAudioContext,
   AbortController: global.AbortController
 };
 
 global.window = mockWindow;
 global.document = mockDoc;
 global.navigator = { userAgent: 'NodeMock' };
+global.AudioContext = MockAudioContext;
+global.webkitAudioContext = MockAudioContext;
 
 const THREE = require('three');
-
-class MockWebGLRenderer {
-  constructor() {
-    this.domElement = createMockElement('canvas');
-    this.shadowMap = {};
-    this.toneMapping = 0;
-    this.toneMappingExposure = 1;
-    this.outputColorSpace = '';
-  }
-  setSize() {}
-  setPixelRatio() {}
-  render() {}
-  dispose() {}
-}
-THREE.WebGLRenderer = MockWebGLRenderer;
-mockWindow.THREE = THREE;
 
 const context = vm.createContext({
   ...mockWindow,
@@ -135,6 +150,8 @@ const context = vm.createContext({
   Image: mockWindow.Image,
   fetch: mockWindow.fetch,
   AbortController: global.AbortController,
+  AudioContext: MockAudioContext,
+  webkitAudioContext: MockAudioContext,
   THREE: THREE,
   console: console,
   setTimeout: setTimeout,
@@ -146,9 +163,14 @@ const context = vm.createContext({
 try {
   let code = fs.readFileSync(path.join(__dirname, 'public', 'app.js'), 'utf8');
   code = code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import');
+  // Replace WebGLRenderer instantiation with a dummy object
+  code = code.replace(
+    /const renderer = new THREE\.WebGLRenderer\([^)]*\);?/,
+    'const renderer = { domElement: document.createElement("canvas"), shadowMap: {}, setSize: ()=>{}, setPixelRatio: ()=>{}, render: ()=>{} };'
+  );
   console.log('Running app.js in simulated browser runtime...');
   vm.runInContext(code, context, { filename: 'app.js' });
-  console.log('🎉 SUCCESS! app.js executed from line 1 to line 14423 without any exceptions!');
+  console.log('🎉🎉🎉 SUCCESS! app.js executed from line 1 to line 14423 without any exceptions!');
 } catch (err) {
   console.error('❌ Top-level runtime error in app.js:');
   console.error(err);
