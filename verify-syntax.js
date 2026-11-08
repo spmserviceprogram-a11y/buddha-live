@@ -18,8 +18,16 @@ for (const rel of files) {
   }
   try {
     const code = fs.readFileSync(full, 'utf8');
-    const scriptCode = code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import');
-    new vm.Script(scriptCode, { filename: rel });
+    if (rel === 'public/app.js') {
+      // Test as real ES Module
+      if (vm.SourceTextModule) {
+        new vm.SourceTextModule(code, { identifier: rel });
+      } else {
+        new vm.Script('"use strict";\n' + code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import'), { filename: rel });
+      }
+    } else {
+      new vm.Script(code, { filename: rel });
+    }
     console.log(`✅ [VALID] ${rel}`);
   } catch (err) {
     hasError = true;
