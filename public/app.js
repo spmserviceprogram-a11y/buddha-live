@@ -1092,12 +1092,15 @@ class GuanYinDivineVoice {
           fallbackText = `ขอบคุณคุณ ${cleanSpeakerName} ขอพระแม่ประทานพรให้โชคดีมีสุขนะคะ`;
         }
 
-        const res = await fetch('/api/gemini/bless', {
+        const fetchPromise = fetch('/api/gemini/bless', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(task.payload),
           signal: abortSignal
         }).then(r => r.json()).catch(() => null);
+
+        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 6500));
+        const res = await Promise.race([fetchPromise, timeoutPromise]);
 
         if (abortSignal.aborted) return;
 
