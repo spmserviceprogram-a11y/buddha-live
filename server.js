@@ -129,6 +129,7 @@ customGifts.forEach(g => {
 // Direct image deployment from user upload
 // ---------------------------------------------------------------------
 const CELESTIAL_BG_CANDIDATES = [
+  'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794097878899_b03508f1.jpg',
   'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794069169198_f8371fbf.jpg',
   'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg'
 ];
