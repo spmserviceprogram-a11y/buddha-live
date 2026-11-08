@@ -13241,7 +13241,7 @@ function triggerAmbientSeatSwap() {
     dA.moveToNewSeat(seatB);
   }
 
-  // Devotee B starts slightly staggered (320ms) for an organic, human-like cadence
+  // Devotee B starts slightly staggered (110ms) for an organic, human-like cadence
   setTimeout(() => {
     if (dB && dB.moveToNewSeat && !dB.isPerformingAltarRitual) {
       dB.moveToNewSeat(seatA, () => {
@@ -13250,7 +13250,7 @@ function triggerAmbientSeatSwap() {
     } else {
       scheduleNextAmbientSeatSwap();
     }
-  }, 320);
+  }, 110);
 
   return true;
 }
