@@ -133,6 +133,7 @@ const CELESTIAL_BG_CANDIDATES = [
   'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794069169198_f8371fbf.jpg',
   'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794047302649_51e079b8.jpg'
 ];
+const CELESTIAL_BG_SOURCE = CELESTIAL_BG_CANDIDATES[0];
 const CELESTIAL_BG_DEST = path.join(__dirname, 'public', 'background.jpg');
 const CELESTIAL_BG_PARADISE = path.join(__dirname, 'public', 'heavenly_paradise.jpg');
 
@@ -164,15 +165,19 @@ app.get('/api/sync-paradise-bg', (req, res) => {
 });
 
 app.get(['/background.jpg', '/heavenly_paradise.jpg'], (req, res) => {
-  if (fs.existsSync(CELESTIAL_BG_DEST)) {
-    res.set('Cache-Control', 'no-cache');
-    return res.sendFile(CELESTIAL_BG_DEST);
+  try {
+    if (fs.existsSync(CELESTIAL_BG_DEST)) {
+      res.set('Cache-Control', 'no-cache');
+      return res.sendFile(CELESTIAL_BG_DEST);
+    }
+    if (CELESTIAL_BG_SOURCE && fs.existsSync(CELESTIAL_BG_SOURCE)) {
+      res.set('Cache-Control', 'no-cache');
+      return res.sendFile(CELESTIAL_BG_SOURCE);
+    }
+    res.status(404).send('Background image not found');
+  } catch (err) {
+    res.status(500).send('Error serving background');
   }
-  if (fs.existsSync(CELESTIAL_BG_SOURCE)) {
-    res.set('Cache-Control', 'no-cache');
-    return res.sendFile(CELESTIAL_BG_SOURCE);
-  }
-  res.status(404).send('Background image not found');
 });
 
 // ---------------------------------------------------------------------
