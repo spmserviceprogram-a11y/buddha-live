@@ -280,35 +280,20 @@ app.get(['/background_video.mp4', '/bg-video.mp4', '/video.mp4', '/background.mp
 });
 
 // ---------------------------------------------------------------------
-// Authentic Da Bei Zhou Sacred Chanting Soundtrack (Original MP3)
+// Background Music Handler (User Configurable: place new audio into public/bgm.mp3)
 // ---------------------------------------------------------------------
 const bgmPublicDir = path.join(__dirname, 'public');
 const bgmTargetPath = path.join(bgmPublicDir, 'bgm.mp3');
-const bgmBackupPath = path.join(bgmPublicDir, 'bgm_backup_commercial.mp3');
-
-try {
-  // Ensure the authentic Da Bei Zhou sacred chanting audio is restored and preserved
-  if (fs.existsSync(bgmBackupPath)) {
-    if (!fs.existsSync(bgmTargetPath) || fs.statSync(bgmBackupPath).size !== fs.statSync(bgmTargetPath).size) {
-      fs.copyFileSync(bgmBackupPath, bgmTargetPath);
-      console.log('[BGM Audio] Restored authentic Da Bei Zhou sacred chanting audio to public/bgm.mp3');
-    }
-  }
-} catch (e) {
-  console.warn('[BGM Restore Error]:', e.message);
-}
 
 app.get(['/bgm.mp3', '/bgm.wav', '/bgm_zen_original.wav'], (req, res) => {
-  const fileToServe = fs.existsSync(bgmTargetPath) ? bgmTargetPath : (fs.existsSync(bgmBackupPath) ? bgmBackupPath : null);
-
-  if (fileToServe) {
+  if (fs.existsSync(bgmTargetPath)) {
     res.set('Content-Type', 'audio/mpeg');
     res.set('Accept-Ranges', 'bytes');
     res.set('Cache-Control', 'no-cache');
-    return res.sendFile(fileToServe);
+    return res.sendFile(bgmTargetPath);
   }
 
-  res.status(404).send('BGM track not found');
+  res.status(404).send('BGM track not found (ready for new song)');
 });
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
