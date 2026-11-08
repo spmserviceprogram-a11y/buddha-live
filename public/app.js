@@ -11255,6 +11255,15 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
   const activeGiftInfo = { ...(giftInfo || {}), icon: giftIcon, name: giftName, image: giftImg };
   const qLen = stageActionQueue.length;
 
+  // Trigger Celestial Heavenly FX Screen & Particle Layer
+  try {
+    if (window.heavenlyFX && typeof window.heavenlyFX.play === 'function') {
+      window.heavenlyFX.play(type);
+    }
+  } catch (hfxErr) {
+    console.warn('[HeavenlyFX Trigger]', type, hfxErr);
+  }
+
   if (type === 'kowtow') {
     // Authentic 3-Phase Benjangkhapradit Prostrations in 2D Chibi with dynamic queue pacing
     if (!isAmbient) {
