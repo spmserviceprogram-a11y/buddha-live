@@ -1305,7 +1305,6 @@ async function connectToTikTok(username, sessionId, apiKey) {
     });
   };
   tiktokConnection.on('member', handleMemberJoin);
-  tiktokConnection.on('join', handleMemberJoin);
 
   // Event: Room Viewers Count (อัปเดตยอดคนดู & ซิงค์ผู้ชมนั่งในวิหาร)
   tiktokConnection.on('roomUser', data => {
@@ -2049,7 +2048,7 @@ app.post('/api/simulate', (req, res) => {
       uniqueId: payload?.uniqueId || autoId,
       nickname: payload?.nickname || 'ผู้เจริญสติใหม่',
       avatar: payload?.avatar
-    }, false);
+    }, false, true);
 
     io.emit('action_join', {
       disciple,
@@ -2212,8 +2211,36 @@ app.post('/api/simulate', (req, res) => {
   res.status(400).json({ success: false, error: 'Unknown event type' });
 });
 
+// Universal Server-Wide Single Speech Master:
+// Guarantees that across OBS Studio, TikTok LIVE Studio, Chrome, Opera, and multi-tabs,
+// EXACTLY ONE client tab or process can ever speak AI blessings or trigger Keep-Alive!
+let activeSpeechMasterSocketId = null;
+let activeSpeechMasterTabId = null;
+let speechMasterLastSeen = 0;
+
+function broadcastSpeechMaster() {
+  io.emit('speech_master_update', {
+    masterSocketId: activeSpeechMasterSocketId,
+    masterTabId: activeSpeechMasterTabId,
+    timestamp: Date.now()
+  });
+}
+
 // Socket.IO connection handler
 io.on('connection', socket => {
+  const clientTabId = socket.handshake.query?.tabId || null;
+  const isVoiceDisabled = socket.handshake.query?.voice === '0' || socket.handshake.query?.display === '1';
+
+  const now = Date.now();
+  if (!isVoiceDisabled) {
+    if (!activeSpeechMasterSocketId || !io.sockets.sockets.has(activeSpeechMasterSocketId) || (now - speechMasterLastSeen > 8000)) {
+      activeSpeechMasterSocketId = socket.id;
+      activeSpeechMasterTabId = clientTabId;
+      speechMasterLastSeen = now;
+      console.log(`[Speech Master] Assigned initial Speech Master to socket ${socket.id} (${clientTabId || 'unknown tab'})`);
+    }
+  }
+
   socket.emit('initial_state', {
     isConnected: state.isConnected,
     tiktokUsername: state.tiktokUsername,
@@ -2224,7 +2251,58 @@ io.on('connection', socket => {
     tributeQueue: state.tributeQueue,
     recentWishes: state.recentWishes,
     prayerCategories: state.prayerCategories,
-    micRouterConfig: state.micRouterConfig
+    micRouterConfig: state.micRouterConfig,
+    speechMasterSocketId: activeSpeechMasterSocketId,
+    speechMasterTabId: activeSpeechMasterTabId,
+    isSpeechMaster: (socket.id === activeSpeechMasterSocketId)
+  });
+
+  socket.on('speech_master_heartbeat', data => {
+    if (socket.id === activeSpeechMasterSocketId) {
+      speechMasterLastSeen = Date.now();
+      if (data?.tabId) activeSpeechMasterTabId = data.tabId;
+    }
+  });
+
+  socket.on('claim_speech_master', data => {
+    activeSpeechMasterSocketId = socket.id;
+    activeSpeechMasterTabId = data?.tabId || null;
+    speechMasterLastSeen = Date.now();
+    console.log(`[Speech Master] Socket ${socket.id} (${activeSpeechMasterTabId || 'tab'}) explicitly claimed Speech Master.`);
+    broadcastSpeechMaster();
+  });
+
+  socket.on('yield_speech_master', () => {
+    if (activeSpeechMasterSocketId === socket.id) {
+      activeSpeechMasterSocketId = null;
+      activeSpeechMasterTabId = null;
+      for (const [id, s] of io.sockets.sockets.entries()) {
+        if (id !== socket.id && s.connected) {
+          activeSpeechMasterSocketId = id;
+          activeSpeechMasterTabId = s.handshake.query?.tabId || null;
+          speechMasterLastSeen = Date.now();
+          break;
+        }
+      }
+      broadcastSpeechMaster();
+    }
+  });
+
+  socket.on('disconnect', () => {
+    if (activeSpeechMasterSocketId === socket.id) {
+      console.log(`[Speech Master] Master socket ${socket.id} disconnected. Re-electing active master.`);
+      activeSpeechMasterSocketId = null;
+      activeSpeechMasterTabId = null;
+      for (const [id, s] of io.sockets.sockets.entries()) {
+        if (id !== socket.id && s.connected) {
+          activeSpeechMasterSocketId = id;
+          activeSpeechMasterTabId = s.handshake.query?.tabId || null;
+          speechMasterLastSeen = Date.now();
+          break;
+        }
+      }
+      broadcastSpeechMaster();
+    }
   });
 
   socket.on('connect-tiktok', data => {
@@ -2295,6 +2373,33 @@ server.on('error', err => {
 server.listen(PORT, () => {
   console.log(`[Server] Buddha TikTok Live Stream Server running on http://localhost:${PORT}`);
 });
+
+// Periodic Speech Master Watchdog:
+// Automatically recovers and re-elects an active Speech Master if the previous master closed or halted
+setInterval(() => {
+  if (io.sockets && io.sockets.sockets && io.sockets.sockets.size > 0) {
+    const now = Date.now();
+    const hasValidMaster = activeSpeechMasterSocketId &&
+      io.sockets.sockets.has(activeSpeechMasterSocketId) &&
+      (now - speechMasterLastSeen < 9000);
+
+    if (!hasValidMaster) {
+      for (const [id, s] of io.sockets.sockets.entries()) {
+        if (s.connected) {
+          activeSpeechMasterSocketId = id;
+          activeSpeechMasterTabId = s.handshake.query?.tabId || null;
+          speechMasterLastSeen = now;
+          console.log(`[Speech Master Watchdog] Elected socket ${id} as central Speech Master.`);
+          broadcastSpeechMaster();
+          break;
+        }
+      }
+    }
+  } else {
+    activeSpeechMasterSocketId = null;
+    activeSpeechMasterTabId = null;
+  }
+}, 3500);
 
 // Devotional Tribute Queue & Streak Auto-Expiry Sweep:
 // If live stream is idle or ceremony completed, automatically dequeue stale entries older than 35s

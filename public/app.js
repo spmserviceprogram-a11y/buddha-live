@@ -866,6 +866,8 @@ class GuanYinDivineVoice {
     this.queue = [];
     this.isSpeaking = false;
     this.isProcessing = false;
+    this.isGenerating = false;
+    this._currentPlaybackResolver = null;
     this.currentAudio = null;
     this.currentTask = null;
     this.currentAbortController = null;
@@ -956,6 +958,13 @@ class GuanYinDivineVoice {
     if (this.synth) {
       try { this.synth.cancel(); } catch (_) {}
     }
+    if (this._currentPlaybackResolver) {
+      const r = this._currentPlaybackResolver;
+      this._currentPlaybackResolver = null;
+      try { r(); } catch (_) {}
+    }
+    this.isSpeaking = false;
+    this.isGenerating = false;
     if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
       templeAudio.duckBgm(false, 300);
     }
@@ -966,6 +975,19 @@ class GuanYinDivineVoice {
     if (typeof speechCoordinator !== 'undefined' && speechCoordinator && !speechCoordinator.canSpeak()) {
       return;
     }
+
+    // High Priority Preemption:
+    // When a Gift Blessing arrives (priority: 1), immediately abort any lower-priority in-flight task
+    // (such as long welcome greetings, keep-alive watchdogs, or casual chat replies)
+    // and purge lower-priority tasks so the donor's blessing speaks immediately without overlap!
+    if (item.priority === 1) {
+      if (this.currentTask && (this.currentTask.priority || 3) > 1) {
+        console.log(`[GuanYin Voice] Preempting lower-priority speech (${this.currentTask.payload?.action || 'speech'}) for gift blessing!`);
+        this.abortCurrentTask();
+      }
+      this.queue = this.queue.filter(q => (q.priority || 3) <= 1);
+    }
+
     this.queue.push(item);
     // Sort so Priority 1 (gifts) always play first, while keeping arrival order
     this.queue.sort((a, b) => (a.priority || 3) - (b.priority || 3));
@@ -1002,6 +1024,12 @@ class GuanYinDivineVoice {
     this.currentTask = task;
     this.currentAbortController = new AbortController();
     const abortSignal = this.currentAbortController.signal;
+    this.isSpeaking = true;
+    this.isGenerating = true;
+    this.lastSpokenAt = Date.now();
+    if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+      smartMicRouter.onVoiceStart();
+    }
 
     try {
       if (abortSignal.aborted) return;
@@ -1165,6 +1193,7 @@ class GuanYinDivineVoice {
     } finally {
       this.currentTask = null;
       this.currentAbortController = null;
+      this.isGenerating = false;
     }
   }
 
@@ -1175,7 +1204,12 @@ class GuanYinDivineVoice {
 
   playAudioUrl(url, maxMs = 12000) {
     return new Promise(resolve => {
-      // Cleanly stop any existing playing audio to guarantee zero overlap
+      // 1. Immediately cancel any running Web Speech API synthesis to guarantee zero voice overlap
+      if (this.synth) {
+        try { this.synth.cancel(); } catch (_) {}
+      }
+
+      // 2. Cleanly stop any existing playing audio to guarantee zero overlap
       if (this.currentAudio) {
         try {
           this.currentAudio.pause();
@@ -1198,12 +1232,14 @@ class GuanYinDivineVoice {
       audio.volume = Math.min(1.0, this.volume * 1.15);
       this.currentAudio = audio;
       this.isSpeaking = true;
+      this.isGenerating = false;
       this.lastSpokenAt = Date.now();
 
       let hasEnded = false;
       const endPlayback = () => {
         if (hasEnded) return;
         hasEnded = true;
+        this._currentPlaybackResolver = null;
         clearTimeout(timeout);
         this.currentAudio = null;
         this.isSpeaking = false;
@@ -1218,6 +1254,7 @@ class GuanYinDivineVoice {
         resolve();
       };
 
+      this._currentPlaybackResolver = endPlayback;
       const timeout = setTimeout(endPlayback, maxMs);
 
       audio.onended = endPlayback;
@@ -1239,6 +1276,16 @@ class GuanYinDivineVoice {
   playBrowserTTS(text, maxMs = 8000) {
     return new Promise(resolve => {
       if (!this.synth || !this.thaiVoice) return resolve();
+
+      // 1. Cleanly stop any existing playing audio to guarantee zero overlap
+      if (this.currentAudio) {
+        try {
+          this.currentAudio.pause();
+          this.currentAudio.src = '';
+        } catch (_) {}
+        this.currentAudio = null;
+      }
+
       try {
         this.synth.cancel(); // Stop any pending utterances
       } catch (_) {}
@@ -1260,6 +1307,7 @@ class GuanYinDivineVoice {
       }
 
       this.isSpeaking = true;
+      this.isGenerating = false;
       this.lastSpokenAt = Date.now();
       if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
         smartMicRouter.onVoiceStart();
@@ -1269,6 +1317,7 @@ class GuanYinDivineVoice {
       const endTTS = () => {
         if (done) return;
         done = true;
+        this._currentPlaybackResolver = null;
         clearTimeout(timeout);
         this.isSpeaking = false;
         this.lastSpokenAt = Date.now();
@@ -1281,6 +1330,7 @@ class GuanYinDivineVoice {
         }
         resolve();
       };
+      this._currentPlaybackResolver = endTTS;
       const timeout = setTimeout(endTTS, maxMs);
 
       utter.onend = endTTS;
@@ -1508,6 +1558,11 @@ class GuanYinDivineVoice {
 
   stopAll() {
     this.queue = [];
+    if (this._currentPlaybackResolver) {
+      const r = this._currentPlaybackResolver;
+      this._currentPlaybackResolver = null;
+      try { r(); } catch (_) {}
+    }
     if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
       templeAudio.duckBgm(false, 200);
     }
@@ -1522,7 +1577,11 @@ class GuanYinDivineVoice {
       try { this.synth.cancel(); } catch (_) {}
     }
     this.isSpeaking = false;
+    this.isGenerating = false;
     this.isProcessing = false;
+    if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+      smartMicRouter.onVoiceEnd();
+    }
   }
 
   // Generic direct speech
@@ -1549,6 +1608,8 @@ class BuddhaSpeechCoordinator {
     this.tabId = 'speech_tab_' + Math.random().toString(36).slice(2, 9) + '_' + Date.now();
     this.channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('buddha_speech_coordinator') : null;
     this.isMaster = false;
+    this.socket = null;
+    this.serverMasterSocketId = null;
     this.heartbeatTimer = null;
     this.watchdogTimer = null;
 
@@ -1575,14 +1636,14 @@ class BuddhaSpeechCoordinator {
         if (msg.type === 'CLAIM_SPEECH_MASTER') {
           if (this.isMaster) {
             console.log('[SpeechCoordinator] Another tab claimed Speech Master. Yielding leadership.');
-            this.yieldMaster();
+            this.yieldMaster(false);
           }
         } else if (msg.type === 'SPEECH_HEARTBEAT') {
           if (this.isMaster && msg.tabId !== this.tabId) {
             // Tie-break: older tabId wins
             if (msg.tabId < this.tabId) {
               console.log('[SpeechCoordinator] Resolving split-brain: yielding to older tab:', msg.tabId);
-              this.yieldMaster();
+              this.yieldMaster(false);
             }
           }
         }
@@ -1603,12 +1664,82 @@ class BuddhaSpeechCoordinator {
     });
   }
 
+  bindSocket(sock) {
+    if (!sock) return;
+    this.socket = sock;
+
+    sock.on('initial_state', (data) => {
+      if (data && data.speechMasterSocketId !== undefined) {
+        this.updateMasterFromServer(data.speechMasterSocketId === sock.id, data.speechMasterSocketId);
+      }
+    });
+
+    sock.on('speech_master_update', (data) => {
+      if (data && data.masterSocketId !== undefined) {
+        this.updateMasterFromServer(data.masterSocketId === sock.id, data.masterSocketId);
+      }
+    });
+
+    // Check URL override: ?master=1 or ?voice=1 forces this tab to claim master
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('master') === '1' || params.get('voice') === '1') {
+        setTimeout(() => this.claimMaster(), 600);
+      }
+    } catch (_) {}
+
+    setInterval(() => {
+      if (this.isMaster && this.socket && this.socket.connected) {
+        this.socket.emit('speech_master_heartbeat', { tabId: this.tabId });
+      }
+    }, 2500);
+  }
+
+  updateMasterFromServer(isMaster, masterSocketId) {
+    this.serverMasterSocketId = masterSocketId;
+    if (isMaster) {
+      if (!this.isMaster) {
+        this.isMaster = true;
+        if (this.voice) this.voice.enabled = true;
+        try {
+          localStorage.setItem('buddha_speech_master_tab', this.tabId);
+          localStorage.setItem('buddha_speech_master_time', Date.now().toString());
+        } catch (_) {}
+        console.log('[SpeechCoordinator] Central Server appointed this tab as ACTIVE SPEECH MASTER 🎙️');
+        if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+          smartMicRouter.updateStatusText();
+        }
+      }
+    } else {
+      if (this.isMaster) {
+        this.isMaster = false;
+        if (this.voice) {
+          this.voice.stopAll();
+          this.voice.enabled = false;
+        }
+        console.log('[SpeechCoordinator] Another tab/process is Speech Master. Voice silenced on this tab 🔒');
+        if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+          smartMicRouter.updateStatusText();
+        }
+      }
+    }
+  }
+
   evaluateLeadership() {
     try {
       const params = new URLSearchParams(window.location.search);
       if (params.get('voice') === '0' || params.get('no_voice') === '1' || params.get('display') === '1') {
         this.isMaster = false;
         if (this.voice) this.voice.enabled = false;
+        return;
+      }
+
+      // If connected to server, server has final authority across OBS, Studio, and browsers
+      if (this.socket && this.socket.connected && this.serverMasterSocketId) {
+        const isServerMaster = (this.socket.id === this.serverMasterSocketId);
+        if (this.isMaster !== isServerMaster) {
+          this.updateMasterFromServer(isServerMaster, this.serverMasterSocketId);
+        }
         return;
       }
 
@@ -1626,7 +1757,7 @@ class BuddhaSpeechCoordinator {
       // If active master exists and is fresh (< 2800ms old)
       if (activeMaster && (now - activeTime < 2800)) {
         if (this.isMaster) {
-          this.yieldMaster();
+          this.yieldMaster(false);
         }
         return;
       }
@@ -1649,12 +1780,19 @@ class BuddhaSpeechCoordinator {
       this.channel.postMessage({ type: 'CLAIM_SPEECH_MASTER', tabId: this.tabId });
     }
 
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('claim_speech_master', { tabId: this.tabId });
+    }
+
     if (this.voice) {
       this.voice.enabled = true;
     }
 
     this.sendHeartbeat();
     console.log('[SpeechCoordinator] This tab is now the ACTIVE SPEECH MASTER 🎙️');
+    if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+      smartMicRouter.updateStatusText();
+    }
   }
 
   sendHeartbeat() {
@@ -1666,13 +1804,19 @@ class BuddhaSpeechCoordinator {
     }
   }
 
-  yieldMaster() {
+  yieldMaster(notifyServer = true) {
     this.isMaster = false;
     if (this.voice) {
       this.voice.stopAll();
       this.voice.enabled = false;
     }
+    if (notifyServer && this.socket && this.socket.connected) {
+      this.socket.emit('yield_speech_master');
+    }
     console.log('[SpeechCoordinator] Yielded Speech Master. Voice disabled on this secondary tab to prevent speech overlap.');
+    if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
+      smartMicRouter.updateStatusText();
+    }
   }
 
   releaseMaster() {
@@ -1683,11 +1827,17 @@ class BuddhaSpeechCoordinator {
           localStorage.removeItem('buddha_speech_master_tab');
         }
       } catch (_) {}
+      if (this.socket && this.socket.connected) {
+        this.socket.emit('yield_speech_master');
+      }
     }
   }
 
   canSpeak() {
-    return this.isMaster;
+    if (this.socket && this.socket.connected && this.serverMasterSocketId) {
+      return Boolean(this.isMaster && this.socket.id === this.serverMasterSocketId);
+    }
+    return Boolean(this.isMaster);
   }
 }
 
@@ -1947,7 +2097,7 @@ class SmartLiveMicRouter {
       if (this.mode === 'voice_split' && this.dualMonitorEnabled && url) {
         try {
           const mon = new Audio(url);
-          mon.playbackRate = audioEl.playbackRate || 1.15;
+          mon.playbackRate = audioEl.playbackRate || 1.0;
           mon.volume = Math.min(1.0, (audioEl.volume || 0.95) * 0.85);
           this.monitorAudio = mon;
           mon.play().catch(() => {});
@@ -2012,7 +2162,7 @@ class SmartLiveMicRouter {
       if (!this.keepAliveEnabled) return;
       if (typeof speechCoordinator !== 'undefined' && speechCoordinator && !speechCoordinator.canSpeak()) return;
       if (!this.voiceEngine || !this.voiceEngine.enabled) return;
-      if (this.voiceEngine.isSpeaking || this.voiceEngine.isProcessing || this.voiceEngine.queue.length > 0) return;
+      if (this.voiceEngine.isSpeaking || this.voiceEngine.isProcessing || this.voiceEngine.isGenerating || this.voiceEngine.queue.length > 0) return;
 
       const lastSpoken = this.voiceEngine.lastSpokenAt || 0;
       const idleMs = Date.now() - lastSpoken;
@@ -2127,8 +2277,18 @@ class SmartLiveMicRouter {
 
     const isMasterTab = typeof speechCoordinator !== 'undefined' && speechCoordinator ? speechCoordinator.canSpeak() : true;
     if (!isMasterTab) {
-      statusEl.textContent = '🔒 ระบบเสียงพูดควบคุมอยู่ที่แท็บหลัก (หน้านี้ปิดเสียงพูดอัตโนมัติเพื่อป้องกันเสียงพูดซ้อน 100%)';
+      statusEl.innerHTML = '🔒 ควบคุมเสียงอยู่ที่หน้าหลัก (ปิดเสียงหน้านี้เพื่อกันเสียงซ้อน 100%) <button id="btn-claim-mic-master" style="margin-left:6px;padding:2px 8px;font-size:11px;background:#eab308;color:#000;border:none;border-radius:4px;cursor:pointer;font-weight:bold;">🎙️ ถือไมค์พูดหน้านี้</button>';
       statusEl.style.color = '#93c5fd';
+      const claimBtn = document.getElementById('btn-claim-mic-master');
+      if (claimBtn && !claimBtn._bound) {
+        claimBtn._bound = true;
+        claimBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (typeof speechCoordinator !== 'undefined' && speechCoordinator) {
+            speechCoordinator.claimMaster();
+          }
+        });
+      }
       return;
     }
 
@@ -11804,8 +11964,16 @@ const socket = io({
   transports: ['websocket', 'polling'],
   reconnection: true,
   reconnectionAttempts: Infinity,
-  reconnectionDelay: 1000
+  reconnectionDelay: 1000,
+  query: {
+    tabId: typeof speechCoordinator !== 'undefined' ? speechCoordinator.tabId : 'tab_' + Date.now(),
+    voice: new URLSearchParams(window.location.search).get('voice') || ''
+  }
 });
+
+if (typeof speechCoordinator !== 'undefined' && speechCoordinator) {
+  speechCoordinator.bindSocket(socket);
+}
 
 socket.on('state_reset', () => {
   clientSadhuScores = [];
@@ -12029,11 +12197,31 @@ socket.on('like', (data) => {
   document.getElementById('like-count').textContent = extractNumber(data?.totalLikeCount ?? data, 0);
 });
 
+const clientSeenEventKeys = new Map();
+function isDuplicateClientEvent(key, ttlMs = 2000) {
+  if (!key) return false;
+  const now = Date.now();
+  if (clientSeenEventKeys.has(key)) {
+    const prev = clientSeenEventKeys.get(key);
+    if (now - prev < ttlMs) return true;
+  }
+  clientSeenEventKeys.set(key, now);
+  if (clientSeenEventKeys.size > 400) {
+    for (const [k, v] of clientSeenEventKeys.entries()) {
+      if (now - v > 15000) clientSeenEventKeys.delete(k);
+    }
+  }
+  return false;
+}
+
 const recentJoinedViewers = new Map();
 
 const onNewDisciple = (discipleData) => {
   const d = (discipleData && discipleData.disciple) ? discipleData.disciple : discipleData;
   if (!d) return;
+
+  const dedupKey = `join_${d.userId || d.uniqueId || d.nickname || ''}`;
+  if (isDuplicateClientEvent(dedupKey, 2000)) return;
 
   unlockAndStartAudio(); // Guarantee audio context is active for new arrivals!
 
@@ -12092,9 +12280,12 @@ socket.on('member', (data) => {
 
 // Follow Event: Graceful Devotional Bow + Radiant Aura + Banner + Guan Yin Voice
 const onFollowEvent = (followData) => {
-  unlockAndStartAudio();
   const d = (followData && followData.disciple) ? followData.disciple : followData;
   const name = d?.nickname || d?.uniqueId || 'ผู้มีจิตศรัทธา';
+
+  const followKey = `follow_${d?.userId || d?.uniqueId || name}`;
+  if (isDuplicateClientEvent(followKey, 4000)) return;
+  unlockAndStartAudio();
 
   triggerFollowerBanner(name);
 
@@ -12180,9 +12371,12 @@ const userLastGreetingAt = new Map();
 
 const onChatMessage = (chat) => {
   if (!chat) return;
-  unlockAndStartAudio();
   const user = chat.nickname || chat.uniqueId || 'ผู้เจริญสติ';
   const text = chat.comment || chat.message || '';
+
+  const chatKey = `chat_${chat.userId || chat.uniqueId || user}_${text}`;
+  if (isDuplicateClientEvent(chatKey, 1500)) return;
+  unlockAndStartAudio();
   appendChatMessage(user, text);
   if (text && text.trim()) {
     pushRecentWishClient(user, text.trim());
@@ -12251,11 +12445,15 @@ socket.on('chat', onChatMessage);
 
 const onGiftEvent = (gift) => {
   if (!gift) return;
-  unlockAndStartAudio();
   const coins = gift.totalDiamonds || gift.diamondCount || gift.repeatCount || gift.coins || 1;
   const giftCount = gift.repeatCount || (gift.isStreakable ? 1 : 1);
   const donor = gift.nickname || gift.uniqueId || 'ผู้มีจิตศรัทธา';
   const giftName = gift.giftName || (coins >= 30 ? 'บุปผามงคล' : (coins >= 10 ? 'ดอกบัวทิพย์' : (coins >= 5 ? 'ประทีปธูปหอม' : 'ดอกกุหลาบ')));
+
+  const streakTag = gift.isStreakable ? `_s${giftCount}_c${coins}` : `_c${coins}`;
+  const giftKey = `gift_${gift.userId || gift.uniqueId || donor}_${giftName}${streakTag}`;
+  if (isDuplicateClientEvent(giftKey, 800)) return;
+  unlockAndStartAudio();
   const giftIcon = gift.giftIcon || (coins >= 30 ? '🌸' : (coins >= 10 ? '🪷' : (coins >= 5 ? '🪔' : '🌹')));
 
   // Derive effectType & canonical effectName FIRST so AI voice and banner have the exact ritual effect
