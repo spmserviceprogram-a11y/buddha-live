@@ -3454,17 +3454,7 @@ function createPrayerSpeechBubble(name, wish) {
 
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-  // 1. Soft Golden Celestial Aura Glow
-  ctx.save();
-  const auraGrad = ctx.createRadialGradient(cx, by + bh / 2, bw * 0.2, cx, by + bh / 2, bw * 0.72);
-  auraGrad.addColorStop(0.0, 'rgba(255, 215, 64, 0.26)');
-  auraGrad.addColorStop(0.55, 'rgba(255, 180, 40, 0.09)');
-  auraGrad.addColorStop(1.0, 'rgba(255, 180, 40, 0.0)');
-  ctx.fillStyle = auraGrad;
-  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-  ctx.restore();
-
-  // 2. Pure White Porcelain / Ivory Lacquer Card Body + Pointer Tail
+  // 1. Clean Modern Borderless Card Body + Pointer Tail (นำกรอบสีทองออกตามคำขอ)
   const r = Math.min(br, bw / 2, bh / 2);
   const bRight = bx + bw;
   const bBottom = by + bh;
@@ -3484,24 +3474,15 @@ function createPrayerSpeechBubble(name, wish) {
   ctx.quadraticCurveTo(bx, by, bx + r, by);
   ctx.closePath();
 
-  // 50% Translucent Dark Glass Card Body + Pointer Tail
+  // Dark Translucent Glass Body (ไร้กรอบสีทอง สะอาดตา คมชัด)
   const cardGrad = ctx.createLinearGradient(bx, by, bx, bBottom);
-  cardGrad.addColorStop(0.0, 'rgba(20, 10, 6, 0.50)');
-  cardGrad.addColorStop(0.85, 'rgba(30, 14, 8, 0.50)');
-  cardGrad.addColorStop(1.0, 'rgba(15, 6, 4, 0.50)');
+  cardGrad.addColorStop(0.0, 'rgba(18, 9, 6, 0.75)');
+  cardGrad.addColorStop(0.85, 'rgba(28, 12, 8, 0.75)');
+  cardGrad.addColorStop(1.0, 'rgba(14, 6, 4, 0.75)');
   ctx.fillStyle = cardGrad;
   ctx.fill();
 
-  // 3. 24K Polished Gold Filigree Border
-  const goldBorder = ctx.createLinearGradient(bx, by, bRight, bBottom);
-  goldBorder.addColorStop(0.0, '#ffd700');
-  goldBorder.addColorStop(0.5, '#d4af37');
-  goldBorder.addColorStop(1.0, '#854d0e');
-  ctx.lineWidth = 2.4;
-  ctx.strokeStyle = goldBorder;
-  ctx.stroke();
-
-  // 4. Ruby Red Header Pill at Top
+  // 2. Ruby Red Header Pill at Top (Borderless)
   const pillW = Math.min(bw - 20, headerW);
   const pillH = 22;
   const pillX = cx - pillW / 2;
@@ -3516,13 +3497,10 @@ function createPrayerSpeechBubble(name, wish) {
     ctx.rect(pillX, pillY, pillW, pillH);
   }
   const pillGrad = ctx.createLinearGradient(pillX, pillY, pillX, pillY + pillH);
-  pillGrad.addColorStop(0.0, 'rgba(219, 39, 119, 0.75)');
-  pillGrad.addColorStop(1.0, 'rgba(157, 23, 77, 0.75)');
+  pillGrad.addColorStop(0.0, 'rgba(219, 39, 119, 0.85)');
+  pillGrad.addColorStop(1.0, 'rgba(157, 23, 77, 0.85)');
   ctx.fillStyle = pillGrad;
   ctx.fill();
-  ctx.lineWidth = 1.2;
-  ctx.strokeStyle = '#ffd700';
-  ctx.stroke();
 
   ctx.font = headerFont;
   ctx.textAlign = 'center';
