@@ -1929,13 +1929,23 @@ app.post('/api/gemini/bless', async (req, res) => {
     }
   }
 
-  getAudioUrlForText(blessing, (err, url) => {
+    getAudioUrlForText(blessing, (err, url) => {
+      res.json({
+        success: true,
+        blessingText: blessing,
+        audioUrl: err ? null : url
+      });
+    }, cleanAction);
+  } catch (err) {
+    console.error('[Gemini AI Bless Error Catch]:', err.message);
+    const fallbackName = formatNaturalSpeakerName(req.body?.name);
+    const fallbackText = `อนุโมทนาบุญคุณ ${fallbackName} ขอให้สมปรารถนานะคะ`;
     res.json({
       success: true,
-      blessingText: blessing,
-      audioUrl: err ? null : url
+      blessingText: fallbackText,
+      audioUrl: null
     });
-  }, cleanAction);
+  }
 });
 
 app.get('/api/status', (req, res) => {
