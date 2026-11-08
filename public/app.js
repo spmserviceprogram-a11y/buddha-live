@@ -7705,14 +7705,14 @@ function triggerGoldenBellEffect() {
   strikerGroup.add(strikerHead);
   bellGroup.add(strikerGroup);
 
-  // 4. Triple Concentric 3D Expanding Dharma Shockwave Rings (คลื่นฉัพพรรณรังสี 3 มิติ)
+  // 4. Triple Concentric 3D Expanding Dharma Shockwave Rings (คลื่นฉัพพรรณรังสี 3 มิติ แสงนวลสบายตา ไม่บังพระแม่)
   const haloTex = getBellHaloTexture();
   const haloMesh = new THREE.Mesh(
     new THREE.RingGeometry(0.32, 2.65, 48),
     new THREE.MeshBasicMaterial({
       map: haloTex,
       transparent: true,
-      opacity: 0.92,
+      opacity: 0.28,
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       depthWrite: false
@@ -7723,14 +7723,14 @@ function triggerGoldenBellEffect() {
 
   const waveRing2 = new THREE.Mesh(
     new THREE.RingGeometry(0.45, 3.05, 48),
-    new THREE.MeshBasicMaterial({ color: 0x00f5d4, side: THREE.DoubleSide, transparent: true, opacity: 0.58, blending: THREE.AdditiveBlending, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0x00f5d4, side: THREE.DoubleSide, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   waveRing2.position.set(0, -0.20, -0.30);
   bellGroup.add(waveRing2);
 
   const waveRing3 = new THREE.Mesh(
     new THREE.RingGeometry(0.60, 3.85, 48),
-    new THREE.MeshBasicMaterial({ color: 0xff66b2, side: THREE.DoubleSide, transparent: true, opacity: 0.52, blending: THREE.AdditiveBlending, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0xff66b2, side: THREE.DoubleSide, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   waveRing3.position.set(0, -0.22, -0.35);
   bellGroup.add(waveRing3);
@@ -7738,7 +7738,7 @@ function triggerGoldenBellEffect() {
   // Horizontal Acoustic Shockwave Ring expanding outward from Bell Lip
   const sonicRing = new THREE.Mesh(
     new THREE.RingGeometry(0.55, 0.72, 48),
-    new THREE.MeshBasicMaterial({ color: 0xffe875, side: THREE.DoubleSide, transparent: true, opacity: 0.90, blending: THREE.AdditiveBlending, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0xffe875, side: THREE.DoubleSide, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   sonicRing.rotation.x = Math.PI / 2;
   sonicRing.position.set(0, -0.42, 0);
@@ -7758,7 +7758,8 @@ function triggerGoldenBellEffect() {
     bellSparks.push(spk);
   }
 
-  const bellLight = new THREE.PointLight(0xffea00, 4.2, 9.0);
+  // แสงนวลทองละมุนตา สบายตา ไม่สว่างจ้ากลบองค์พระแม่กวนอิม
+  const bellLight = new THREE.PointLight(0xffea00, 1.2, 5.0);
   bellLight.position.set(0, -0.2, 0.3);
   bellGroup.add(bellLight);
 
@@ -7791,7 +7792,7 @@ function triggerGoldenBellEffect() {
       // Pulse horizontal acoustic ring outward every cycle
       const sonicPhase = (t * 0.85) % 1.0;
       sonicRing.scale.setScalar(1.0 + sonicPhase * 3.4);
-      sonicRing.material.opacity = (1.0 - sonicPhase) * 0.85;
+      sonicRing.material.opacity = (1.0 - sonicPhase) * 0.35;
 
       bellSparks.forEach(sp => {
         sp.userData.ang += sp.userData.speed * 0.03;
@@ -9234,14 +9235,14 @@ function triggerHeavenlyPortalEffect() {
     portalGroup.add(colGroup);
   });
 
-  // 3. Cosmic Nirvana Mandala Vortex & 12-Spoke Spinning Golden Wheel of Dharma (ห้วงจักรวาลทิพย์นิพพาน)
+  // 3. Cosmic Nirvana Mandala Vortex & 12-Spoke Spinning Golden Wheel of Dharma (ห้วงจักรวาลทิพย์นิพพาน แสงละมุนนวลตา)
   const cosmicPortal = new THREE.Mesh(
     new THREE.CircleGeometry(1.75, 48),
     new THREE.MeshBasicMaterial({
       map: getLotusPondTexture(),
       color: 0x96fff2,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.30,
       side: THREE.DoubleSide,
       blending: THREE.AdditiveBlending,
       depthWrite: false
@@ -9263,7 +9264,7 @@ function triggerHeavenlyPortalEffect() {
   }
   portalGroup.add(wheelGroup);
 
-  // 4. 16 Volumetric Radiant God-Rays (ลำแสงฉัพพรรณรังสีสวรรค์ 16 แฉก)
+  // 4. 16 Volumetric Radiant God-Rays (ลำแสงฉัพพรรณรังสีสวรรค์ 16 แฉก แสงโปร่งตา)
   const rayGroup = new THREE.Group();
   rayGroup.position.set(0, 0.20, -0.10);
   for (let r = 0; r < 16; r++) {
@@ -9273,7 +9274,7 @@ function triggerHeavenlyPortalEffect() {
       new THREE.MeshBasicMaterial({
         color: (r % 2 === 0) ? 0xffb700 : 0xf59e0b,
         transparent: true,
-        opacity: 0.08,
+        opacity: 0.035,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
         depthWrite: false
@@ -9343,11 +9344,11 @@ function triggerHeavenlyPortalEffect() {
     lionGroup.position.set(lx, -1.9, 0.42);
     lionGroup.rotation.y = (lIdx === 0) ? 0.22 : -0.22;
 
-    // Tiered Carved Plinth Pedestal
-    const plinthBase = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.36, 0.66), crimsonPalaceMat);
+    // Tiered Carved Plinth Pedestal (ฐานสิงโตทองคำและหยกขาวสวรรค์ ไร้กล่องดำทึบ 100%)
+    const plinthBase = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.16, 0.66), jadeMat);
     lionGroup.add(plinthBase);
-    const plinthTop = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.07, 0.72), goldMat);
-    plinthTop.position.y = 0.20;
+    const plinthTop = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.06, 0.72), goldMat);
+    plinthTop.position.y = 0.10;
     lionGroup.add(plinthTop);
 
     // Muscular Seated Haunches & Chest
@@ -9408,29 +9409,12 @@ function triggerHeavenlyPortalEffect() {
     portalGroup.add(lionGroup);
   });
 
-  // 7. Arched White-Jade & Gold Rainbow Bridge at Portal Threshold (สะพานหยกขาวสู่มหาวิมาน)
-  const bridgeGroup = new THREE.Group();
-  bridgeGroup.position.set(0, -1.92, 0.55);
-  const bridgeDeck = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.35, 2.2, 24, 1, false, -0.55, 1.10), crimsonPalaceMat);
-  bridgeDeck.rotation.z = Math.PI / 2;
-  bridgeDeck.position.y = -1.05;
-  bridgeGroup.add(bridgeDeck);
-
-  [-1.02, 1.02].forEach(bx => {
-    for (let post = -1; post <= 1; post++) {
-      const pPost = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.042, 0.34, 8), goldMat);
-      pPost.position.set(bx, 0.36 - Math.abs(post) * 0.06, post * 0.34);
-      bridgeGroup.add(pPost);
-    }
-  });
-  portalGroup.add(bridgeGroup);
-
-  // 8. Colossal Vertical Divine Light Pillar (เสาแสงสวรรค์สีทองสาดส่องลงสู่สะพานหยกขาว)
+  // 7. Colossal Vertical Divine Light Pillar (เสาแสงสวรรค์สีทองสาดส่อง นวลตาละมุน ไม่บังพระพักตร์พระแม่)
   const lightPillarGeo = new THREE.CylinderGeometry(1.6, 2.8, 8.5, 32, 1, true);
   const lightPillarMat = new THREE.MeshBasicMaterial({
     color: 0xfff6c2,
     transparent: true,
-    opacity: 0.35,
+    opacity: 0.14,
     blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide,
     depthWrite: false
@@ -9441,12 +9425,13 @@ function triggerHeavenlyPortalEffect() {
 
   const innerBeam = new THREE.Mesh(
     new THREE.CylinderGeometry(0.65, 1.2, 8.5, 24, 1, true),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0xffea70, transparent: true, opacity: 0.10, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false })
   );
   innerBeam.position.set(0, -2.4, 0.4);
   portalGroup.add(innerBeam);
 
-  const pLight = new THREE.PointLight(0xffb700, 4.5, 12.0);
+  // แสงนวลทองละมุนตา สบายตา ไม่จ้ากลบองค์พระแม่กวนอิม
+  const pLight = new THREE.PointLight(0xffb700, 1.2, 6.0);
   pLight.position.set(0, 0.2, 0.6);
   portalGroup.add(pLight);
 
@@ -9470,18 +9455,19 @@ function triggerHeavenlyPortalEffect() {
       rayGroup.rotation.z += 0.006;
       cosmicPortal.rotation.z -= 0.014;
 
-      // Pulse and rotate colossal vertical divine light pillar
+      // Pulse and rotate colossal vertical divine light pillar (ละมุนตา ไม่สว่างกลบพระแม่)
       lightPillar.rotation.y += 0.015;
-      lightPillar.material.opacity = 0.28 + Math.sin(pt * 4.0) * 0.12;
+      lightPillar.material.opacity = 0.12 + Math.sin(pt * 4.0) * 0.04;
       innerBeam.rotation.y -= 0.022;
-      innerBeam.material.opacity = 0.45 + Math.sin(pt * 5.0) * 0.15;
+      innerBeam.material.opacity = 0.10 + Math.sin(pt * 5.0) * 0.03;
 
       hangingLanterns.forEach(lan => {
         lan.rotation.z = Math.sin(pt * 3.2 + lan.userData.phase) * 0.14;
       });
 
       rayGroup.children.forEach((rm, idx) => {
-        rm.material.opacity = 0.22 + Math.sin(pt * 3.5 + idx) * 0.14;
+        rm.material.opacity = 0.04 + Math.sin(pt * 3.5 + idx) * 0.02;
+      });
       });
 
       if (Math.random() < 0.45) {
@@ -13411,41 +13397,14 @@ try {
   }).catch(() => {});
 } catch (_) {}
 
+// Celestial Paradise Sanctuary Background Image Engine
+const bgParadiseImg = document.getElementById('bg-paradise-img');
+if (bgParadiseImg) {
+  bgParadiseImg.style.display = 'block';
+}
 if (bgVideoEl) {
-  bgVideoEl.playbackRate = 1.0;
-  bgVideoEl.muted = true;
-  bgVideoEl.setAttribute('muted', '');
-  bgVideoEl.setAttribute('playsinline', '');
-  bgVideoEl.setAttribute('webkit-playsinline', '');
-
-  const tryPlayBgVideo = () => {
-    if (bgVideoEl.paused) {
-      bgVideoEl.play().then(() => {
-        bgVideoEl.style.display = 'block';
-        if (bgParadiseImg) bgParadiseImg.style.display = 'none';
-      }).catch(() => {
-        // Fallback to high-res still image if autoplay policy temporarily blocks
-        if (bgParadiseImg) bgParadiseImg.style.display = 'block';
-      });
-    }
-  };
-
-  bgVideoEl.addEventListener('playing', () => {
-    bgVideoEl.style.display = 'block';
-    if (bgParadiseImg) bgParadiseImg.style.display = 'none';
-  });
-
-  bgVideoEl.addEventListener('error', () => {
-    console.warn('[BgVideo] Video playback encountered error, switching to still paradise image');
-    if (bgParadiseImg) bgParadiseImg.style.display = 'block';
-  });
-
-  tryPlayBgVideo();
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) tryPlayBgVideo();
-  });
-  window.addEventListener('click', tryPlayBgVideo, { once: true });
-  window.addEventListener('touchstart', tryPlayBgVideo, { once: true });
+  bgVideoEl.style.display = 'none';
+  try { bgVideoEl.pause(); } catch (_) {}
 }
 
 // ---------------------------------------------------------------------
@@ -14170,20 +14129,20 @@ function createHeavenlyFX(THREE, scene, camera, opts = {}) {
     // ── 4. พวงมาลัย / สั่นระฆังทอง ──
     golden_bell() {
       const an = anchors(), b = { x: 0, y: 3.85, z: 2.1 };
-      heavenBase(an, PAL.gold, 0.95, 6);
-      raysHalo({ x: 0, y: 3.85, z: 1.5 }, PAL.gold, 5.5, 5.6, 0.28, 0.4);
-      // คลื่นเสียงระฆัง 3 ครั้ง สอดคล้องกับการสั่นระฆัง
+      heavenBase(an, PAL.gold, 0.40, 6);
+      raysHalo({ x: 0, y: 3.85, z: 1.5 }, PAL.gold, 3.8, 5.6, 0.15, 0.4);
+      // คลื่นเสียงระฆัง 3 ครั้ง สอดคล้องกับการสั่นระฆัง (แสงนวลละมุน ไม่บังพระพักตร์พระแม่)
       [0.25, 1.45, 2.65].forEach((d, i) => {
-        ringWave(b, PAL.cream, 6.4 + i * 0.6, 2.3, 1.0, false, d);
-        ringWave(b, PAL.white, 4.4 + i * 0.5, 1.8, 1.0, false, d + 0.18);
-        ringWave(b, PAL.amber, 7.6 + i * 0.6, 2.6, 0.8, false, d + 0.35);
-        flash(b, PAL.cream, 2.6, 0.9, 0.35, d);
-        sparkles(b, 20, { spread: 0.2, v0: 1.2, v1: 2.6, up0: -0.6, up1: 1.4, g: -0.3, drag: 1.2, colors: [PAL.gold, PAL.white, PAL.amber], l0: 1.2, l1: 2.0, s0: 0.14, s1: 0.28, delay: 0.01 });
+        ringWave(b, PAL.cream, 5.2 + i * 0.4, 2.3, 0.35, false, d);
+        ringWave(b, PAL.white, 3.8 + i * 0.3, 1.8, 0.30, false, d + 0.18);
+        ringWave(b, PAL.amber, 6.0 + i * 0.4, 2.6, 0.22, false, d + 0.35);
+        flash(b, PAL.cream, 1.5, 0.9, 0.15, d);
+        sparkles(b, 16, { spread: 0.2, v0: 1.0, v1: 2.0, up0: -0.4, up1: 1.1, g: -0.2, drag: 1.2, colors: [PAL.gold, PAL.white, PAL.amber], l0: 1.2, l1: 2.0, s0: 0.12, s1: 0.22, delay: 0.01 });
       });
-      pillar({ x: 0, y: 0, z: 2.1 }, PAL.gold, 4.4, 0.8, 5.4, 0.4);
-      ringWave({ x: 0, y: 0, z: 2.1 }, PAL.gold, 4.8, 2.0, 0.7, true, 0.3);
-      ringWave({ x: 0, y: 0, z: 2.1 }, PAL.gold, 5.8, 2.2, 0.6, true, 1.5);
-      sparkles(A(0, 0.75, 1.0), 44, { spread: 2.8, spreadY: 0.5, v0: 0.05, v1: 0.2, up0: -0.9, up1: -0.2, g: 0.0, colors: [PAL.gold, PAL.amber, PAL.cream], delay: 3.2, l0: 2.2, l1: 3.4 });
+      pillar({ x: 0, y: 0, z: 2.1 }, PAL.gold, 3.8, 0.65, 5.4, 0.25);
+      ringWave({ x: 0, y: 0, z: 2.1 }, PAL.gold, 4.2, 2.0, 0.35, true, 0.3);
+      ringWave({ x: 0, y: 0, z: 2.1 }, PAL.gold, 5.0, 2.2, 0.25, true, 1.5);
+      sparkles(A(0, 0.75, 1.0), 32, { spread: 2.2, spreadY: 0.4, v0: 0.05, v1: 0.18, up0: -0.7, up1: -0.2, g: 0.0, colors: [PAL.gold, PAL.amber, PAL.cream], delay: 3.2, l0: 2.2, l1: 3.4 });
       glyph('เมตตา', gp(), 0.25, 0.87, 4.4, '#ffe27a', 0.5);
       screenFx('golden_bell', 5.6);
     },
@@ -14252,22 +14211,22 @@ function createHeavenlyFX(THREE, scene, camera, opts = {}) {
     // ── 8. ประตูวิมาน / เปิดวิมานทิพย์ ──
     castle() {
       const an = anchors(), pt = { x: 0, y: 3.2, z: 1.8 };
-      heavenBase(an, PAL.gold, 1.2, 7.5);
-      raysHalo({ x: 0, y: 3.2, z: 0.4 }, PAL.gold, 10.5, 7, 0.55, 0.22, 0.2);
-      starburst(pt, PAL.cream, 5.4, 2.0, 0.1);
-      ringWave(pt, PAL.gold, 9.5, 2.4, 0.9, false, 0.2);
-      ringWave(pt, PAL.white, 7.0, 2.0, 0.8, false, 0.5);
-      ringWave(pt, PAL.cream, 11.5, 2.8, 0.5, false, 1.0);
-      // ธารแสงทิพย์ไหลลงจากประตูสวรรค์
-      pillar({ x: 0, y: 0, z: 1.8 }, PAL.cream, 6.4, 2.6, 6.4, 0.4, 0.4);
-      [-1.7, 1.7].forEach((x, i) => pillar({ x, y: 0, z: 1.8 }, PAL.gold, 6, 1.2, 5.6, 0.45, 0.8 + i * 0.2));
+      heavenBase(an, PAL.gold, 0.45, 7.5);
+      raysHalo({ x: 0, y: 3.2, z: 0.4 }, PAL.gold, 5.5, 7, 0.20, 0.22, 0.2);
+      starburst(pt, PAL.cream, 2.5, 1.4, 0.1);
+      ringWave(pt, PAL.gold, 6.5, 2.4, 0.35, false, 0.2);
+      ringWave(pt, PAL.white, 4.8, 2.0, 0.25, false, 0.5);
+      ringWave(pt, PAL.cream, 7.8, 2.8, 0.20, false, 1.0);
+      // ธารแสงทิพย์ไหลลงจากประตูสวรรค์ (แสงนวลโปร่ง ไม่สว่างจ้ากลบพระแม่)
+      pillar({ x: 0, y: 0, z: 1.8 }, PAL.cream, 5.2, 1.8, 6.4, 0.22, 0.4);
+      [-1.7, 1.7].forEach((x, i) => pillar({ x, y: 0, z: 1.8 }, PAL.gold, 5, 0.9, 5.6, 0.25, 0.8 + i * 0.2));
       // ทะเลเมฆใต้ประตู
-      mist({ x: 0, y: 0.6, z: 2.8 }, 7, PAL.white, 4.0, 6.6, 3.0, 0.42, 0.3);
-      mist({ x: 0, y: 1.8, z: 1.0 }, 3, PAL.cream, 3.4, 6, 3.0, 0.3, 0.8);
+      mist({ x: 0, y: 0.6, z: 2.8 }, 5, PAL.white, 3.2, 6.6, 2.6, 0.25, 0.3);
+      mist({ x: 0, y: 1.8, z: 1.0 }, 2, PAL.cream, 2.8, 6, 2.5, 0.20, 0.8);
       birds(7, -4.6, 4.6, 6.0, 0.4, 6.4, 0.5);
       birds(5, 4.6, -4.6, 4.7, 0.9, 6.6, 2.2);
-      petals(40, { x0: -3, x1: 3, y0: 6.8, y1: 8.5, z0: 0, z1: 5, colors: [PAL.gold, PAL.white, PAL.cream, PAL.pink], fall0: 0.7, fall1: 1.3, l0: 5, l1: 7, delay: 3.4 });
-      sparkles(pt, 70, { spread: 0.8, v0: 0.5, v1: 2.2, up0: -1.0, up1: 1.6, g: -0.25, drag: 0.7, colors: [PAL.gold, PAL.white, PAL.cream], l0: 2.0, l1: 3.6, s0: 0.14, s1: 0.32, delay: 1.2 });
+      petals(30, { x0: -3, x1: 3, y0: 6.8, y1: 8.5, z0: 0, z1: 5, colors: [PAL.gold, PAL.white, PAL.cream, PAL.pink], fall0: 0.7, fall1: 1.3, l0: 5, l1: 7, delay: 3.4 });
+      sparkles(pt, 45, { spread: 0.8, v0: 0.5, v1: 1.8, up0: -0.8, up1: 1.3, g: -0.2, drag: 0.7, colors: [PAL.gold, PAL.white, PAL.cream], l0: 2.0, l1: 3.6, s0: 0.12, s1: 0.25, delay: 1.2 });
       glyph('วิมานทิพย์', gp(), 0.22, 1.10, 5, '#fff0b0', 0.7);
       screenFx('castle', 7.2);
     },
