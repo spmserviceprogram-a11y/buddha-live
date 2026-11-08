@@ -668,6 +668,16 @@
     </div>
   </aside>
 
+  <!-- Global Error Boundary Shield (ดักจับ Syntax / Runtime Error ไม่ให้เว็บค้างเงียบ) -->
+  <script>
+    window.addEventListener('error', function(e) {
+      console.warn('[Error Shield]:', e.message, 'at', e.filename, 'line:', e.lineno);
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      console.warn('[Unhandled Rejection Shield]:', e.reason);
+    });
+  </script>
+
   <!-- Main Application Logic (ES Module) -->
   <script type="module" src="app.js?v=paradise_v11"></script>
 </body>
