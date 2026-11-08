@@ -523,14 +523,20 @@ async function getAudioUrlForText(text, callback, action = '') {
   return callback(null, null);
 }
 
-// Dedicated TTS generation endpoint
-app.post('/api/tts', (req, res) => {
-  const text = (req.body?.text || '').trim();
-  if (!text) return res.status(400).json({ success: false, error: 'Text required' });
-  getAudioUrlForText(text, (err, url) => {
-    if (err || !url) return res.json({ success: false, url: null });
-    res.json({ success: true, url });
-  });
+// Dedicated Neural AI Voice TTS Endpoint (Handles both GET and POST with complete error immunity)
+app.all('/api/tts', (req, res) => {
+  try {
+    const rawText = req.method === 'POST' ? req.body?.text : req.query?.text;
+    const text = (typeof rawText === 'string' ? rawText : '').trim().slice(0, 300);
+    if (!text) return res.status(400).json({ success: false, error: 'Text required' });
+
+    getAudioUrlForText(text, (err, url) => {
+      if (err || !url) return res.json({ success: false, url: null });
+      res.json({ success: true, url });
+    });
+  } catch (err) {
+    res.json({ success: false, url: null });
+  }
 });
 
 // Explicit route to serve index.html (with root fallback if uploaded flat on GitHub)
