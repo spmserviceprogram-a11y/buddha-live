@@ -12449,6 +12449,39 @@ if (seamsiHighlightPopupEl) {
   });
 }
 
+// Click-to-Test / Preview on all 10 items in the Gift Guide HUD
+const guideItemElements = document.querySelectorAll('.gift-guide-list .guide-item');
+const guideItemSpecs = [
+  { name: 'กุหลาบ', icon: '🌹', coins: 1, type: 'kowtow' },
+  { name: 'เครื่องราง', icon: '🪔', coins: 5, type: 'incense' },
+  { name: 'Lucky 9', icon: '9️⃣', coins: 9, type: 'lotus' },
+  { name: 'กุหลาบ ๙๙', icon: '🌸', coins: 99, type: 'flowers' },
+  { name: 'พวงมาลัย', icon: '🔔', coins: 199, type: 'golden_bell' },
+  { name: 'โคโลญจน์', icon: '💎', coins: 299, type: 'crystal_fountain' },
+  { name: 'โดนัท', icon: '☸️', coins: 399, type: 'royal_carriage' },
+  { name: 'หัวใจ 4 ดวง', icon: '🕊️', coins: 499, type: 'fireworks' },
+  { name: 'ประตูมิติ', icon: '👑', coins: 1000, type: 'castle' },
+  { name: 'มังกรแฟนตาซี', icon: '🐉', coins: 29999, type: 'dragon' }
+];
+
+guideItemElements.forEach((itemEl, idx) => {
+  itemEl.style.cursor = 'pointer';
+  itemEl.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const spec = guideItemSpecs[idx] || guideItemSpecs[0];
+    onGiftEvent({
+      nickname: 'ผู้มีจิตศรัทธา',
+      uniqueId: `guide_test_${spec.type}_${Date.now() % 1000}`,
+      giftName: spec.name,
+      giftIcon: spec.icon,
+      effectType: spec.type,
+      totalDiamonds: spec.coins,
+      diamondCount: spec.coins,
+      repeatCount: 1
+    });
+  });
+});
+
 const onLeaderboard = (list) => {
   updateLeaderboard(list);
   updateMeritBoard(list);
