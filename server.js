@@ -1626,6 +1626,7 @@ app.post('/api/gemini/bless', async (req, res) => {
   const cleanGift = String(giftName || '').trim() ||
     (cleanAction.includes('ถวาย') || cleanAction.includes('ร่วมบุญ') ? cleanAction.replace(/^(ถวาย|ร่วมบุญ)/, '').trim() : '');
   const isGiftAction = Boolean(isGift || effectName || effectType || cleanGift || cleanAction.includes('ถวาย') || cleanAction.includes('ร่วมบุญ') || cleanAction.includes('gift'));
+  const cleanEffectType = String(effectType || '').trim();
 
   // Always resolve to the canonical 10-Tier Devotional Effect Name (never speak raw TikTok gift names)
   let spokenEffectName = String(effectName || '').trim();
