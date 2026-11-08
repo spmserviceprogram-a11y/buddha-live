@@ -1544,6 +1544,9 @@ async function connectToTikTok(username, sessionId, apiKey) {
       }
         state.lastError = timeoutMsg;
         io.emit('status_change', { isConnected: false, username, error: timeoutMsg });
+        if (!state.userExplicitlyDisconnected && state.tiktokUsername) {
+          scheduleAutoReconnect();
+        }
         reject(new Error(timeoutMsg));
       }
     }, 25000);
@@ -1575,13 +1578,16 @@ async function connectToTikTok(username, sessionId, apiKey) {
       if (err.message.includes('rate_limit') || err.message.includes('Rate Limited') || err.message.includes('rate limit') || err.message.includes('SIGN SERVER MESSAGE')) {
         friendlyError = `[Rate Limited] ติดขีดจำกัดเชื่อมต่อฟรีของ EulerStream แนะนำให้นำ Free API Key จาก https://www.eulerstream.com/pricing มากรอกในช่อง 🔑 API Key เพื่อปลดล็อกทันที`;
       } else if (err.message.includes("isn't online") || err.message.includes('LIVE has ended')) {
-        friendlyError = `ช่อง @${username} ยังไม่ได้เริ่มไลฟ์สด หรือไลฟ์จบไปแล้ว (โปรดเริ่มไลฟ์สดบน TikTok ก่อนกดเชื่อมต่อ)`;
+        friendlyError = `ช่อง @${username} ยังไม่ได้เริ่มไลฟ์สด หรือไลฟ์จบไปแล้ว (ระบบจะคอยตรวจจับและเชื่อมต่อให้อัตโนมัติเมื่อเริ่มไลฟ์)`;
       } else if (err.message.includes('user_not_found') || err.message.includes('Failed to retrieve Room ID')) {
         friendlyError = `ไม่พบห้องไลฟ์สดของ @${username} (โปรดตรวจสอบว่าไอดีถูกต้องและเริ่มไลฟ์สดแล้ว)`;
       }
       state.lastError = friendlyError;
       console.error(`[TikTok] Failed to connect to ${username}:`, friendlyError);
       io.emit('status_change', { isConnected: false, username, error: friendlyError });
+      if (!state.userExplicitlyDisconnected && state.tiktokUsername) {
+        scheduleAutoReconnect();
+      }
       reject(new Error(friendlyError));
     });
   });
