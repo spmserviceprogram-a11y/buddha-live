@@ -7,6 +7,7 @@
     "build": "pip install --break-system-packages edge-tts || pip3 install edge-tts || python3 -m pip install edge-tts || echo 'build finished'",
     "start": "node server.js",
     "test": "node test/verify.js",
+    "check": "node verify-syntax.js",
     "deploy": "git add . && git commit -m \"update\" && git push origin main",
     "watch": "node auto-push.js",
     "dev": "start node auto-push.js && node server.js"
