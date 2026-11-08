@@ -3377,25 +3377,25 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
 
   const cleanName = sanitizeDisplayName(nickname, isVip ? 'ผู้มีจิตศรัทธา' : 'ผู้เจริญสติ');
 
-  // Standardized Fixed Geometry: All devotees have uniform, proportional, beautifully balanced nameplates
-  const canvasWidth = 280;
-  const canvasHeight = 74;
+  // Standardized Fixed Geometry: Beautifully enlarged, perfectly balanced nameplates
+  const canvasWidth = 290;
+  const canvasHeight = 78;
   const rx = 4, ry = 4;
-  const rw = canvasWidth - 8; // 272px
-  const rh = canvasHeight - 8; // 66px
-  const radius = rh / 2; // 33px pill corner radius
+  const rw = canvasWidth - 8; // 282px
+  const rh = canvasHeight - 8; // 70px
+  const radius = rh / 2; // 35px pill corner radius
 
   // Circular avatar on left
-  const avatarDiameter = 54;
-  const avatarRadius = avatarDiameter / 2; // 27px
-  const avatarCx = rx + 6 + avatarRadius; // 37px
-  const avatarCy = ry + rh / 2; // 37px
+  const avatarDiameter = 58;
+  const avatarRadius = avatarDiameter / 2; // 29px
+  const avatarCx = rx + 6 + avatarRadius; // 39px
+  const avatarCy = ry + rh / 2; // 39px
 
   // Text layout: starts to the right of avatar with a clean gap
-  const textX = avatarCx + avatarRadius + 10; // 74px
-  const maxTextW = canvasWidth - textX - 14; // 192px
+  const textX = avatarCx + avatarRadius + 10; // 78px
+  const maxTextW = canvasWidth - textX - 14; // 198px
 
-  const fontSize = 30;
+  const fontSize = 32;
   const fontStyle = `600 ${fontSize}px "Kanit", "Sarabun", "Segoe UI", sans-serif`;
   ctx.font = fontStyle;
 
@@ -3423,16 +3423,21 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
   function renderPill(avatarImg = null) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // Background: Smooth Borderless Dark Glass Pill (ไร้กรอบสีทอง สวยงาม หรูหรา เรียบง่าย)
+    // 1. Background: 65% Translucent Dark Glass Pill with 24K Gold Filigree Border (กรอบเดิม)
     const bgGrad = ctx.createLinearGradient(rx, ry, rx + rw, ry + rh);
-    bgGrad.addColorStop(0, 'rgba(18, 9, 6, 0.72)');
-    bgGrad.addColorStop(1, 'rgba(30, 13, 8, 0.72)');
+    bgGrad.addColorStop(0, 'rgba(20, 10, 6, 0.65)');
+    bgGrad.addColorStop(1, 'rgba(35, 14, 8, 0.65)');
     ctx.fillStyle = bgGrad;
     ctx.beginPath();
     ctx.roundRect(rx, ry, rw, rh, radius);
     ctx.fill();
 
-    // 4. Circular Profile Avatar on Left (Borderless, clean edge)
+    // 2. The Original 24K Gold Filigree Border (กรอบสีทองเดิม)
+    ctx.strokeStyle = isVip ? '#f59e0b' : '#ffd700';
+    ctx.lineWidth = isVip ? 3.0 : 2.2;
+    ctx.stroke();
+
+    // 3. Circular Profile Avatar on Left
     ctx.save();
     ctx.beginPath();
     ctx.arc(avatarCx, avatarCy, avatarRadius, 0, Math.PI * 2);
@@ -3469,7 +3474,7 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
       ctx.fill();
 
       // Stylized Initial Character / Icon
-      ctx.font = `700 ${isVip ? 26 : 24}px "Kanit", "Sarabun", sans-serif`;
+      ctx.font = `700 ${isVip ? 28 : 26}px "Kanit", "Sarabun", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = isVip ? '#2a0e06' : '#ffffff';
@@ -3478,13 +3483,20 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
     }
     ctx.restore();
 
-    // 5. Razor-Sharp Typography on Right (White / Gold with Drop Shadow, 100% Mobile Contrast)
+    // 4. Original 24K Gold Ring around avatar (กรอบเดิม)
+    ctx.strokeStyle = isVip ? '#f59e0b' : '#ffd700';
+    ctx.lineWidth = 2.0;
+    ctx.beginPath();
+    ctx.arc(avatarCx, avatarCy, avatarRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 5. Razor-Sharp Typography on Right (Original Colors: Gold for VIP, White for regular, with Drop Shadow)
     ctx.save();
     ctx.font = fontStyle;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
 
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.90)';
     ctx.shadowBlur = 4;
     ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 1;
@@ -3515,8 +3527,8 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
   const safeZ = (z !== undefined && z !== null) ? Number(z) : 5.0;
   sprite.renderOrder = 95000 + Math.round(safeZ * 1000);
 
-  // Fixed uniform world-space scale: perfectly proportional to the chibi character body across all rows
-  const baseSpriteH = isVip ? 0.088 : 0.078;
+  // Enlarged proportional scale: clearly readable on mobile & stream while harmoniously matching the character model
+  const baseSpriteH = isVip ? 0.138 : 0.125;
   const spriteW = baseSpriteH * (canvasWidth / canvasHeight);
   sprite.scale.set(spriteW, baseSpriteH, 1);
   sprite.position.set(0, 0.50, 0);
