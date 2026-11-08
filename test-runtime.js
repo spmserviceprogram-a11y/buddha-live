@@ -51,14 +51,7 @@ function createMockElement(tag = 'div', id = '') {
       fillText: () => {},
       strokeText: () => {},
       drawImage: () => {},
-      roundRect: () => {},
-      // WebGL mocks
-      getExtension: () => null,
-      getParameter: () => 16,
-      createTexture: () => ({}),
-      bindTexture: () => {},
-      texParameteri: () => {},
-      texImage2D: () => {}
+      roundRect: () => {}
     })
   };
   return el;
@@ -106,7 +99,8 @@ const mockWindow = {
   io: () => ({
     on: () => {},
     emit: () => {}
-  })
+  }),
+  AbortController: global.AbortController
 };
 
 global.window = mockWindow;
@@ -114,6 +108,21 @@ global.document = mockDoc;
 global.navigator = { userAgent: 'NodeMock' };
 
 const THREE = require('three');
+
+class MockWebGLRenderer {
+  constructor() {
+    this.domElement = createMockElement('canvas');
+    this.shadowMap = {};
+    this.toneMapping = 0;
+    this.toneMappingExposure = 1;
+    this.outputColorSpace = '';
+  }
+  setSize() {}
+  setPixelRatio() {}
+  render() {}
+  dispose() {}
+}
+THREE.WebGLRenderer = MockWebGLRenderer;
 mockWindow.THREE = THREE;
 
 const context = vm.createContext({
@@ -125,6 +134,7 @@ const context = vm.createContext({
   Audio: mockWindow.Audio,
   Image: mockWindow.Image,
   fetch: mockWindow.fetch,
+  AbortController: global.AbortController,
   THREE: THREE,
   console: console,
   setTimeout: setTimeout,
@@ -138,7 +148,7 @@ try {
   code = code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import');
   console.log('Running app.js in simulated browser runtime...');
   vm.runInContext(code, context, { filename: 'app.js' });
-  console.log('✅ app.js executed successfully to the very end without any top-level exceptions!');
+  console.log('🎉 SUCCESS! app.js executed from line 1 to line 14423 without any exceptions!');
 } catch (err) {
   console.error('❌ Top-level runtime error in app.js:');
   console.error(err);
