@@ -11992,7 +11992,7 @@ const onConnected = (data) => {
 };
 socket.on('tiktok-connected', onConnected);
 socket.on('tiktok_connected', onConnected);
-
+  const nam
 const onError = (err) => {
   connStatus.className = 'conn-status status-offline';
   connStatus.textContent = `เกิดข้อผิดพลาด: ${err ? (err.message || err) : 'ไม่สามารถเชื่อมต่อได้'}`;
