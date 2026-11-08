@@ -6251,6 +6251,18 @@ function triggerSeamSiEffect(donorName = 'ผู้มีจิตศรัท�
   }, 30);
 }
 
+// ── Tier 1: Rose Offering & 3-Phase Benjangkhapradit Kowtow Celestial Effect (🌹) ──
+function triggerKowtowEffect() {
+  templeAudio.playWoodblock();
+  templeAudio.playBell(432, 4.0);
+  triggerGuanYinDivineRadiance();
+  createCarpetRipple(0, 0.05, 2.05, 0xffd700);
+  createLotusBloomDecal(0, 0.05, 2.05, 0xffd700);
+  spawnBlessingSparks(0, 0.5, 2.05, 28, 0xffea70);
+  spawnGiftTrailRose();
+  setTimeout(() => spawnGiftTrailRose(), 220);
+}
+
 // ── Tier 2: Sacred Golden Censer, Dragon Candles & Omamori Offering (🪔 / 🕯️) ──
 const incenseParticles = [];
 const incenseGeo = new THREE.SphereGeometry(0.09, 8, 8);
