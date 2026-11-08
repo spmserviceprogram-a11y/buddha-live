@@ -140,11 +140,15 @@ function syncCelestialBackground() {
   try {
     for (const src of CELESTIAL_BG_CANDIDATES) {
       if (fs.existsSync(src)) {
-        fs.copyFileSync(src, CELESTIAL_BG_DEST);
-        fs.copyFileSync(src, CELESTIAL_BG_PARADISE);
-        try { fs.copyFileSync(src, path.join(__dirname, 'public', 'bg.jpg')); } catch (_) {}
-        try { fs.copyFileSync(src, path.join(__dirname, 'public', 'bg-paradise.jpg')); } catch (_) {}
-        console.log(`[Background] Synced Heavenly Paradise background from ${src} to public/background.jpg`);
+        const srcSize = fs.statSync(src).size;
+        // Only write if missing or size differs to prevent unnecessary disk writes & watcher loops
+        if (!fs.existsSync(CELESTIAL_BG_DEST) || fs.statSync(CELESTIAL_BG_DEST).size !== srcSize) {
+          fs.copyFileSync(src, CELESTIAL_BG_DEST);
+          fs.copyFileSync(src, CELESTIAL_BG_PARADISE);
+          try { fs.copyFileSync(src, path.join(__dirname, 'public', 'bg.jpg')); } catch (_) {}
+          try { fs.copyFileSync(src, path.join(__dirname, 'public', 'bg-paradise.jpg')); } catch (_) {}
+          console.log(`[Background] Synced Heavenly Paradise background from ${src} to public/background.jpg`);
+        }
         break;
       }
     }

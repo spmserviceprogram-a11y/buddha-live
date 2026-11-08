@@ -8,7 +8,7 @@ console.log('ระบบกำลังเฝ้าตรวจจับกา�
 let debounceTimer = null;
 const DEBOUNCE_DELAY = 3500; // 3.5 วินาทีหลังการบันทึกครั้งสุดท้าย
 
-const IGNORED_DIRS = ['node_modules', '.git', '.system_generated', 'dist'];
+const IGNORED_DIRS = ['node_modules', '.git', '.system_generated', 'dist', 'audio_cache', 'public/audio_cache', 'public\\audio_cache', 'logs', '.cache'];
 
 const customGiftsToSync = [
   {
@@ -56,11 +56,11 @@ const customGiftsToSync = [
     dest: path.join(__dirname, 'public', 'seamsi.png')
   },
   {
-    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794069169198_f8371fbf.jpg',
+    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794097878899_b03508f1.jpg',
     dest: path.join(__dirname, 'public', 'background.jpg')
   },
   {
-    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794069169198_f8371fbf.jpg',
+    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794097878899_b03508f1.jpg',
     dest: path.join(__dirname, 'public', 'heavenly_paradise.jpg')
   },
   {
@@ -117,35 +117,45 @@ syncCustomGifts();
 
 function shouldIgnore(filename) {
   if (!filename) return true;
+  const normalized = filename.replace(/\\/g, '/');
   for (const dir of IGNORED_DIRS) {
-    if (filename.includes(dir)) return true;
+    if (normalized.includes(dir)) return true;
+  }
+  if (normalized.endsWith('.tmp') || normalized.endsWith('~') || normalized.includes('.git')) {
+    return true;
   }
   return false;
 }
 
+const gitEnv = {
+  ...process.env,
+  GIT_TERMINAL_PROMPT: '0',
+  GCM_INTERACTIVE: 'never'
+};
+
 function commitAndPush(forcePush = false) {
   try {
     syncCustomGifts();
-    const status = execSync('git status --porcelain', { encoding: 'utf-8' }).trim();
+    const status = execSync('git status --porcelain', { encoding: 'utf-8', env: gitEnv }).trim();
     if (status) {
       console.log(`[${new Date().toLocaleTimeString()}] ตรวจพบการแก้ไขไฟล์ กำลังอัปโหลดขึ้น GitHub...`);
       const timeStr = new Date().toLocaleString('th-TH');
 
-      execSync('git add .');
-      execSync(`git commit -m "auto: update ${timeStr}"`);
+      execSync('git add .', { env: gitEnv });
+      execSync(`git commit -m "auto: update ${timeStr}"`, { env: gitEnv });
       console.log(`  -> ทำการ Commit สำเร็จ`);
     } else if (!forcePush) {
       return;
     }
 
-    exec('git push --force origin main', (err) => {
+    exec('git push --force origin main', { env: gitEnv }, (err) => {
       if (err) {
-        console.warn(`[คำเตือน] Push ไปยัง spmserviceprogram-a11y/buddha-live ยังติดสิทธิ์ 403 (ต้องเพิ่ม suphat060841 เป็น Collaborator):`, err.message);
+        console.warn(`[คำเตือน] Push ไปยัง spmserviceprogram-a11y/buddha-live:`, err.message);
       } else {
         console.log(`>>> [SUCCESS] อัปเดตขึ้น GitHub (spmserviceprogram-a11y/buddha-live) สำเร็จแล้ว! Render จะเริ่มบิลด์ให้อัตโนมัติ <<<\n`);
       }
     });
-    exec('git push backup main', () => {});
+    // Note: backup push removed to prevent non-stop GCM browser OAuth popup windows
   } catch (err) {
     console.warn('[Auto-Push Error]:', err.message);
   }
