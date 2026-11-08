@@ -14111,6 +14111,19 @@ function createHeavenlyFX(THREE, scene, camera, opts = {}) {
   // 10 TIER RECIPES
   // ------------------------------------------------------------------
   const recipes = {
+    // ── 0. กุหลาบมงคล / กราบเบญจางคประดิษฐ์ (1 เหรียญ) ──
+    kowtow() {
+      const an = anchors(), c = { x: 0, y: 0.1, z: 2.05 };
+      heavenBase(an, PAL.rose, 0.75, 5.5);
+      mandalaFloor(c, PAL.gold, 3.2, 5.8, 0.25);
+      ringWave(c, PAL.gold, 4.2, 2.0, 0.8, true);
+      ringWave(c, PAL.white, 5.0, 2.4, 0.5, true, 0.5);
+      petals(48, { x0: -2.2, x1: 2.2, y0: 6.0, y1: 8.0, z0: 0.5, z1: 4.0, colors: [PAL.red, PAL.rose, PAL.gold, PAL.white], fall0: 0.8, fall1: 1.4, flutter: 0.25, l0: 4.5, l1: 6.5, delay: 2.5 });
+      sparkles(c, 36, { spread: 1.2, v0: 0.1, v1: 0.6, up0: 0.4, up1: 1.2, g: 0.02, colors: [PAL.gold, PAL.rose, PAL.white], delay: 2.2, l0: 1.8, l1: 3.2 });
+      glyph('สาธุ', gp(), 0.26, 0.88, 4.2, '#ff9ebb', 0.4);
+      screenFx('kowtow', 5.0);
+    },
+
     // ── 1. เครื่องรางศักดิ์สิทธิ์ / จุดประทีปบูชาธูปทอง ──
     incense() {
       const an = anchors(), c = { x: 0, y: 0, z: 1.05 };
