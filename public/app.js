@@ -6312,20 +6312,6 @@ function getOmamoriPlaqueTexture() {
   return cachedOmamoriTex;
 }
 
-// ── Tier 1: Prostrating Reverently (กราบเบญจางคประดิษฐ์ / 🌹 / 1 เหรียญ) ──
-function triggerKowtowEffect() {
-  if (typeof templeAudio !== 'undefined') {
-    if (templeAudio.playWoodblock) templeAudio.playWoodblock();
-    if (templeAudio.playBell) templeAudio.playBell(432, 2.5);
-  }
-  if (typeof triggerGuanYinDivineRadiance === 'function') {
-    triggerGuanYinDivineRadiance();
-  }
-  createCarpetRipple(0, 0.05, 2.35, 0xffd700);
-  createLotusBloomDecal(0, 0.05, 2.35, 0xffd700);
-  spawnBlessingSparks(0, 0.05, 2.35, 14, 0xffea70);
-}
-
 function triggerIncenseEffect() {
   templeAudio.playWoodblock();
   templeAudio.playBell(513.6, 4.0);
