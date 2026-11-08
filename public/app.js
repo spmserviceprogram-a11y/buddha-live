@@ -10709,7 +10709,7 @@ function updateMeritBoard(list) {
   el.innerHTML = listToRender.map((item, idx) => {
     const giftImgUrl = item.lastGiftImage || getGiftImageUrl(item.lastGiftName, item.coins);
     const giftBadge = giftImgUrl
-      ? `<img src="${giftImgUrl}" class="merit-gift-img" alt="" onerror="this.outerHTML='${item.lastGiftIcon || '✨'}'" />`
+      ? `<img src="${giftImgUrl}" class="merit-gift-img" width="14" height="14" alt="" onerror="this.outerHTML='${item.lastGiftIcon || '✨'}'" />`
       : (item.lastGiftIcon || '✨');
     // Donor profile picture (same filtering as the Sadhu board; stale placeholder avatars fall back to 🪷)
     const rawAvatar = (item.avatar && !item.avatar.includes('tos-maliva-avt-0068/7311181283626287110')) ? item.avatar : '';
