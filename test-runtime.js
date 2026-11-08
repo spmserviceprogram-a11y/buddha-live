@@ -1,10 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const vm = require('vm');
-const THREE = require('three');
 
 function createMockElement(tag = 'div', id = '') {
-  return {
+  const el = {
     tagName: tag.toUpperCase(),
     id: id,
     style: {},
@@ -26,6 +25,8 @@ function createMockElement(tag = 'div', id = '') {
     clientHeight: 1920,
     offsetWidth: 1080,
     offsetHeight: 1920,
+    options: [{ textContent: 'Default', value: 'default' }],
+    selectedIndex: 0,
     getContext: () => ({
       clearRect: () => {},
       fillRect: () => {},
@@ -50,9 +51,17 @@ function createMockElement(tag = 'div', id = '') {
       fillText: () => {},
       strokeText: () => {},
       drawImage: () => {},
-      roundRect: () => {}
+      roundRect: () => {},
+      // WebGL mocks
+      getExtension: () => null,
+      getParameter: () => 16,
+      createTexture: () => ({}),
+      bindTexture: () => {},
+      texParameteri: () => {},
+      texImage2D: () => {}
     })
   };
+  return el;
 }
 
 const mockDoc = {
@@ -60,6 +69,7 @@ const mockDoc = {
   querySelector: (sel) => createMockElement('div'),
   querySelectorAll: () => [],
   createElement: (tag) => createMockElement(tag),
+  createElementNS: (ns, tag) => createMockElement(tag),
   body: createMockElement('body'),
   addEventListener: () => {},
   removeEventListener: () => {}
@@ -96,15 +106,21 @@ const mockWindow = {
   io: () => ({
     on: () => {},
     emit: () => {}
-  }),
-  THREE: THREE
+  })
 };
+
+global.window = mockWindow;
+global.document = mockDoc;
+global.navigator = { userAgent: 'NodeMock' };
+
+const THREE = require('three');
+mockWindow.THREE = THREE;
 
 const context = vm.createContext({
   ...mockWindow,
   window: mockWindow,
   document: mockDoc,
-  navigator: { userAgent: 'NodeMock' },
+  navigator: global.navigator,
   localStorage: mockWindow.localStorage,
   Audio: mockWindow.Audio,
   Image: mockWindow.Image,
@@ -122,7 +138,7 @@ try {
   code = code.replace(/import\s+\*\s+as\s+THREE\s+from\s+['"][^'"]+['"];?/, '// stripped import');
   console.log('Running app.js in simulated browser runtime...');
   vm.runInContext(code, context, { filename: 'app.js' });
-  console.log('✅ app.js executed successfully without any top-level exceptions!');
+  console.log('✅ app.js executed successfully to the very end without any top-level exceptions!');
 } catch (err) {
   console.error('❌ Top-level runtime error in app.js:');
   console.error(err);
