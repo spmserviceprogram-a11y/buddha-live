@@ -54,20 +54,6 @@ const customGiftsToSync = [
 ];
 
 function syncCustomGifts() {
-  try {
-    const backupPath = path.join(__dirname, 'public', 'bgm_backup_commercial.mp3');
-    const bgmTarget = path.join(__dirname, 'public', 'bgm.mp3');
-    // Ensure the authentic Da Bei Zhou sacred chanting audio is restored and preserved
-    if (fs.existsSync(backupPath)) {
-      if (!fs.existsSync(bgmTarget) || fs.statSync(backupPath).size !== fs.statSync(bgmTarget).size) {
-        fs.copyFileSync(backupPath, bgmTarget);
-        console.log('[Auto-Sync] Restored authentic Da Bei Zhou chanting track to public/bgm.mp3');
-      }
-    }
-  } catch (e) {
-    console.warn('[BGM Restore Notice]:', e.message);
-  }
-
   customGiftsToSync.forEach(g => {
     try {
       if (fs.existsSync(g.source)) {
