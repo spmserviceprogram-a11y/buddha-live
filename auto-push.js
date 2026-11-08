@@ -101,19 +101,50 @@ const gitEnv = {
   GCM_INTERACTIVE: 'never'
 };
 
+function verifySyntax() {
+  const filesToCheck = [
+    path.join(__dirname, 'server.js'),
+    path.join(__dirname, 'public', 'app.js'),
+    path.join(__dirname, 'auto-push.js')
+  ];
+
+  for (const file of filesToCheck) {
+    if (fs.existsSync(file)) {
+      try {
+        execSync(`node --check "${file}"`, { stdio: 'pipe' });
+      } catch (err) {
+        const errorMsg = err.stderr ? err.stderr.toString().trim() : err.message;
+        console.error(`\n❌ [SYNTAX SHIELD - COMMIT BLOCKED]`);
+        console.error(`ไฟล์ ${path.basename(file)} มีข้อผิดพลาดทางไวยากรณ์ (Syntax Error):`);
+        console.error(errorMsg);
+        console.error(`🚨 ยกเลิกการ Commit และ Push อัตโนมัติ เพื่อป้องกันระบบบน Render/เว็บพัง\n`);
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 function commitAndPush(forcePush = false) {
   try {
     syncCustomGifts();
     const status = execSync('git status --porcelain', { encoding: 'utf-8', env: gitEnv }).trim();
+    if (!status && !forcePush) {
+      return;
+    }
+
+    // --- SYNTAX GATE: Permanently protect production code ---
+    if (!verifySyntax()) {
+      return;
+    }
+
     if (status) {
-      console.log(`[${new Date().toLocaleTimeString()}] ตรวจพบการแก้ไขไฟล์ กำลังอัปโหลดขึ้น GitHub...`);
+      console.log(`[${new Date().toLocaleTimeString()}] ตรวจพบการแก้ไขไฟล์ (ผ่านการตรวจไวยากรณ์เรียบร้อย) กำลังอัปโหลดขึ้น GitHub...`);
       const timeStr = new Date().toLocaleString('th-TH');
 
       execSync('git add .', { env: gitEnv });
       execSync(`git commit -m "auto: update ${timeStr}"`, { env: gitEnv });
       console.log(`  -> ทำการ Commit สำเร็จ`);
-    } else if (!forcePush) {
-      return;
     }
 
     exec('git push --force origin main', { env: gitEnv }, (err) => {
