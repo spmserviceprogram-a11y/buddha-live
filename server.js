@@ -726,7 +726,7 @@ const DEVOTIONAL_TIERS = [
     icon: '🐉',
     image: '/dragon.png',
     isLegend: true,
-    keywords: ['มังกรแฟนตาซี', 'alebrije', 'มังกร', 'มังกรทอง', 'ระฆังใหญ่', 'big bell', 'dragon', 'universe', 'จักรวาล', 'galaxy', 'phoenix']
+    keywords: ['มังกรแฟนตาซี', 'alebrije', 'มังกร', 'มังกรทอง', 'ระฆังใหญ่', 'big bell', 'dragon', 'golden dragon', 'universe', 'จักรวาล', 'galaxy', 'phoenix', 'ฟีนิกซ์']
   },
   {
     tier: 9,
@@ -737,7 +737,7 @@ const DEVOTIONAL_TIERS = [
     icon: '🧨',
     image: '/portal.png',
     isLegend: true,
-    keywords: ['ประตูมิติ', 'portal', 'gate', 'magical portal', 'ประตู', 'ประทัด ๙๙๙', 'ประทัด999', 'ประทัด', 'firecracker', 'firecrackers', 'วิมาน', 'ปราสาท', 'castle', 'lion', 'whale']
+    keywords: ['ประตูมิติ', 'portal', 'gate', 'magical portal', 'ประตู', 'ประทัด ๙๙๙', 'ประทัด999', 'ประทัด', 'firecracker', 'firecrackers', 'วิมาน', 'ปราสาท', 'castle', 'lion', 'whale', 'สิงโต', 'ปลาวาฬ']
   },
   {
     tier: 8,
@@ -748,7 +748,7 @@ const DEVOTIONAL_TIERS = [
     icon: '🕊️',
     image: '/four_hearts.png',
     isLegend: true,
-    keywords: ['หัวใจ 4 ดวง', 'หัวใจ ๔ ดวง', 'four hearts', '4 hearts', 'hearts', 'ปิดทอง', 'gold leaf', 'crane', 'นกกระเรียน', 'พลุ', 'firework', 'fireworks', 'elephant', 'ช้าง']
+    keywords: ['หัวใจ 4 ดวง', 'หัวใจ ๔ ดวง', 'four hearts', '4 hearts', 'hearts', 'ปิดทอง', 'gold leaf', 'crane', 'นกกระเรียน', 'พลุ', 'firework', 'fireworks', 'elephant', 'ช้าง', 'หมวกและหนวด', 'cap and moustache', 'crown', 'มงกุฎ']
   },
   {
     tier: 7,
@@ -792,7 +792,7 @@ const DEVOTIONAL_TIERS = [
     icon: '🌹',
     image: '/rose_99.png',
     isLegend: false,
-    keywords: ['กุหลาบ ๙๙', 'กุหลาบ99', 'rose 99', 'rose99', 'rose_99', 'บุปผา', 'flower', 'ดอกไม้']
+    keywords: ['กุหลาบ ๙๙', 'กุหลาบ99', 'rose 99', 'rose99', 'rose_99', 'บุปผา', 'flower', 'ดอกไม้', 'ดอกไม้งาม']
   },
   {
     tier: 3,
@@ -803,7 +803,7 @@ const DEVOTIONAL_TIERS = [
     icon: '9️⃣',
     image: '/lucky_9.png',
     isLegend: false,
-    keywords: ['lucky 9', 'lucky9', 'lucky_9', 'ขอเลข', 'บัว', 'lotus', 'ดอกบัว']
+    keywords: ['lucky 9', 'lucky9', 'lucky_9', 'ขอเลข', 'บัว', 'lotus', 'ดอกบัว', 'สระบัว']
   },
   {
     tier: 1.5,
@@ -826,7 +826,7 @@ const DEVOTIONAL_TIERS = [
     icon: '🫰',
     image: '/omamori.png',
     isLegend: false,
-    keywords: ['เครื่องราง', 'omamori', 'amulet', 'ดอกไม้มงคล', 'finger heart', 'มินิฮาร์ต', 'มินิฮาร์ท', 'incense', 'ธูป', 'เทียน', 'ประทีป', 'lamp']
+    keywords: ['เครื่องราง', 'omamori', 'amulet', 'ดอกไม้มงคล', 'finger heart', 'มินิฮาร์ต', 'มินิฮาร์ท', 'incense', 'ธูป', 'เทียน', 'ประทีป', 'lamp', 'แพนด้า', 'panda']
   },
   {
     tier: 1,
@@ -837,7 +837,7 @@ const DEVOTIONAL_TIERS = [
     icon: '🌹',
     image: '/rose.png',
     isLegend: false,
-    keywords: ['กุหลาบ', 'rose', 'roses', 'diya', 'heart', 'ใจ']
+    keywords: ['กุหลาบ', 'rose', 'roses', 'diya', 'heart', 'ใจ', 'tiktok', 'ติ๊กต๊อก', 'ดัมเบล', 'dumbbell', 'ไอศกรีม', 'ice cream', 'cone', 'ของขวัญ', 'gift']
   }
 ];
 
