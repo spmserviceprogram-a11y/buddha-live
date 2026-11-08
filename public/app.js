@@ -11249,6 +11249,7 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
     } else {
       templeAudio.playBell(432, 3.0);
     }
+    triggerKowtowEffect();
 
     let bowCycle = 0;
     function doOneBenjangkhapradit() {
