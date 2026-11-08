@@ -280,20 +280,34 @@ app.get(['/background_video.mp4', '/bg-video.mp4', '/video.mp4', '/background.mp
 });
 
 // ---------------------------------------------------------------------
-// Background Music Handler (User Configurable: place new audio into public/bgm.mp3)
+// Background Music Handler (Supports 举头望明月 .m4a / .mp3 / .wav)
 // ---------------------------------------------------------------------
 const bgmPublicDir = path.join(__dirname, 'public');
-const bgmTargetPath = path.join(bgmPublicDir, 'bgm.mp3');
+const bgmM4aPath = path.join(bgmPublicDir, 'bgm.m4a');
+const bgmMp3Path = path.join(bgmPublicDir, 'bgm.mp3');
 
-app.get(['/bgm.mp3', '/bgm.wav', '/bgm_zen_original.wav'], (req, res) => {
-  if (fs.existsSync(bgmTargetPath)) {
-    res.set('Content-Type', 'audio/mpeg');
+app.get(['/bgm.mp3', '/bgm.m4a', '/bgm.wav', '/bgm_zen_original.wav'], (req, res) => {
+  const chosenPath = fs.existsSync(bgmM4aPath) ? bgmM4aPath : (fs.existsSync(bgmMp3Path) ? bgmMp3Path : null);
+
+  if (chosenPath) {
+    let isM4A = chosenPath.endsWith('.m4a');
+    if (!isM4A) {
+      try {
+        const buf = Buffer.alloc(16);
+        const fd = fs.openSync(chosenPath, 'r');
+        fs.readSync(fd, buf, 0, 16, 0);
+        fs.closeSync(fd);
+        if (buf.toString('latin1').includes('ftyp')) isM4A = true;
+      } catch (_) {}
+    }
+
+    res.set('Content-Type', isM4A ? 'audio/mp4' : 'audio/mpeg');
     res.set('Accept-Ranges', 'bytes');
     res.set('Cache-Control', 'no-cache');
-    return res.sendFile(bgmTargetPath);
+    return res.sendFile(chosenPath);
   }
 
-  res.status(404).send('BGM track not found (ready for new song)');
+  res.status(404).send('BGM track not found');
 });
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
