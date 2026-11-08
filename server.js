@@ -164,7 +164,6 @@ app.get('/api/sync-paradise-bg', (req, res) => {
 });
 
 app.get(['/background.jpg', '/heavenly_paradise.jpg'], (req, res) => {
-  syncCelestialBackground();
   if (fs.existsSync(CELESTIAL_BG_DEST)) {
     res.set('Cache-Control', 'no-cache');
     return res.sendFile(CELESTIAL_BG_DEST);
