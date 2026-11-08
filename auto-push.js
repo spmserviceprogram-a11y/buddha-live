@@ -50,38 +50,6 @@ const customGiftsToSync = [
   {
     source: path.join(__dirname, 'ของขวัญ', 'ลำดับที่ 10.png'),
     dest: path.join(__dirname, 'public', 'dragon.png')
-  },
-  {
-    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1793976636041_08732252.png',
-    dest: path.join(__dirname, 'public', 'seamsi.png')
-  },
-  {
-    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794097878899_b03508f1.jpg',
-    dest: path.join(__dirname, 'public', 'background.jpg')
-  },
-  {
-    source: 'C:/Users/BINARY/.gemini/antigravity/brain/7a20d83f-7817-49a0-aa95-c0145116b164/.user_uploaded/media_1794097878899_b03508f1.jpg',
-    dest: path.join(__dirname, 'public', 'heavenly_paradise.jpg')
-  },
-  {
-    source: 'C:/Users/BINARY/Desktop/พื้นหลัง.mp4',
-    dest: path.join(__dirname, 'public', 'background_video.mp4')
-  },
-  {
-    source: 'C:/Users/BINARY/Desktop/พื้นหลัง.mp4',
-    dest: path.join(__dirname, 'public', 'bg-video.mp4')
-  },
-  {
-    source: 'C:/Users/BINARY/Desktop/พื้นหลัง.mp4',
-    dest: path.join(__dirname, 'public', 'background.mp4')
-  },
-  {
-    source: 'C:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
-    dest: path.join(__dirname, 'public', 'background_video.mp4')
-  },
-  {
-    source: 'C:/Users/BINARY/Desktop/พื้นหลังใหม่.mp4',
-    dest: path.join(__dirname, 'public', 'bg-video.mp4')
   }
 ];
 
