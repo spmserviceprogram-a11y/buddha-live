@@ -14426,6 +14426,9 @@ window.testGiftEffect = function(tier) {
   };
   const target = map[tier] || tier;
   console.log(`[TestGiftEffect] Testing celestial gift effect: ${target}`);
+  try {
+    if (window.heavenlyFX) window.heavenlyFX.play(target);
+  } catch (e) {}
 
   if (target === 'kowtow') {
     triggerKowtowEffect();
