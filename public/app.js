@@ -13081,14 +13081,20 @@ if (btnBots22) {
   });
 }
 
-// Restore saved preference once
+// Restore saved preference once (Default: 22 full crowd)
 const savedBotCount = localStorage.getItem('buddha_bot_count');
 if (savedBotCount !== null) {
   const parsedCount = parseInt(savedBotCount, 10);
-  if (!isNaN(parsedCount) && parsedCount !== 8) {
-    setInitialBotCrowd(parsedCount);
+  if (!isNaN(parsedCount) && [0, 8, 16, 22].includes(parsedCount)) {
+    if (parsedCount !== 22) {
+      setInitialBotCrowd(parsedCount);
+    }
     updateBotBtnStyles(parsedCount);
+  } else {
+    updateBotBtnStyles(22);
   }
+} else {
+  updateBotBtnStyles(22);
 }
 
 // ---------------------------------------------------------------------
