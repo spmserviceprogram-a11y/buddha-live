@@ -10566,7 +10566,7 @@ function updateTributeQueue(queueOrData) {
     const giftIcon = escapeHtml(item.giftIcon || '🌹');
     const giftImgUrl = item.giftImage || getGiftImageUrl(item.giftName, item.diamondCount);
     const giftBadgeContent = giftImgUrl
-      ? `<img src="${giftImgUrl}" class="q-gift-img" alt="" onerror="this.outerHTML='${giftIcon}'" />`
+      ? `<img src="${giftImgUrl}" class="q-gift-img" width="14" height="14" alt="" onerror="this.outerHTML='${giftIcon}'" />`
       : giftIcon;
 
     return `
