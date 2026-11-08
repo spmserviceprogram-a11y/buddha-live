@@ -78,6 +78,25 @@
             <span class="live-date" id="live-clock-date">--/--</span>
             <span id="live-clock-time">--:--:--</span>
           </div>
+          <script>
+            (function() {
+              var m = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+              function tick() {
+                var d = new Date();
+                var t = document.getElementById('live-clock-time');
+                var dt = document.getElementById('live-clock-date');
+                if (t) {
+                  var h = String(d.getHours()).padStart(2, '0');
+                  var min = String(d.getMinutes()).padStart(2, '0');
+                  var s = String(d.getSeconds()).padStart(2, '0');
+                  t.textContent = h + ':' + min + ':' + s;
+                }
+                if (dt) dt.textContent = d.getDate() + ' ' + (m[d.getMonth()] || '');
+              }
+              tick();
+              setInterval(tick, 1000);
+            })();
+          </script>
           <button class="btn-icon" id="btn-audio-toggle" title="เปิด/ปิดเสียงสมาธิ">🎵</button>
           <button class="btn-icon" id="btn-toggle-panel" title="แผงควบคุม / ตั้งค่า">⚙️</button>
         </div>
