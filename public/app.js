@@ -14385,6 +14385,7 @@ function withHeavenlyFX(original, tier) {
     return result;
   };
 }
+triggerKowtowEffect         = withHeavenlyFX(triggerKowtowEffect, 'kowtow');
 triggerIncenseEffect        = withHeavenlyFX(triggerIncenseEffect, 'incense');
 triggerLotusBloomEffect     = withHeavenlyFX(triggerLotusBloomEffect, 'lotus');
 triggerLotusRainEffect      = withHeavenlyFX(triggerLotusRainEffect, 'flowers');
@@ -14415,12 +14416,7 @@ window.testGiftEffect = function(tier) {
   console.log(`[TestGiftEffect] Testing celestial gift effect: ${target}`);
 
   if (target === 'kowtow') {
-    createCarpetRipple(0, 0.05, 5.0, 0xffd700);
-    createLotusBloomDecal(0, 0.05, 5.0, 0xffd700);
-    spawnBlessingSparks(0, 0.3, 5.0, 24, 0xffea70);
-    templeAudio.playWoodblock();
-    templeAudio.playBell(432, 4.0);
-    if (window.heavenlyFX) window.heavenlyFX.play('seamsi');
+    triggerKowtowEffect();
   } else if (target === 'seamsi') {
     triggerSeamSiEffect('ผู้มีจิตศรัทธา');
   } else if (target === 'incense') {
