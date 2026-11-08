@@ -1,13 +1,9 @@
 const fs = require('fs');
 const content = fs.readFileSync('e:/Buddha/node_modules/tiktok-live-connector/dist/lib-DWhiWLli.js', 'utf8');
 
-const idx = content.indexOf('name: "WebcastGiftMessage"');
-if (idx !== -1) {
-  console.log(content.slice(idx, idx + 1500));
-} else {
-  const idx2 = content.indexOf('GiftMessage');
-  console.log(content.slice(idx2, idx2 + 800));
-}
+const idx = content.indexOf('fetchAvailableGifts(');
+console.log(content.slice(idx, idx + 1000));
+
 
 
 
