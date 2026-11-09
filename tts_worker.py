@@ -35,7 +35,7 @@ async def synthesize(text, filename=None):
     last_err = None
     for voice in VOICES:
         try:
-            comm = edge_tts.Communicate(text, voice, rate='+15%')
+            comm = edge_tts.Communicate(text, voice, rate='+20%')
             await comm.save(out_path)
             if os.path.exists(out_path) and os.path.getsize(out_path) > 500:
                 return filename
