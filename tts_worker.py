@@ -1,43 +1,8 @@
 import sys
 import asyncio
 import os
-import shutil
 import hashlib
 import edge_tts
-
-try:
-    _src_seamsi = r"C:\Users\BINARY\.gemini\antigravity\brain\7a20d83f-7817-49a0-aa95-c0145116b164\.user_uploaded\media_1793905094923_17168cec.png"
-    _dst_seamsi = os.path.join(os.path.dirname(__file__), 'public', 'seamsi.png')
-    if os.path.exists(_src_seamsi) and not os.path.exists(_dst_seamsi):
-        shutil.copyfile(_src_seamsi, _dst_seamsi)
-
-    # Automatically copy and synchronize the user's new celestial paradise background video
-    _src_candidates = [
-        r"C:\Users\BINARY\Desktop\พื้นหลัง.mp4",
-        r"c:\Users\BINARY\Desktop\พื้นหลัง.mp4",
-        r"C:\Users\BINARY\Desktop\พื้นหลังใหม่.mp4",
-        r"c:\Users\BINARY\Desktop\พื้นหลังใหม่.mp4"
-    ]
-    _src_video = None
-    for cand in _src_candidates:
-        if os.path.exists(cand):
-            _src_video = cand
-            break
-
-    if _src_video:
-        _dst_video = os.path.join(os.path.dirname(__file__), 'public', 'background_video.mp4')
-        _dst_video2 = os.path.join(os.path.dirname(__file__), 'public', 'bg-video.mp4')
-        _dst_video3 = os.path.join(os.path.dirname(__file__), 'public', 'background.mp4')
-        _src_sz = os.path.getsize(_src_video)
-        if not os.path.exists(_dst_video) or os.path.getsize(_dst_video) != _src_sz:
-            shutil.copyfile(_src_video, _dst_video)
-            sys.stderr.write(f"[tts_worker] Copied {_src_video} -> {_dst_video} ({_src_sz} bytes)\n")
-        if not os.path.exists(_dst_video2) or os.path.getsize(_dst_video2) != _src_sz:
-            shutil.copyfile(_src_video, _dst_video2)
-        if not os.path.exists(_dst_video3) or os.path.getsize(_dst_video3) != _src_sz:
-            shutil.copyfile(_src_video, _dst_video3)
-except Exception as e:
-    sys.stderr.write(f"[tts_worker background video copy exception]: {e}\n")
 
 if sys.platform == 'win32':
     try:
