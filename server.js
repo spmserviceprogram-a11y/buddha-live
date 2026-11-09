@@ -421,17 +421,44 @@ async function synthesizeGoogleTTS(text, filename) {
   const audioBuffers = [];
   for (const chunk of chunks) {
     if (!chunk) continue;
-    const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=th&client=tw-ob&q=${encodeURIComponent(chunk)}`;
-    const response = await axios.get(url, {
-      responseType: 'arraybuffer',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Referer': 'https://translate.google.com/'
-      },
-      timeout: 8000
-    });
-    if (response.data && response.data.length > 200) {
-      audioBuffers.push(Buffer.from(response.data));
+    let fetched = false;
+
+    // Primary: client=tw-ob
+    try {
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=th&client=tw-ob&q=${encodeURIComponent(chunk)}`;
+      const response = await axios.get(url, {
+        responseType: 'arraybuffer',
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Referer': 'https://translate.google.com/'
+        },
+        timeout: 4500
+      });
+      if (response.data && response.data.length > 200) {
+        audioBuffers.push(Buffer.from(response.data));
+        fetched = true;
+      }
+    } catch (_) {}
+
+    // Secondary: client=gtx
+    if (!fetched) {
+      try {
+        const url2 = `https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=th&client=gtx&q=${encodeURIComponent(chunk)}`;
+        const response2 = await axios.get(url2, {
+          responseType: 'arraybuffer',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Referer': 'https://translate.google.com/'
+          },
+          timeout: 4500
+        });
+        if (response2.data && response2.data.length > 200) {
+          audioBuffers.push(Buffer.from(response2.data));
+          fetched = true;
+        }
+      } catch (err2) {
+        console.warn(`[Google TTS chunk notice]: ${err2.message}`);
+      }
     }
   }
 
@@ -443,6 +470,24 @@ async function synthesizeGoogleTTS(text, filename) {
   }
   return null;
 }
+
+// Guarantee default blessing MP3s exist on server boot
+async function ensureDefaultAudioFiles() {
+  const defaults = [
+    { name: 'default_blessing.mp3', text: 'ขอพระแม่กวนอิมประทานพรให้ทุกท่านพบเจอแต่ความสุข ความเจริญ สุขภาพแข็งแรง ร่ำรวยเงินทองนะคะ' },
+    { name: 'default_welcome.mp3', text: 'ยินดีต้อนรับทุกท่านสู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ' },
+    { name: 'default_follow.mp3', text: 'อนุโมทนาบุญกับกัลยาณมิตรทุกท่านที่ร่วมกดติดตาม ขอให้มีความสุขนะคะ' }
+  ];
+  for (const item of defaults) {
+    const p = path.join(CACHE_DIR, item.name);
+    if (!fs.existsSync(p) || fs.statSync(p).size < 1000) {
+      try {
+        await synthesizeGoogleTTS(item.text, item.name);
+      } catch (_) {}
+    }
+  }
+}
+setTimeout(ensureDefaultAudioFiles, 1000);
 
 // Tier 2: Edge-TTS Subprocess with UTF-8 stdin pipe & multi-voice fallback
 function synthesizeEdgeTTS(clean, filename) {
@@ -492,7 +537,7 @@ function synthesizeEdgeTTS(clean, filename) {
         finished = true;
         try { py.kill(); } catch (_) { }
         resolve(null);
-      }, 10000);
+      }, 4000);
 
     } catch (err) {
       console.warn('[Edge TTS Spawn Exception]:', err.message);
@@ -501,7 +546,7 @@ function synthesizeEdgeTTS(clean, filename) {
   });
 }
 
-// Main Dynamic Neural TTS Orchestrator (Original Studio-Grade Bodhisattva Guan Yin Voice)
+// Main Dynamic Neural TTS Orchestrator (Google Neural Thai TTS Tier 1 + Edge-TTS Tier 2)
 async function getAudioUrlForText(text, callback, action = '') {
   const clean = (text || '').trim();
   if (!clean) return callback(null, getFallbackAudioUrl(action));
@@ -514,23 +559,28 @@ async function getAudioUrlForText(text, callback, action = '') {
     return callback(null, `/audio_cache/${filename}`);
   }
 
-  // Tier 1: Authentic Maternal Edge-TTS (th-TH-PremwadeeNeural via tts_worker.py)
-  try {
-    const edgeUrl = await synthesizeEdgeTTS(clean, filename);
-    if (edgeUrl) return callback(null, edgeUrl);
-  } catch (err) {
-    console.warn('[Edge TTS Primary Notice, falling back to secondary]:', err.message);
-  }
-
-  // Tier 2: Google Translate Neural Thai TTS (Direct Node.js Fallback)
+  // Tier 1 (Mandate in Rule 10): Google Translate Neural Thai TTS (Ultra-fast ~200ms, zero-crash, crystal clear Thai name pronunciation)
   try {
     const googleUrl = await synthesizeGoogleTTS(clean, filename);
     if (googleUrl) return callback(null, googleUrl);
   } catch (err) {
-    console.warn('[Google TTS Fallback Notice]:', err.message);
+    console.warn('[Google TTS Notice, falling back to Edge-TTS]:', err.message);
   }
 
-  // Tier 3: If server synthesis is unavailable, return null so client speaks via Web Speech API
+  // Tier 2: Authentic Maternal Edge-TTS (th-TH-PremwadeeNeural via tts_worker.py)
+  try {
+    const edgeUrl = await synthesizeEdgeTTS(clean, filename);
+    if (edgeUrl) return callback(null, edgeUrl);
+  } catch (err) {
+    console.warn('[Edge TTS Fallback Notice]:', err.message);
+  }
+
+  // Tier 3: Pre-rendered fallback MP3 with gentle blessing
+  const fallbackUrl = getFallbackAudioUrl(action);
+  if (fallbackUrl) {
+    return callback(null, fallbackUrl);
+  }
+
   console.warn(`[TTS Engine] Dynamic audio unavailable for: "${clean.slice(0, 30)}...". Delegating to client speech.`);
   return callback(null, null);
 }
