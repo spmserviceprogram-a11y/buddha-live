@@ -5140,13 +5140,15 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
         return;
       }
 
-      // Fast & Snappy Walk Transition to new seat (ปรับการเคลื่อนไหวสลับที่นั่งให้ไวขึ้น)
+      // Fast, Agile & Randomized Walk Transition to new seat (สลับที่นั่งไวและไม่ซ้ำเส้นทาง)
       this.isWalking = true;
       this.isMovingSeat = true;
       this._hasCrossedCenterCarpet = false;
-      this.smoothPoseTransition('walk', 110, () => {
+      this.smoothPoseTransition('walk', 90, () => {
         let t = 0;
-        const dur = 1.25; // Brisk 1.25s walking duration across aisles (was 3.0s)
+        const dur = 0.75 + Math.random() * 0.35; // Brisk 0.75s - 1.10s agile seat crossing!
+        const crossArc = (Math.random() - 0.5) * 0.22; // Random organic arc across aisle
+        const crossCadence = 11.6 + (Math.random() - 0.5) * 1.5;
         this.walkPhaseTime = 0;
         const rWalk = (spriteRatios[this.typeKey] || spriteRatios.female_buns).walk || 0.45;
         const baseWalkH = POSE_H.walk * CHIBI_SCALE;
@@ -5157,15 +5159,15 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           const ease = p * p * (3 - 2 * p);
           const env = Math.sin(p * Math.PI);
 
-          const phase = this.walkPhaseTime * 9.6; // Rapid, agile stride cadence matching brisk 1.25s speed
+          const phase = this.walkPhaseTime * crossCadence; // Rapid, agile stride cadence
           const cycle = 0.5 - 0.5 * Math.cos(phase * 2.0);
-          this.charSprite.position.y = 0.05 + cycle * 0.016 * (0.3 + 0.7 * env);
-          this.charSprite.material.rotation = Math.sin(phase) * 0.018 * env;
+          this.charSprite.position.y = 0.05 + cycle * 0.017 * (0.3 + 0.7 * env);
+          this.charSprite.material.rotation = Math.sin(phase) * 0.020 * env;
 
-          const stretch = 1.0 + (cycle - 0.5) * 0.022 * env;
+          const stretch = 1.0 + (cycle - 0.5) * 0.024 * env;
           this.charSprite.scale.set(baseWalkH * rWalk * (2.0 - stretch), baseWalkH * stretch, 1);
 
-          const curX = THREE.MathUtils.lerp(startX, targetX, ease);
+          const curX = THREE.MathUtils.lerp(startX, targetX, ease) + Math.sin(p * Math.PI) * crossArc;
           const curZ = THREE.MathUtils.lerp(startZ, targetZ, ease);
           this.root.position.x = curX;
           this.root.position.z = curZ;
@@ -5185,7 +5187,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
             this.charSprite.position.y = 0.05;
             this.root.position.set(targetX, targetLayout.y, targetZ);
             const finalPose = targetLayout.standing ? 'walk' : 'kneel';
-            this.smoothPoseTransition(finalPose, 120, () => {
+            this.smoothPoseTransition(finalPose, 100, () => {
               this.isWalking = false;
               this.isMovingSeat = false;
               if (onComplete) onComplete();
