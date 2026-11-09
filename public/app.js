@@ -352,8 +352,17 @@ class TempleAudio {
     try {
       if (!this.bgmBuffer && !this.bgmBufferLoading) {
         this.bgmBufferLoading = true;
-        const resp = await fetch('/bgm.mp3');
-        if (resp.ok) {
+        let resp = null;
+        try {
+          resp = await fetch('/bgm.m4a');
+          if (!resp.ok) resp = null;
+        } catch (_) {}
+        if (!resp) {
+          try {
+            resp = await fetch('/bgm.mp3');
+          } catch (_) {}
+        }
+        if (resp && resp.ok) {
           const arr = await resp.arrayBuffer();
           this.bgmBuffer = await this.ctx.decodeAudioData(arr);
         }
