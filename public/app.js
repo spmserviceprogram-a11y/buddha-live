@@ -10651,9 +10651,92 @@ function spawnBannerSparkleBurst(tierClass = 'tier-standard') {
   }
 }
 
+// =====================================================================
+// UNIFIED BOTTOM BANNER COORDINATOR (ระบบจัดคิวป้ายล่าง ไม่ให้ซ้อนทับกัน)
+// Priority: Gift (P1) > Share (P2) > Follower (P3)
+// All 3 banners share the bottom center space. Only ONE can be visible.
+// =====================================================================
+let _activeBottomBanner = null; // 'gift' | 'share' | 'follower' | null
+
+function hideBottomFollowerBanner(immediate = true) {
+  const banner = document.getElementById('follower-banner');
+  if (!banner) return;
+  if (banner._timer) {
+    clearTimeout(banner._timer);
+    banner._timer = null;
+  }
+  banner.classList.remove('pulse');
+  banner.classList.add('hidden');
+  if (immediate) {
+    banner.style.display = 'none';
+  } else {
+    setTimeout(() => { if (banner.classList.contains('hidden')) banner.style.display = 'none'; }, 300);
+  }
+  if (_activeBottomBanner === 'follower') _activeBottomBanner = null;
+}
+
+function hideBottomShareToast(immediate = true) {
+  const banner = document.getElementById('share-toast-banner');
+  if (!banner) return;
+  if (typeof shareToastHideTimer !== 'undefined' && shareToastHideTimer) {
+    clearTimeout(shareToastHideTimer);
+    shareToastHideTimer = null;
+  }
+  banner.classList.remove('active');
+  banner.classList.add('hidden');
+  if (immediate) {
+    banner.style.display = 'none';
+  } else {
+    setTimeout(() => { if (banner.classList.contains('hidden')) banner.style.display = 'none'; }, 300);
+  }
+  if (_activeBottomBanner === 'share') _activeBottomBanner = null;
+}
+
+function hideBottomEffectBanner(immediate = true) {
+  const banner = document.getElementById('effect-banner');
+  if (!banner) return;
+  if (typeof giftBannerTimer !== 'undefined' && giftBannerTimer) {
+    clearTimeout(giftBannerTimer);
+    giftBannerTimer = null;
+  }
+  if (typeof giftBannerFadeTimer !== 'undefined' && giftBannerFadeTimer) {
+    clearTimeout(giftBannerFadeTimer);
+    giftBannerFadeTimer = null;
+  }
+  banner.classList.remove('active');
+  banner.classList.add('hidden');
+  if (immediate) {
+    banner.style.display = 'none';
+  } else {
+    setTimeout(() => { if (banner.classList.contains('hidden')) banner.style.display = 'none'; }, 300);
+  }
+  if (_activeBottomBanner === 'gift') _activeBottomBanner = null;
+}
+
+function isBottomEffectBannerActive() {
+  const banner = document.getElementById('effect-banner');
+  return !!(banner && banner.style.display !== 'none' && !banner.classList.contains('hidden'));
+}
+
+function isBottomShareToastActive() {
+  const banner = document.getElementById('share-toast-banner');
+  return !!(banner && banner.style.display !== 'none' && !banner.classList.contains('hidden'));
+}
+
+window.hideBottomFollowerBanner = hideBottomFollowerBanner;
+window.hideBottomShareToast = hideBottomShareToast;
+window.hideBottomEffectBanner = hideBottomEffectBanner;
+window.isBottomEffectBannerActive = isBottomEffectBannerActive;
+window.isBottomShareToastActive = isBottomShareToastActive;
+
 function triggerGiftAnnouncementBanner(donor, giftInfo = null) {
   const banner = document.getElementById('effect-banner');
   if (!banner) return;
+
+  // Mutual Exclusion: Dismiss lower priority banners immediately (P1 overrides P2 and P3)
+  hideBottomFollowerBanner(true);
+  hideBottomShareToast(true);
+  _activeBottomBanner = 'gift';
 
   const iconImgEl = document.getElementById('effect-icon-img');
   const iconEl = document.getElementById('effect-icon');
