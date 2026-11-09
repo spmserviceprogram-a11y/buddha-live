@@ -8246,6 +8246,7 @@ function triggerCrystalFountainEffect() {
     color: 0x96fff2,
     transparent: true,
     opacity: 0.75,
+    depthWrite: false,
     blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide
   });
@@ -8257,6 +8258,7 @@ function triggerCrystalFountainEffect() {
     color: 0xff66b2,
     transparent: true,
     opacity: 0.50,
+    depthWrite: false,
     blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide
   });
@@ -8267,7 +8269,7 @@ function triggerCrystalFountainEffect() {
   [-4.2, 4.2].forEach(gx => {
     const pRipple = new THREE.Mesh(
       new THREE.RingGeometry(0.25, 1.25, 32),
-      new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.65, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+      new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.65, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })
     );
     pRipple.rotation.x = -Math.PI / 2;
     pRipple.position.set(gx, 0.16, 3.5);
