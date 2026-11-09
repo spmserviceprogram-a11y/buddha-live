@@ -3783,28 +3783,33 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   const H = 114;
   ctx.clearRect(0, 0, W, H);
 
-  // 1. Ethereal Celestial Aura Halo (แสงรัศมีสุวรรณภูมิสีทองนุ่มนวลแผ่ออกรอบป้าย)
+  const bx = 16, by = 14, bw = 378, bh = 86, br = 43;
+
+  // 1. Ethereal Soft Golden Aura strictly within canvas bounds (ไร้ขอบดำและขอบกล่องทึบ 100%)
   ctx.save();
-  const auraGrad = ctx.createRadialGradient(W / 2, H / 2, 45, W / 2, H / 2, 200);
-  auraGrad.addColorStop(0.0, 'rgba(255, 238, 130, 0.44)');
-  auraGrad.addColorStop(0.38, 'rgba(255, 195, 55, 0.24)');
-  auraGrad.addColorStop(0.72, 'rgba(255, 140, 20, 0.08)');
-  auraGrad.addColorStop(1.0, 'rgba(255, 120, 0, 0.0)');
+  ctx.beginPath();
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(bx - 6, by - 6, bw + 12, bh + 12, br + 6);
+  } else {
+    ctx.rect(bx - 6, by - 6, bw + 12, bh + 12);
+  }
+  const auraGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
+  auraGrad.addColorStop(0.0, 'rgba(255, 238, 130, 0.28)');
+  auraGrad.addColorStop(0.5, 'rgba(255, 195, 55, 0.16)');
+  auraGrad.addColorStop(1.0, 'rgba(255, 140, 20, 0.0)');
   ctx.fillStyle = auraGrad;
-  ctx.fillRect(0, 0, W, H);
+  ctx.fill();
   ctx.restore();
 
-  // 2. 50% Translucent Imperial Ruby & Obsidian Glassmorphic Pill Body
-  const bx = 14, by = 12, bw = 382, bh = 90, br = 45;
+  // 2. High-Transparency Translucent Imperial Ruby Glassmorphic Pill Body (ไร้เงาดำขอบกล่อง)
   ctx.save();
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
-  ctx.shadowBlur = 14;
-  ctx.shadowOffsetY = 4;
+  ctx.shadowColor = 'rgba(255, 215, 0, 0.25)';
+  ctx.shadowBlur = 6;
+  ctx.shadowOffsetY = 1;
   const bodyGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
-  bodyGrad.addColorStop(0.0, 'rgba(68, 12, 28, 0.26)');   // High-Transparency Translucent Imperial Ruby
-  bodyGrad.addColorStop(0.38, 'rgba(38, 8, 20, 0.26)');   // High-Transparency Translucent Velvet Burgundy
-  bodyGrad.addColorStop(0.75, 'rgba(20, 5, 12, 0.26)');   // High-Transparency Translucent Deep Plum
-  bodyGrad.addColorStop(1.0, 'rgba(10, 2, 6, 0.26)');     // High-Transparency Translucent Obsidian Lacquer
+  bodyGrad.addColorStop(0.0, 'rgba(68, 12, 28, 0.32)');   // Translucent Imperial Ruby
+  bodyGrad.addColorStop(0.40, 'rgba(42, 9, 22, 0.30)');   // Translucent Velvet Burgundy
+  bodyGrad.addColorStop(1.0, 'rgba(25, 6, 14, 0.28)');    // Translucent Deep Plum
   ctx.fillStyle = bodyGrad;
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
@@ -3857,7 +3862,7 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   goldBorder.addColorStop(1.0, '#8c6708');
 
   // Outer 24K Gold Bevel
-  ctx.lineWidth = 2.6;
+  ctx.lineWidth = 2.4;
   ctx.strokeStyle = goldBorder;
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
@@ -3867,32 +3872,21 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   }
   ctx.stroke();
 
-  // Recessed inner dark ruby bevel groove
+  // Inner warm gold hairline with warm champagne tone (ไร้ขอบดำทึบ)
   ctx.lineWidth = 1.0;
-  ctx.strokeStyle = 'rgba(20, 2, 8, 0.75)';
+  ctx.strokeStyle = 'rgba(255, 248, 195, 0.45)';
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
-    ctx.roundRect(bx + 1.8, by + 1.8, bw - 3.6, bh - 3.6, br - 1.8);
+    ctx.roundRect(bx + 2.2, by + 2.2, bw - 4.4, bh - 4.4, br - 2.2);
   } else {
-    ctx.rect(bx + 1.8, by + 1.8, bw - 3.6, bh - 3.6);
-  }
-  ctx.stroke();
-
-  // Inner fine gold hairline with warm champagne tone
-  ctx.lineWidth = 1.1;
-  ctx.strokeStyle = 'rgba(255, 248, 195, 0.48)';
-  ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') {
-    ctx.roundRect(bx + 3.2, by + 3.2, bw - 6.4, bh - 6.4, br - 3.2);
-  } else {
-    ctx.rect(bx + 3.2, by + 3.2, bw - 6.4, bh - 6.4);
+    ctx.rect(bx + 2.2, by + 2.2, bw - 4.4, bh - 4.4);
   }
   ctx.stroke();
 
   // 5. Sacred Reliquary Medal Pedestal on Left (เหรียญตราทองคำประดิษฐานของขวัญ)
-  const medalCx = 62;
+  const medalCx = 60;
   const medalCy = 57;
-  const medalRad = 35;
+  const medalRad = 33;
 
   // Sunburst radiant glow behind emblem
   const sunburst = ctx.createRadialGradient(medalCx, medalCy, 6, medalCx, medalCy, medalRad + 8);
@@ -3911,11 +3905,11 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.arc(medalCx, medalCy, medalRad, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Dark velvet medallion base
+  // Jewel ruby medallion base (ไร้สีดำทึบ)
   const medalBase = ctx.createRadialGradient(medalCx, medalCy, 3, medalCx, medalCy, medalRad - 2);
-  medalBase.addColorStop(0.0, '#520e1e');
-  medalBase.addColorStop(0.65, '#2e0712');
-  medalBase.addColorStop(1.0, '#140308');
+  medalBase.addColorStop(0.0, '#a8152e');
+  medalBase.addColorStop(0.65, '#6e0c1e');
+  medalBase.addColorStop(1.0, '#420610');
   ctx.fillStyle = medalBase;
   ctx.beginPath();
   ctx.arc(medalCx, medalCy, medalRad - 2, 0, Math.PI * 2);
