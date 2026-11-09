@@ -909,7 +909,8 @@ class GuanYinDivineVoice {
         this.thaiVoice = voices.find(v => (v.lang || '').toLowerCase().includes('th') && 
           ((v.name || '').includes('Premwadee') || (v.name || '').includes('Kanya') || (v.name || '').includes('Female') || (v.name || '').includes('ภาษาไทย')))
           || voices.find(v => (v.lang || '').toLowerCase().includes('th'))
-          || null;
+          || voices.find(v => (v.lang || '').toLowerCase().startsWith('th'))
+          || (voices.length > 0 ? voices[0] : null);
       } catch (_) {}
     };
     loadVoices();
