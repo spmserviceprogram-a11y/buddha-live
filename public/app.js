@@ -1230,7 +1230,7 @@ class GuanYinDivineVoice {
       }
 
       const audio = new Audio(url);
-      audio.playbackRate = 1.0; // Play generated Edge-TTS at authentic neural speed (preserves warm maternal timbre)
+      audio.playbackRate = 1.15; // Brisk, fluid, responsive pace (พูดไวขึ้นอย่างเป็นธรรมชาติและคล่องแคล่ว)
       audio.volume = Math.min(1.0, this.volume * 1.15);
       this.currentAudio = audio;
       this.isSpeaking = true;
