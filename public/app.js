@@ -13906,6 +13906,15 @@ class VideoBlessingController {
       return;
     }
 
+    // Tier Priority Protection: Higher tiers (climax: 4) cannot be interrupted by lower tiers (tier1: 1, tier2: 2)
+    const TIER_WEIGHTS = { tier1: 1, tier2: 2, climax_a: 4, climax_b: 4 };
+    const newWeight = TIER_WEIGHTS[tierKey] || 1;
+    const currentWeight = this.isPlaying && this.activeKey ? (TIER_WEIGHTS[this.activeKey] || 0) : 0;
+    if (this.isPlaying && newWeight < currentWeight) {
+      if (typeof onFinish === 'function') onFinish();
+      return;
+    }
+
     if (this.fadeTimeout) {
       clearTimeout(this.fadeTimeout);
       this.fadeTimeout = null;
