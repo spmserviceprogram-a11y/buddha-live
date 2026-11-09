@@ -12641,33 +12641,35 @@ socket.on('gift-event', onGiftEvent);
 socket.on('gift_event', onGiftEvent);
 socket.on('gift', onGiftEvent);
 
-// Click-to-Test / Preview on all 11 items in the Gift Guide HUD
-const guideItemElements = document.querySelectorAll('.gift-guide-list .guide-item');
-const guideItemSpecs = [
-  { name: 'กุหลาบ', icon: '🌹', coins: 1, type: 'kowtow' },
-  { name: 'รักนะมากๆ', icon: '🎋', coins: 1, type: 'seamsi' },
-  { name: 'เครื่องราง', icon: '🪔', coins: 5, type: 'incense' },
-  { name: 'Lucky 9', icon: '9️⃣', coins: 9, type: 'lotus' },
-  { name: 'กุหลาบ ๙๙', icon: '🌸', coins: 99, type: 'flowers' },
-  { name: 'พวงมาลัย', icon: '🔔', coins: 199, type: 'golden_bell' },
-  { name: 'โคโลญจน์', icon: '💎', coins: 299, type: 'crystal_fountain' },
-  { name: 'โดนัท', icon: '☸️', coins: 399, type: 'royal_carriage' },
-  { name: 'หัวใจ 4 ดวง', icon: '🕊️', coins: 499, type: 'fireworks' },
-  { name: 'ประตูมิติ', icon: '👑', coins: 1000, type: 'castle' },
-  { name: 'มังกรแฟนตาซี', icon: '🐉', coins: 29999, type: 'dragon' }
+// Click-to-Test / Preview on all 11 items in the Bottom Offering Deck
+const bottomOfferingSpecs = [
+  { name: 'กุหลาบ', icon: '🌹', coins: 1, type: 'kowtow', effectName: 'กราบเบญจางคประดิษฐ์' },
+  { name: 'รักนะมากๆ', icon: '🎋', coins: 1, type: 'seamsi', effectName: 'เสี่ยงเซียมซีมหาโชค' },
+  { name: 'เครื่องราง', icon: '🫰', coins: 5, type: 'incense', effectName: 'จุดประทีปบูชาธูปทอง' },
+  { name: 'Lucky 9', icon: '9️⃣', coins: 9, type: 'lotus', effectName: 'สระดอกบัวทิพย์' },
+  { name: 'กุหลาบ ๙๙', icon: '🌹', coins: 10, type: 'flowers', effectName: 'โปรยบุปผามงคล' },
+  { name: 'พวงมาลัย', icon: '📿', coins: 15, type: 'golden_bell', effectName: 'สั่นระฆังทอง' },
+  { name: 'โคโลญจน์', icon: '🎁', coins: 20, type: 'crystal_fountain', effectName: 'ธารน้ำพุมณี' },
+  { name: 'โดนัท', icon: '🍩', coins: 30, type: 'royal_carriage', effectName: 'ขบวนราชรถ' },
+  { name: 'หัวใจ 4 ดวง', icon: '🕊️', coins: 99, type: 'fireworks', effectName: 'พลุเพลิงบุญ' },
+  { name: 'ประตูมิติ', icon: '🧨', coins: 100, type: 'castle', effectName: 'เปิดวิมานทิพย์' },
+  { name: 'มังกรแฟนตาซี', icon: '🐉', coins: 299, type: 'dragon', effectName: 'มังกรทองเหิน' }
 ];
 
-guideItemElements.forEach((itemEl, idx) => {
+document.querySelectorAll('.bottom-gift-deck .bgc-card, .gift-guide-list .guide-item').forEach((itemEl) => {
   itemEl.style.cursor = 'pointer';
   itemEl.addEventListener('click', (e) => {
     e.stopPropagation();
-    const spec = guideItemSpecs[idx] || guideItemSpecs[0];
+    const rawIdx = itemEl.getAttribute('data-index');
+    const idx = (rawIdx !== null && rawIdx !== undefined && rawIdx !== '') ? parseInt(rawIdx, 10) : 0;
+    const spec = (!isNaN(idx) && bottomOfferingSpecs[idx]) ? bottomOfferingSpecs[idx] : bottomOfferingSpecs[0];
     onGiftEvent({
       nickname: 'ผู้มีจิตศรัทธา',
-      uniqueId: `guide_test_${spec.type}_${Date.now() % 1000}`,
+      uniqueId: `deck_test_${spec.type}_${Date.now() % 1000}`,
       giftName: spec.name,
       giftIcon: spec.icon,
       effectType: spec.type,
+      effectName: spec.effectName,
       totalDiamonds: spec.coins,
       diamondCount: spec.coins,
       repeatCount: 1
