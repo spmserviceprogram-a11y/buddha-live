@@ -441,25 +441,89 @@ const bgmPublicDir = path.join(__dirname, 'public');
 const bgmM4aPath = path.join(bgmPublicDir, 'bgm.m4a');
 const bgmMp3Path = path.join(bgmPublicDir, 'bgm.mp3');
 
+// Background auto-transcoding: Ensures authentic MP3 file exists for 100% browser compatibility
+function ensureTrueMp3Bgm() {
+  const ffmpegCandidates = [
+    'E:\\TikTok Shop\\ffmpeg\\ffmpeg.exe',
+    'E:\\TikTok Shop\\senrerun_extracted\\app\\ffmpeg\\ffmpeg.exe',
+    'ffmpeg'
+  ];
+  let ffmpegBin = null;
+  for (const c of ffmpegCandidates) {
+    if (c === 'ffmpeg' || fs.existsSync(c)) {
+      ffmpegBin = c;
+      break;
+    }
+  }
+  if (!ffmpegBin || !fs.existsSync(bgmM4aPath)) return;
+
+  // Inspect existing bgm.mp3
+  let needsTranscode = true;
+  if (fs.existsSync(bgmMp3Path)) {
+    try {
+      const buf = Buffer.alloc(16);
+      const fd = fs.openSync(bgmMp3Path, 'r');
+      fs.readSync(fd, buf, 0, 16, 0);
+      fs.closeSync(fd);
+      // If it contains 'ftyp', it is an M4A file disguised with an .mp3 extension
+      if (!buf.toString('latin1').includes('ftyp') && (buf[0] === 0xFF || buf.toString('latin1').startsWith('ID3'))) {
+        needsTranscode = false;
+      }
+    } catch (_) {}
+  }
+
+  if (needsTranscode) {
+    const tempMp3 = path.join(bgmPublicDir, 'bgm_transcoded.mp3');
+    try {
+      const { execFile } = require('child_process');
+      execFile(ffmpegBin, ['-i', bgmM4aPath, '-vn', '-c:a', 'libmp3lame', '-b:a', '192k', '-y', tempMp3], (err) => {
+        if (!err && fs.existsSync(tempMp3) && fs.statSync(tempMp3).size > 10000) {
+          try {
+            fs.copyFileSync(tempMp3, bgmMp3Path);
+            fs.unlinkSync(tempMp3);
+            console.log('[BGM] Successfully created genuine MP3 encoding for bgm.mp3 via ffmpeg');
+          } catch (_) {}
+        }
+      });
+    } catch (_) {}
+  }
+}
+setTimeout(ensureTrueMp3Bgm, 1200);
+
 app.get(['/bgm.mp3', '/bgm.m4a', '/bgm.wav', '/bgm_zen_original.wav'], (req, res) => {
-  const chosenPath = fs.existsSync(bgmM4aPath) ? bgmM4aPath : (fs.existsSync(bgmMp3Path) ? bgmMp3Path : null);
+  const isReqM4a = req.path.toLowerCase().endsWith('.m4a');
+  let chosenPath = null;
+  let isM4A = false;
+
+  if (isReqM4a && fs.existsSync(bgmM4aPath)) {
+    chosenPath = bgmM4aPath;
+    isM4A = true;
+  } else if (fs.existsSync(bgmMp3Path)) {
+    chosenPath = bgmMp3Path;
+    try {
+      const buf = Buffer.alloc(16);
+      const fd = fs.openSync(chosenPath, 'r');
+      fs.readSync(fd, buf, 0, 16, 0);
+      fs.closeSync(fd);
+      if (buf.toString('latin1').includes('ftyp')) isM4A = true;
+    } catch (_) {}
+  } else if (fs.existsSync(bgmM4aPath)) {
+    chosenPath = bgmM4aPath;
+    isM4A = true;
+  }
 
   if (chosenPath) {
-    let isM4A = chosenPath.endsWith('.m4a');
-    if (!isM4A) {
-      try {
-        const buf = Buffer.alloc(16);
-        const fd = fs.openSync(chosenPath, 'r');
-        fs.readSync(fd, buf, 0, 16, 0);
-        fs.closeSync(fd);
-        if (buf.toString('latin1').includes('ftyp')) isM4A = true;
-      } catch (_) {}
-    }
-
-    res.set('Content-Type', isM4A ? 'audio/mp4' : 'audio/mpeg');
+    const contentType = isM4A ? 'audio/mp4' : 'audio/mpeg';
+    res.set('Content-Type', contentType);
     res.set('Accept-Ranges', 'bytes');
     res.set('Cache-Control', 'no-cache');
-    return res.sendFile(chosenPath);
+    return res.sendFile(chosenPath, {
+      headers: {
+        'Content-Type': contentType,
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': 'no-cache'
+      }
+    });
   }
 
   res.status(404).send('BGM track not found');
