@@ -10814,6 +10814,7 @@ function triggerGiftAnnouncementBanner(donor, giftInfo = null) {
     banner.classList.add('hidden');
     giftBannerFadeTimer = setTimeout(() => {
       banner.style.display = 'none';
+      if (_activeBottomBanner === 'gift') _activeBottomBanner = null;
     }, 450);
   }, 5200);
 }
@@ -10880,6 +10881,7 @@ function showBigEffectBanner(icon, title, subtitle, giftInfo = null) {
     banner.classList.add('hidden');
     giftBannerFadeTimer = setTimeout(() => {
       banner.style.display = 'none';
+      if (_activeBottomBanner === 'gift') _activeBottomBanner = null;
     }, 450);
   }, 5200);
 }
