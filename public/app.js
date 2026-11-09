@@ -6221,7 +6221,7 @@ function createSeamSiStickPlaqueTexture(stickTitle = 'ใบที่ ๙') {
   return tex;
 }
 
-function triggerSeamSiEffect(donorName = 'ผู้มีจิตศรัทธา', fortune = null) {
+function triggerSeamSiEffect(donorName = 'ผู้มีจิตศรัทธา', fortune = null, showScrollImmediately = true) {
   const f = fortune || drawSeamSiFortune();
 
   if (activeSeamSiGroup) {
