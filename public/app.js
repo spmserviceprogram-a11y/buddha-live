@@ -13410,10 +13410,22 @@ function triggerAmbientSeatSwap() {
   let candA = null;
   let candB = null;
 
-  if (leftCandidates.length > 0 && rightCandidates.length > 0) {
-    // Cross-Aisle Pairing: One from left, one from right!
+  // Randomized pairing strategy: 65% cross-aisle, 20% diagonal depth, 15% free shuffle
+  const stratRoll = Math.random();
+  if (stratRoll < 0.65 && leftCandidates.length > 0 && rightCandidates.length > 0) {
+    // Cross-Aisle Pairing: Traverse center aisle in front of camera
     candA = leftCandidates[Math.floor(Math.random() * leftCandidates.length)];
     candB = rightCandidates[Math.floor(Math.random() * rightCandidates.length)];
+  } else if (stratRoll < 0.85 && candidates.length >= 2) {
+    // Diagonal depth pairing: Sort candidates by depth/Z and pick from different rows
+    const sorted = [...candidates].sort((a, b) => {
+      const az = congregationLayout[a.seatId]?.z || 0;
+      const bz = congregationLayout[b.seatId]?.z || 0;
+      return az - bz;
+    });
+    const half = Math.max(1, Math.floor(sorted.length / 2));
+    candA = sorted[Math.floor(Math.random() * half)];
+    candB = sorted[half + Math.floor(Math.random() * (sorted.length - half))];
   } else {
     // Fallback: Pick any two distinct candidates
     const idxA = Math.floor(Math.random() * candidates.length);
@@ -13444,7 +13456,8 @@ function triggerAmbientSeatSwap() {
     dA.moveToNewSeat(seatB);
   }
 
-  // Devotee B starts slightly staggered (110ms) for an organic, human-like cadence
+  // Devotee B starts slightly staggered (70ms - 120ms) for an organic, human-like cadence
+  const staggerMs = 70 + Math.floor(Math.random() * 50);
   setTimeout(() => {
     if (dB && dB.moveToNewSeat && !dB.isPerformingAltarRitual) {
       dB.moveToNewSeat(seatA, () => {
@@ -13453,7 +13466,7 @@ function triggerAmbientSeatSwap() {
     } else {
       scheduleNextAmbientSeatSwap();
     }
-  }, 110);
+  }, staggerMs);
 
   return true;
 }
