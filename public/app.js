@@ -5725,8 +5725,67 @@ function drawSeamSiFortune() {
 
 let seamSiScrollHideTimer = null;
 let seamSiScrollToken = 0;
+let seamSiTransitionTimer = null;
 let luckyNumbersHideTimer = null;
 let luckyRollIntervals = [null, null, null];
+
+// Centralized Mutual Exclusion Engine for Ceremony Modals
+function hideCeremonyModals({ except = null } = {}) {
+  if (seamSiScrollHideTimer) {
+    clearTimeout(seamSiScrollHideTimer);
+    seamSiScrollHideTimer = null;
+  }
+  if (seamSiTransitionTimer) {
+    clearTimeout(seamSiTransitionTimer);
+    seamSiTransitionTimer = null;
+  }
+  if (luckyNumbersHideTimer) {
+    clearTimeout(luckyNumbersHideTimer);
+    luckyNumbersHideTimer = null;
+  }
+  luckyRollIntervals.forEach((t, i) => {
+    if (t) clearTimeout(t);
+    luckyRollIntervals[i] = null;
+  });
+
+  if (except !== 'mvp') {
+    const mvpModal = document.getElementById('round-mvp-modal');
+    if (mvpModal) {
+      mvpModal.classList.remove('active');
+      mvpModal.classList.add('hidden');
+      mvpModal.style.display = 'none';
+    }
+  }
+
+  if (except !== 'fortune') {
+    const fortuneCard = document.getElementById('seamsi-fortune-card');
+    if (fortuneCard) {
+      fortuneCard.classList.remove('active');
+      fortuneCard.classList.add('hidden');
+      fortuneCard.style.display = 'none';
+    }
+  }
+
+  if (except !== 'lucky') {
+    const luckyCard = document.getElementById('seamsi-lucky-card');
+    if (luckyCard) {
+      luckyCard.classList.remove('active');
+      luckyCard.classList.add('hidden');
+      luckyCard.style.display = 'none';
+      const d1El = document.getElementById('lucky-d1');
+      const d2El = document.getElementById('lucky-d2');
+      const d3El = document.getElementById('lucky-d3');
+      [d1El, d2El, d3El].forEach(el => {
+        if (el) {
+          el.textContent = '✦';
+          el.style.opacity = '0.35';
+          el.parentElement?.classList.remove('digit-locked');
+        }
+      });
+    }
+  }
+}
+window.hideCeremonyModals = hideCeremonyModals;
 
 function spawnSeamSiCardSparkles() {
   const layer = document.getElementById('seamsi-sparkle-layer');
