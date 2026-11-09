@@ -1658,6 +1658,15 @@ class BuddhaSpeechCoordinator {
       this.evaluateLeadership();
     }, 1500);
 
+    // Auto-claim speech master when user interacts with this window
+    const autoClaim = () => {
+      if (!this.isMaster) {
+        this.claimMaster();
+      }
+    };
+    window.addEventListener('pointerdown', autoClaim, { passive: true });
+    window.addEventListener('keydown', autoClaim, { passive: true });
+
     // Release master on unload
     window.addEventListener('beforeunload', () => {
       this.releaseMaster();
@@ -1715,7 +1724,6 @@ class BuddhaSpeechCoordinator {
         this.isMaster = false;
         if (this.voice) {
           this.voice.stopAll();
-          this.voice.enabled = false;
         }
         console.log('[SpeechCoordinator] Another tab/process is Speech Master. Voice silenced on this tab 🔒');
         if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
