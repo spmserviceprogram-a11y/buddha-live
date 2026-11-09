@@ -8716,6 +8716,10 @@ function getAncientGoldCoinTexture() {
   const ctx = canvas.getContext('2d');
   const cx = 64, cy = 64;
 
+  // Fill square background with metallic gold so cylinder sides & corners have zero black artifacts
+  ctx.fillStyle = '#b87700';
+  ctx.fillRect(0, 0, 128, 128);
+
   // Metallic Gold Disc with Raised Rim
   const g = ctx.createRadialGradient(cx - 12, cy - 12, 6, cx, cy, 60);
   g.addColorStop(0.0, '#fffac2');
