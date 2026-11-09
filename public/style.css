@@ -4373,24 +4373,24 @@ body {
 @keyframes hvBannerDescend {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(-46px) scale(0.6);
+    transform: translate(-50%, calc(-50% - 35px)) scale(0.6);
     filter: brightness(2.6) blur(5px);
   }
 
   45% {
     opacity: 1;
-    transform: translateX(-50%) translateY(7px) scale(1.07);
+    transform: translate(-50%, calc(-50% + 6px)) scale(1.06);
     filter: brightness(1.5) blur(0);
   }
 
   70% {
-    transform: translateX(-50%) translateY(-2px) scale(0.985);
+    transform: translate(-50%, calc(-50% - 2px)) scale(0.985);
     filter: brightness(1.15);
   }
 
   100% {
     opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
     filter: brightness(1);
   }
 }
@@ -4399,18 +4399,22 @@ body {
 
   0%,
   100% {
+    transform: translate(-50%, -50%) scale(1);
     filter: brightness(1) drop-shadow(0 0 0 rgba(255, 216, 107, 0));
   }
 
   50% {
+    transform: translate(-50%, calc(-50% - 2px)) scale(1.02);
     filter: brightness(1.12) drop-shadow(0 0 10px rgba(255, 216, 107, 0.7));
   }
 }
 
 .effect-banner.hidden {
-  transform: translateX(-50%) translateY(-26px) scale(0.86);
+  opacity: 0;
+  transform: translate(-50%, calc(-50% - 20px)) scale(0.86);
   filter: brightness(1.8) blur(3px);
   transition: opacity 0.4s ease, transform 0.45s ease-in, filter 0.4s ease;
+  pointer-events: none;
 }
 
 /* ── 2) การ์ดเซียมซี: ม้วนคัมภีร์ทองประทานจากสวรรค์ ───────────────── */
