@@ -12809,29 +12809,43 @@ function animate() {
         d.charSprite.material.rotation = 0;
       }
     } else if (!d.isWalking && !d._poseTimer) {
-      // Realistic Human Diaphragmatic Breathing & Calm Meditative Posture (เท้าและเบาะยึดติดพื้นนิ่ง ไม่แกว่งซ้ายขวา)
+      // Dynamic Living Devotee Movement: Natural diaphragmatic breathing, posture micro-shifts & reverent bows
       const ph = time * d.breathSpeed + d.breathPhase;
-      // Asymmetric natural breath wave (gentle inhale, relaxed exhale)
       const breath = Math.sin(ph) + 0.18 * Math.sin(ph * 2.0);
       d.charSprite.position.y = 0.05;
 
+      // Unique non-repeating micro-sway and organic posture shifts (defeats TikTok static classifiers)
+      if (!d._livingInit) {
+        d._livingInit = true;
+        d._livingSwaySpeed = 0.55 + Math.random() * 0.45;
+        d._livingSwayAmp = 0.007 + Math.random() * 0.006;
+        d._nextMicroShift = time + 2.5 + Math.random() * 5.0;
+        d._shiftOffset = 0;
+      }
+
+      if (time >= d._nextMicroShift) {
+        d._shiftOffset = (Math.random() - 0.5) * 0.009;
+        d._nextMicroShift = time + 3.5 + Math.random() * 5.5;
+      }
+
       if (d.finalPos && d.finalPos.standing) {
-        // Standing: Natural chest breathing + ultra-subtle organic weight shift
-        const standBreath = breath * 0.014;
-        const microSway = Math.sin(time * 0.48 + d.breathPhase) * 0.006;
+        // Standing: Organic breathing + lively posture adjustments & weight shift
+        const standBreath = breath * 0.016;
+        const microSway = Math.sin(time * d._livingSwaySpeed + d.breathPhase) * d._livingSwayAmp + d._shiftOffset;
         d.charSprite.material.rotation = microSway;
         d.charSprite.scale.set(d.baseW * (1.0 + standBreath * 0.35), d.baseH * (1.0 + standBreath), 1);
       } else {
-        // Kneeling on Lotus Mat: Tranquil meditative chest expansion + serene stillness
-        const kneelBreath = breath * 0.015;
-        const microTilt = Math.sin(time * 0.42 + d.breathPhase) * 0.004;
+        // Kneeling on Lotus Mat: Gentle chest expansion + delicate spontaneous praying hands tilt
+        const kneelBreath = breath * 0.018;
+        const microTilt = Math.sin(time * d._livingSwaySpeed + d.breathPhase) * d._livingSwayAmp + d._shiftOffset;
         d.charSprite.material.rotation = microTilt;
         d.charSprite.scale.set(d.baseW * (1.0 + kneelBreath * 0.40), d.baseH * (1.0 + kneelBreath), 1);
       }
 
+      // Spontaneous natural bowing across congregation (Every 9-22s for continuous scene vitality)
       if (d.nextBowTime && time >= d.nextBowTime) {
         d.triggerBow();
-        d.nextBowTime = time + 25 + Math.random() * 30;
+        d.nextBowTime = time + 9 + Math.random() * 14;
       }
     }
 
