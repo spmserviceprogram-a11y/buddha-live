@@ -8827,7 +8827,8 @@ function triggerFireworksEffect() {
         color: isInner ? 0xfff6b0 : sparkColors[i % sparkColors.length],
         transparent: true,
         opacity: 1.0,
-        blending: THREE.AdditiveBlending
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
       });
       const s = new THREE.Mesh(sparkGeo, sMat);
       s.position.set(hub.x, hub.y, hub.z);
