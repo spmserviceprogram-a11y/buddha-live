@@ -695,7 +695,7 @@ body {
 
 .audio-unlock-pill {
   position: absolute;
-  top: 56px;
+  top: 32px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
