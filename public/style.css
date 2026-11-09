@@ -897,40 +897,35 @@ body {
   font-size: 10px;
 }
 
-.panel-left-sadhu .panel-header-gold {
+/* Pop-Up HUD Cards (TOP 5, คิวถวาย, คำขอพรล่าสุด แสดงเป็นป็อปอัพชั่วคราว) */
+.panel-popup {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px) scale(0.96);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  visibility: hidden;
+}
+
+.panel-popup.popup-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+/* Panel Left: คิวถวาย & คำขอพรล่าสุด */
+.panel-left-queue,
+.panel-left-wishes {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: 100%;
+}
+
+.panel-left-queue .panel-header-gold,
+.panel-left-wishes .panel-header-gold {
   padding: 3px 5px;
-  font-size: 9.4px;
-  white-space: nowrap;
-  letter-spacing: -0.1px;
-}
-
-/* Panel Left: คิวถวาย + คำขอพรล่าสุด */
-.panel-left-queue {
-  position: relative;
-  top: auto;
-  left: auto;
-  width: 100%;
-}
-
-.panel-left-queue-old {
-  position: absolute;
-  top: 68px;
-  left: 10px;
-  width: 148px;
-}
-
-/* Panel: รายการของขวัญ & เอฟเฟกต์มงคล ๑๑ ระดับ */
-.panel-right-guide,
-.panel-left-guide,
-#panel-gift-guide {
-  position: relative;
-  top: auto;
-  left: auto;
-  right: auto;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 20;
-  overflow: visible;
+  font-size: 10px;
 }
 
 .gift-guide-list {
