@@ -13531,10 +13531,11 @@ function triggerAmbientDevotion() {
     recentAmbientDevoteeSeats.shift();
   }
 
-  // 3. Low-tier humble offerings ONLY for ambient bots (1-coin Kowtow, 5-coin Incense)
+  // 3. Low-tier humble offerings ONLY for ambient bots (1-coin Kowtow, 5-coin Incense, 1-coin Seam-Si)
   const AMBIENT_RITUALS = [
     { type: 'kowtow',  icon: '🌹', name: 'กุหลาบมงคล',   coins: 1 },
-    { type: 'incense', icon: '🪔', name: 'ประทีปธูปหอม', coins: 5 }
+    { type: 'incense', icon: '🪔', name: 'ประทีปธูปหอม', coins: 5 },
+    { type: 'seamsi',  icon: '🎋', name: 'รักนะมากๆ',     coins: 1 }
   ];
 
   const picked = AMBIENT_RITUALS[Math.floor(Math.random() * AMBIENT_RITUALS.length)];
@@ -13566,11 +13567,11 @@ const AMBIENT_PRAYER_BUBBLES = [
 function triggerAmbientMicroAction() {
   const cfg = getAdaptiveAmbientConfig();
   if (disciplesMap.size === 0) {
-    nextAmbientMicroActionTime = Date.now() + 30000;
+    nextAmbientMicroActionTime = Date.now() + 15000;
     return;
   }
   if (isStageActionRunning || stageActionQueue.length > 0) {
-    nextAmbientMicroActionTime = Date.now() + 15000;
+    nextAmbientMicroActionTime = Date.now() + 8000;
     return;
   }
 
@@ -13582,29 +13583,35 @@ function triggerAmbientMicroAction() {
   });
 
   if (idle.length === 0) {
-    nextAmbientMicroActionTime = Date.now() + 15000;
+    nextAmbientMicroActionTime = Date.now() + 8000;
     return;
   }
 
-  const chosen = idle[Math.floor(Math.random() * idle.length)];
-  const isBow = !cfg.allowMicroBubbles || Math.random() < 0.85;
+  // Pick 1 or 2 devotees to perform organic micro-actions simultaneously (lively congregation)
+  const actionCount = (idle.length >= 2 && Math.random() < 0.40) ? 2 : 1;
+  const pickedDevotees = [];
+  for (let k = 0; k < actionCount; k++) {
+    const remaining = idle.filter(d => !pickedDevotees.includes(d));
+    if (remaining.length === 0) break;
+    const chosen = remaining[Math.floor(Math.random() * remaining.length)];
+    pickedDevotees.push(chosen);
 
-  if (isBow) {
-    chosen.triggerBow();
-    if (Math.random() < 0.35 && typeof templeAudio !== 'undefined' && templeAudio.playWoodblock) {
-      templeAudio.playWoodblock();
-    }
-  } else if (cfg.allowMicroBubbles) {
-    const text = AMBIENT_PRAYER_BUBBLES[Math.floor(Math.random() * AMBIENT_PRAYER_BUBBLES.length)];
-    showDiscipleComment(chosen, text, false);
-    if (Math.random() < 0.30 && typeof templeAudio !== 'undefined' && templeAudio.playLotusChime) {
-      templeAudio.playLotusChime();
+    const isBow = !cfg.allowMicroBubbles || Math.random() < 0.88;
+    if (isBow) {
+      chosen.triggerBow();
+      if (Math.random() < 0.35 && typeof templeAudio !== 'undefined' && templeAudio.playWoodblock) {
+        templeAudio.playWoodblock();
+      }
+    } else if (cfg.allowMicroBubbles) {
+      const text = AMBIENT_PRAYER_BUBBLES[Math.floor(Math.random() * AMBIENT_PRAYER_BUBBLES.length)];
+      showDiscipleComment(chosen, text, false);
+      if (Math.random() < 0.30 && typeof templeAudio !== 'undefined' && templeAudio.playLotusChime) {
+        templeAudio.playLotusChime();
+      }
     }
   }
 
-  const delay = cfg.allowMicroBubbles
-    ? (cfg.bubbleIntervalMin + Math.random() * cfg.bubbleIntervalRange)
-    : (22000 + Math.random() * 16000);
+  const delay = 3500 + Math.random() * 3500;
   nextAmbientMicroActionTime = Date.now() + delay;
 }
 
