@@ -835,7 +835,8 @@ body {
    ===================================================================== */
 .follower-banner {
   position: absolute;
-  top: 32px;
+  top: auto;
+  bottom: clamp(170px, 21.5vh, 185px);
   left: 50%;
   transform: translateX(-50%);
   max-width: calc(100% - 24px);
@@ -867,7 +868,7 @@ body {
 
 .follower-banner.hidden {
   opacity: 0;
-  transform: translateX(-50%) translateY(-14px) scale(0.82);
+  transform: translateX(-50%) translateY(14px) scale(0.85);
   pointer-events: none;
 }
 
@@ -879,19 +880,19 @@ body {
 
 @keyframes followerBannerEntrance {
   0% {
-    transform: translateX(-50%) translateY(-22px) scale(0.70);
+    transform: translateX(-50%) translateY(18px) scale(0.70);
     opacity: 0;
     filter: brightness(2) blur(3px);
   }
 
   65% {
-    transform: translateX(-50%) translateY(2px) scale(1.06);
+    transform: translateX(-50%) translateY(-2px) scale(1.06);
     opacity: 1;
     filter: brightness(1.2) blur(0);
   }
 
   85% {
-    transform: translateX(-50%) translateY(-1px) scale(0.985);
+    transform: translateX(-50%) translateY(1px) scale(0.985);
   }
 
   100% {
