@@ -11517,6 +11517,13 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
     doOneBenjangkhapradit();
 
   } else if (type === 'seamsi') {
+    if (isAmbient) {
+      actor.smoothPoseTransition('kneel', 260, () => {
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, 1200);
+      });
+      return;
+    }
     const seamFortune = activeGiftInfo.seamsiFortune || drawSeamSiFortune();
     activeGiftInfo.seamsiFortune = seamFortune;
     if (!isAmbient) {
