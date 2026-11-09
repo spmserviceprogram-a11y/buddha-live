@@ -2424,23 +2424,23 @@ body {
 
 @keyframes celestialBannerEntrance {
   0% {
-    transform: translateX(-50%) translateY(22px) scale(0.70);
+    transform: translate(-50%, calc(-50% + 22px)) scale(0.70);
     opacity: 0;
     filter: brightness(2) blur(3px);
   }
 
   62% {
-    transform: translateX(-50%) translateY(-3px) scale(1.05);
+    transform: translate(-50%, calc(-50% - 3px)) scale(1.05);
     opacity: 1;
     filter: brightness(1.2) blur(0);
   }
 
   84% {
-    transform: translateX(-50%) translateY(1px) scale(0.985);
+    transform: translate(-50%, calc(-50% + 1px)) scale(0.985);
   }
 
   100% {
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
     filter: brightness(1);
   }
@@ -2450,12 +2450,12 @@ body {
 
   0%,
   100% {
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
     filter: brightness(1);
   }
 
   50% {
-    transform: translateX(-50%) translateY(-2px) scale(1.015);
+    transform: translate(-50%, calc(-50% - 2px)) scale(1.015);
     filter: brightness(1.08);
   }
 }
