@@ -1331,7 +1331,7 @@ class GuanYinDivineVoice {
       const utter = new SpeechSynthesisUtterance(text);
       utter.voice = this.thaiVoice;
       utter.lang = 'th-TH';
-      utter.rate = 1.25; // Brisk, rapid, fluent pace (พูดไวขึ้นกระชับ)
+      utter.rate = 1.08; // Calm, clear, natural Thai speech synthesis pace (พูดช้าลง นุ่มนวล ชัดถ้อยชัดคำ)
       utter.pitch = 1.0; // Natural warm pitch
       utter.volume = this.volume;
 
