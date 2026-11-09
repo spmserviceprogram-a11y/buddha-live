@@ -67,10 +67,19 @@ class TempleAudio {
     if (!this.bgmAudio) {
       this.bgmAudio = document.getElementById('bgm-audio');
       if (!this.bgmAudio) {
-        this.bgmAudio = new Audio('/bgm.mp3');
+        this.bgmAudio = document.createElement('audio');
         this.bgmAudio.id = 'bgm-audio';
         this.bgmAudio.loop = true;
         this.bgmAudio.preload = 'auto';
+        this.bgmAudio.setAttribute('playsinline', '');
+        const src1 = document.createElement('source');
+        src1.src = '/bgm.m4a';
+        src1.type = 'audio/mp4';
+        const src2 = document.createElement('source');
+        src2.src = '/bgm.mp3';
+        src2.type = 'audio/mpeg';
+        this.bgmAudio.appendChild(src1);
+        this.bgmAudio.appendChild(src2);
         try { document.body.appendChild(this.bgmAudio); } catch (_) { }
       }
       this.bgmAudio.volume = this.volume;
