@@ -5014,9 +5014,10 @@ body {
 /* Floating Golden Share Toast Notification */
 .share-toast-banner {
   position: absolute;
-  top: 32px;
+  top: auto;
+  bottom: clamp(170px, 21.5vh, 185px);
   left: 50%;
-  transform: translateX(-50%) translateY(-10px) scale(0.95);
+  transform: translateX(-50%) translateY(14px) scale(0.95);
   width: calc(100% - 24px);
   max-width: 410px;
   background: linear-gradient(135deg, rgba(25, 14, 40, 0.94) 0%, rgba(65, 30, 15, 0.94) 100%);
