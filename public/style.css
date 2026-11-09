@@ -1789,9 +1789,9 @@ body {
 }
 
 .merit-row.rank-1 {
-  background: linear-gradient(90deg, rgba(180, 83, 9, 0.50), rgba(245, 158, 11, 0.50));
+  background: linear-gradient(90deg, rgba(180, 83, 9, 0.30), rgba(245, 158, 11, 0.30));
   border-color: #ffd700;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
 }
 
 .merit-row.rank-1 .merit-name {
