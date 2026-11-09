@@ -26,7 +26,7 @@ class TempleAudio {
     this.soundMode = 'chanting_file'; // 'chanting_file' (Authentic Sacred Da Bei Zhou MP3)
     try {
       localStorage.setItem('buddha_sound_mode', 'chanting_file');
-    } catch (_) {}
+    } catch (_) { }
     this.zenMasterGain = null;
     this.zenOscs = [];
     this.zenTimer = null;
@@ -60,9 +60,9 @@ class TempleAudio {
     try {
       if (!this._bgmRegenRequested) {
         this._bgmRegenRequested = true;
-        fetch('/api/regenerate-zen-bgm').catch(() => {});
+        fetch('/api/regenerate-zen-bgm').catch(() => { });
       }
-    } catch (_) {}
+    } catch (_) { }
 
     if (!this.bgmAudio) {
       this.bgmAudio = document.getElementById('bgm-audio');
@@ -71,7 +71,7 @@ class TempleAudio {
         this.bgmAudio.id = 'bgm-audio';
         this.bgmAudio.loop = true;
         this.bgmAudio.preload = 'auto';
-        try { document.body.appendChild(this.bgmAudio); } catch (_) {}
+        try { document.body.appendChild(this.bgmAudio); } catch (_) { }
       }
       this.bgmAudio.volume = this.volume;
 
@@ -95,7 +95,7 @@ class TempleAudio {
       this.bgmAudio.addEventListener('ended', () => {
         if (!this.userMuted && this.enabled) {
           this.bgmAudio.currentTime = 0;
-          this.bgmAudio.play().catch(() => {});
+          this.bgmAudio.play().catch(() => { });
         }
       });
 
@@ -124,7 +124,7 @@ class TempleAudio {
     }
 
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
   }
 
@@ -133,7 +133,7 @@ class TempleAudio {
     if (!this.enabled) return;
     this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
     const now = this.ctx.currentTime;
 
@@ -170,7 +170,7 @@ class TempleAudio {
     if (!this.enabled) return;
     this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
     const now = this.ctx.currentTime;
 
@@ -205,7 +205,7 @@ class TempleAudio {
     if (!this.enabled) return;
     this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
     const chord = [432, 513.6, 648, 864, 1027.2];
     chord.forEach((freq, idx) => {
@@ -218,7 +218,7 @@ class TempleAudio {
     if (!this.enabled) return;
     this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
     const rattleTimes = [0, 95, 185, 285, 375, 480, 575, 675, 780, 890];
     rattleTimes.forEach((delayMs, i) => {
@@ -264,7 +264,7 @@ class TempleAudio {
     if (!this.enabled || !this.ambientPlaying) return;
     this.init();
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
     const notes = [this.scale[2], this.scale[4], this.scale[5], this.scale[7]];
     const shuffled = [...notes].sort(() => Math.random() - 0.5);
@@ -279,7 +279,7 @@ class TempleAudio {
   stopSynthesizedDrone() {
     if (this.zenOscs && this.zenOscs.length > 0) {
       this.zenOscs.forEach(o => {
-        try { o.stop(); o.disconnect(); } catch (_) {}
+        try { o.stop(); o.disconnect(); } catch (_) { }
       });
       this.zenOscs = [];
     }
@@ -292,17 +292,17 @@ class TempleAudio {
       this.zenTimer = null;
     }
     if (this.zenMasterGain) {
-      try { this.zenMasterGain.disconnect(); } catch (_) {}
+      try { this.zenMasterGain.disconnect(); } catch (_) { }
       this.zenMasterGain = null;
     }
     if (this.ambientOscs && this.ambientOscs.length > 0) {
       this.ambientOscs.forEach(o => {
-        try { o.stop(); o.disconnect(); } catch (_) {}
+        try { o.stop(); o.disconnect(); } catch (_) { }
       });
       this.ambientOscs = [];
     }
     if (this.droneGain) {
-      try { this.droneGain.disconnect(); } catch (_) {}
+      try { this.droneGain.disconnect(); } catch (_) { }
       this.droneGain = null;
     }
     if (this.bowlTimer) {
@@ -320,11 +320,11 @@ class TempleAudio {
       try {
         this.bgmBufferSource.stop();
         this.bgmBufferSource.disconnect();
-      } catch (_) {}
+      } catch (_) { }
       this.bgmBufferSource = null;
     }
     if (this.bgmBufferGain) {
-      try { this.bgmBufferGain.disconnect(); } catch (_) {}
+      try { this.bgmBufferGain.disconnect(); } catch (_) { }
       this.bgmBufferGain = null;
     }
   }
@@ -334,7 +334,7 @@ class TempleAudio {
     this.init();
     if (!this.ctx) return false;
     if (this.ctx.state === 'suspended') {
-      try { await this.ctx.resume(); } catch (_) {}
+      try { await this.ctx.resume(); } catch (_) { }
     }
     if (this.ctx.state !== 'running') return false;
     if (this.bgmBufferSource) return true;
@@ -357,7 +357,7 @@ class TempleAudio {
       const src = this.ctx.createBufferSource();
       src.buffer = this.bgmBuffer;
       src.loop = true;
-      try { src.playbackRate.value = 1.018; } catch (_) {}
+      try { src.playbackRate.value = 1.018; } catch (_) { }
 
       const gain = this.ctx.createGain();
       gain.gain.setValueAtTime(this.volume, this.ctx.currentTime);
@@ -388,17 +388,17 @@ class TempleAudio {
     this.init();
     if (!this.ctx) return;
     if (this.ctx.state === 'suspended') {
-      try { this.ctx.resume(); } catch (_) {}
+      try { this.ctx.resume(); } catch (_) { }
     }
 
     this.stopSynthesizedDrone();
     this.stopWebAudioBgmBuffer();
     if (this.bgmAudio && !this.bgmAudio.paused) {
-      try { this.bgmAudio.pause(); } catch (_) {}
+      try { this.bgmAudio.pause(); } catch (_) { }
     }
 
     if (withBell) {
-      try { this.playBell(432, 4.5); } catch (_) {}
+      try { this.playBell(432, 4.5); } catch (_) { }
     }
 
     const now = this.ctx.currentTime;
@@ -447,7 +447,7 @@ class TempleAudio {
       const curTarget = (this._isDucked ? (this.volume * 0.18) : this.volume) * 0.35 * breathFactor;
       try {
         this.zenMasterGain.gain.setTargetAtTime(Math.max(0.0001, curTarget), this.ctx.currentTime, 0.4);
-      } catch (_) {}
+      } catch (_) { }
     }, 400);
 
     // 3. Periodic Tibetan Singing Bowl Strikes & Wooden Fish (Mõ Chùa) Knocking
@@ -457,24 +457,24 @@ class TempleAudio {
       // Strike a Tibetan Singing Bowl (every 18-24s)
       const bowlFreqs = [432, 528, 384, 513.6];
       const bf = bowlFreqs[Math.floor(Math.random() * bowlFreqs.length)];
-      try { this.playBell(bf, 5.5); } catch (_) {}
+      try { this.playBell(bf, 5.5); } catch (_) { }
 
       // Traditional Buddhist Wooden Fish (Mõ Chùa) gentle meditative knocks
       if (Math.random() < 0.85) {
         setTimeout(() => {
-          try { this.playWoodblock(); } catch (_) {}
+          try { this.playWoodblock(); } catch (_) { }
         }, 1200 + Math.random() * 800);
 
         if (Math.random() < 0.6) {
           setTimeout(() => {
-            try { this.playWoodblock(); } catch (_) {}
+            try { this.playWoodblock(); } catch (_) { }
           }, 2600 + Math.random() * 600);
         }
       }
     }, 18000);
 
     // Initial strike for immediate serene ambiance
-    try { this.playBell(432, 5.0); } catch (_) {}
+    try { this.playBell(432, 5.0); } catch (_) { }
 
     this.zenMasterGain.connect(this.filterNode);
     this.ambientPlaying = true;
@@ -490,7 +490,7 @@ class TempleAudio {
 
     // Resume AudioContext if suspended by browser
     if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
+      this.ctx.resume().catch(() => { });
     }
 
     if (this.zenMasterGain || (this.bgmAudio && !this.bgmAudio.paused && !this.bgmAudio.muted) || this.bgmBufferSource) {
@@ -515,7 +515,7 @@ class TempleAudio {
     }
 
     if (withBell) {
-      try { this.playBell(432, 4.0); } catch (_) {}
+      try { this.playBell(432, 4.0); } catch (_) { }
     }
 
     const startHarmonicTimer = () => {
@@ -524,12 +524,12 @@ class TempleAudio {
           if (!this.userMuted && this.enabled && this.ambientPlaying) {
             const sacredFreqs = [432, 513.6, 528, 639, 741, 852];
             const chosenF = sacredFreqs[Math.floor(Math.random() * sacredFreqs.length)];
-            try { this.playBell(chosenF, 4.8); } catch (_) {}
+            try { this.playBell(chosenF, 4.8); } catch (_) { }
 
             if (Math.random() < 0.75) {
-              setTimeout(() => { try { this.playWoodblock(); } catch (_) {} }, 1100);
+              setTimeout(() => { try { this.playWoodblock(); } catch (_) { } }, 1100);
               if (Math.random() < 0.45) {
-                setTimeout(() => { try { this.playWoodblock(); } catch (_) {} }, 2200);
+                setTimeout(() => { try { this.playWoodblock(); } catch (_) { } }, 2200);
               }
             }
 
@@ -537,7 +537,7 @@ class TempleAudio {
             try {
               if (this.bgmAudio) this.bgmAudio.playbackRate = rateJitter;
               if (this.bgmBufferSource) this.bgmBufferSource.playbackRate.value = rateJitter;
-            } catch (_) {}
+            } catch (_) { }
           }
         }, 11000);
       }
@@ -547,10 +547,10 @@ class TempleAudio {
     if (this.bgmAudio) {
       this.bgmAudio.muted = false;
       this.bgmAudio.volume = this.volume;
-      try { this.bgmAudio.playbackRate = 1.042; } catch (_) {}
+      try { this.bgmAudio.playbackRate = 1.042; } catch (_) { }
 
       if (this.bgmAudio.readyState >= 2 && this.bgmAudio.currentTime < 0.5) {
-        try { this.bgmAudio.currentTime = 0.8; } catch (_) {}
+        try { this.bgmAudio.currentTime = 0.8; } catch (_) { }
       }
       const playPromise = this.bgmAudio.play();
       if (playPromise !== undefined) {
@@ -589,7 +589,7 @@ class TempleAudio {
   stopAmbient() {
     this.isStartingBgm = false;
     if (this.bgmAudio) {
-      try { this.bgmAudio.pause(); } catch (_) {}
+      try { this.bgmAudio.pause(); } catch (_) { }
     }
     this.stopWebAudioBgmBuffer();
     if (this._antiLoopHarmonicTimer) {
@@ -608,7 +608,7 @@ class TempleAudio {
   pauseBgmForOtherTab() {
     this.isStartingBgm = false;
     if (this.bgmAudio && !this.bgmAudio.paused) {
-      try { this.bgmAudio.pause(); } catch (_) {}
+      try { this.bgmAudio.pause(); } catch (_) { }
     }
     this.stopWebAudioBgmBuffer();
     this.stopSynthesizedDrone();
@@ -650,7 +650,7 @@ class TempleAudio {
         if (this.droneGain && this.ctx) {
           this.droneGain.gain.setValueAtTime(clampedV * 0.04, this.ctx.currentTime);
         }
-      } catch (_) {}
+      } catch (_) { }
       if (currentStep >= steps) {
         clearInterval(this._duckTimer);
         this._duckTimer = null;
@@ -665,7 +665,7 @@ class TempleAudio {
           if (this.droneGain && this.ctx) {
             this.droneGain.gain.setValueAtTime(targetVolume * 0.04, this.ctx.currentTime);
           }
-        } catch (_) {}
+        } catch (_) { }
       }
     }, stepInterval);
   }
@@ -754,7 +754,7 @@ class BuddhaAudioCoordinator {
         this.audio.userMuted = true;
         this.audio.stopAmbient();
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   claimMaster() {
@@ -762,7 +762,7 @@ class BuddhaAudioCoordinator {
     try {
       localStorage.setItem('buddha_active_audio_tab', this.tabId);
       localStorage.setItem('buddha_active_audio_time', Date.now().toString());
-    } catch (_) {}
+    } catch (_) { }
 
     if (this.channel) {
       this.channel.postMessage({ type: 'CLAIM_BGM', tabId: this.tabId });
@@ -776,7 +776,7 @@ class BuddhaAudioCoordinator {
         if (localStorage.getItem('buddha_active_audio_tab') === this.tabId) {
           localStorage.removeItem('buddha_active_audio_tab');
         }
-      } catch (_) {}
+      } catch (_) { }
     }
   }
 }
@@ -887,7 +887,7 @@ class GuanYinDivineVoice {
       if (savedChatVoice !== null) {
         this.chatVoiceEnabled = (savedChatVoice === 'true');
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // Check if query parameter requests voice disable: ?voice=0 or ?no_voice=1
     try {
@@ -896,7 +896,7 @@ class GuanYinDivineVoice {
         this.enabled = false;
         console.log('[GuanYin Voice] URL parameter ?voice=0 requested. AI Voice generation disabled on this tab.');
       }
-    } catch (_) {}
+    } catch (_) { }
 
     this.initVoice();
   }
@@ -906,12 +906,12 @@ class GuanYinDivineVoice {
     const loadVoices = () => {
       try {
         const voices = this.synth.getVoices() || [];
-        this.thaiVoice = voices.find(v => (v.lang || '').toLowerCase().includes('th') && 
+        this.thaiVoice = voices.find(v => (v.lang || '').toLowerCase().includes('th') &&
           ((v.name || '').includes('Premwadee') || (v.name || '').includes('Kanya') || (v.name || '').includes('Female') || (v.name || '').includes('ภาษาไทย')))
           || voices.find(v => (v.lang || '').toLowerCase().includes('th'))
           || voices.find(v => (v.lang || '').toLowerCase().startsWith('th'))
           || (voices.length > 0 ? voices[0] : null);
-      } catch (_) {}
+      } catch (_) { }
     };
     loadVoices();
     if (this.synth.onvoiceschanged !== undefined) {
@@ -946,23 +946,23 @@ class GuanYinDivineVoice {
 
   abortCurrentTask() {
     if (this.currentAbortController) {
-      try { this.currentAbortController.abort(); } catch (_) {}
+      try { this.currentAbortController.abort(); } catch (_) { }
       this.currentAbortController = null;
     }
     if (this.currentAudio) {
       try {
         this.currentAudio.pause();
         this.currentAudio.src = '';
-      } catch (_) {}
+      } catch (_) { }
       this.currentAudio = null;
     }
     if (this.synth) {
-      try { this.synth.cancel(); } catch (_) {}
+      try { this.synth.cancel(); } catch (_) { }
     }
     if (this._currentPlaybackResolver) {
       const r = this._currentPlaybackResolver;
       this._currentPlaybackResolver = null;
-      try { r(); } catch (_) {}
+      try { r(); } catch (_) { }
     }
     this.isSpeaking = false;
     this.isGenerating = false;
@@ -1007,9 +1007,9 @@ class GuanYinDivineVoice {
     try {
       while (this.queue.length > 0) {
         const task = this.queue.shift();
-        try { if (typeof task.onStart === 'function') task.onStart(); } catch (_) {}
+        try { if (typeof task.onStart === 'function') task.onStart(); } catch (_) { }
         await this.executeVoiceTask(task);
-        try { if (typeof task.onDone === 'function') task.onDone(); } catch (_) {}
+        try { if (typeof task.onDone === 'function') task.onDone(); } catch (_) { }
         // Guaranteed peaceful 700ms gap between blessings - speeches NEVER overlap!
         await new Promise(r => setTimeout(r, 700));
       }
@@ -1208,7 +1208,7 @@ class GuanYinDivineVoice {
     return new Promise(resolve => {
       // 1. Immediately cancel any running Web Speech API synthesis to guarantee zero voice overlap
       if (this.synth) {
-        try { this.synth.cancel(); } catch (_) {}
+        try { this.synth.cancel(); } catch (_) { }
       }
 
       // 2. Cleanly stop any existing playing audio to guarantee zero overlap
@@ -1216,7 +1216,7 @@ class GuanYinDivineVoice {
         try {
           this.currentAudio.pause();
           this.currentAudio.src = '';
-        } catch (_) {}
+        } catch (_) { }
         this.currentAudio = null;
       }
 
@@ -1295,13 +1295,13 @@ class GuanYinDivineVoice {
         try {
           this.currentAudio.pause();
           this.currentAudio.src = '';
-        } catch (_) {}
+        } catch (_) { }
         this.currentAudio = null;
       }
 
       try {
         this.synth.cancel(); // Stop any pending utterances
-      } catch (_) {}
+      } catch (_) { }
 
       // Smoothly duck BGM
       if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
@@ -1574,7 +1574,7 @@ class GuanYinDivineVoice {
     if (this._currentPlaybackResolver) {
       const r = this._currentPlaybackResolver;
       this._currentPlaybackResolver = null;
-      try { r(); } catch (_) {}
+      try { r(); } catch (_) { }
     }
     if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
       templeAudio.duckBgm(false, 200);
@@ -1583,11 +1583,11 @@ class GuanYinDivineVoice {
       try {
         this.currentAudio.pause();
         this.currentAudio.src = '';
-      } catch (_) {}
+      } catch (_) { }
       this.currentAudio = null;
     }
     if (this.synth) {
-      try { this.synth.cancel(); } catch (_) {}
+      try { this.synth.cancel(); } catch (_) { }
     }
     this.isSpeaking = false;
     this.isGenerating = false;
@@ -1639,7 +1639,7 @@ class BuddhaSpeechCoordinator {
         if (this.voice) this.voice.enabled = false;
         return;
       }
-    } catch (_) {}
+    } catch (_) { }
 
     if (this.channel) {
       this.channel.onmessage = (e) => {
@@ -1708,7 +1708,7 @@ class BuddhaSpeechCoordinator {
       if (params.get('master') === '1' || params.get('voice') === '1') {
         setTimeout(() => this.claimMaster(), 600);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     setInterval(() => {
       if (this.isMaster && this.socket && this.socket.connected) {
@@ -1726,7 +1726,7 @@ class BuddhaSpeechCoordinator {
         try {
           localStorage.setItem('buddha_speech_master_tab', this.tabId);
           localStorage.setItem('buddha_speech_master_time', Date.now().toString());
-        } catch (_) {}
+        } catch (_) { }
         console.log('[SpeechCoordinator] Central Server appointed this tab as ACTIVE SPEECH MASTER 🎙️');
         if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
           smartMicRouter.updateStatusText();
@@ -1795,7 +1795,7 @@ class BuddhaSpeechCoordinator {
     try {
       localStorage.setItem('buddha_speech_master_tab', this.tabId);
       localStorage.setItem('buddha_speech_master_time', Date.now().toString());
-    } catch (_) {}
+    } catch (_) { }
 
     if (this.channel) {
       this.channel.postMessage({ type: 'CLAIM_SPEECH_MASTER', tabId: this.tabId });
@@ -1819,7 +1819,7 @@ class BuddhaSpeechCoordinator {
   sendHeartbeat() {
     try {
       localStorage.setItem('buddha_speech_master_time', Date.now().toString());
-    } catch (_) {}
+    } catch (_) { }
     if (this.channel) {
       this.channel.postMessage({ type: 'SPEECH_HEARTBEAT', tabId: this.tabId });
     }
@@ -1847,7 +1847,7 @@ class BuddhaSpeechCoordinator {
         if (localStorage.getItem('buddha_speech_master_tab') === this.tabId) {
           localStorage.removeItem('buddha_speech_master_tab');
         }
-      } catch (_) {}
+      } catch (_) { }
       if (this.socket && this.socket.connected) {
         this.socket.emit('yield_speech_master');
       }
@@ -1860,7 +1860,7 @@ class BuddhaSpeechCoordinator {
       if (params.get('voice') === '0' || params.get('no_voice') === '1' || params.get('display') === '1') {
         return false;
       }
-    } catch (_) {}
+    } catch (_) { }
 
     if (this.socket && this.socket.connected && this.serverMasterSocketId) {
       if (this.socket.id === this.serverMasterSocketId) return true;
@@ -1936,7 +1936,7 @@ class SmartLiveMicRouter {
           await this.refreshDeviceList(false);
         }
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   restoreSettings() {
@@ -1953,7 +1953,7 @@ class SmartLiveMicRouter {
       if (savedKeepAlive !== null) this.keepAliveEnabled = (savedKeepAlive !== 'false');
       const savedMonitor = localStorage.getItem('buddha_mic_dual_monitor');
       if (savedMonitor !== null) this.dualMonitorEnabled = (savedMonitor !== 'false');
-    } catch (_) {}
+    } catch (_) { }
   }
 
   saveLocalSettings() {
@@ -1963,7 +1963,7 @@ class SmartLiveMicRouter {
       localStorage.setItem('buddha_mic_acoustics', this.acousticsEnabled ? 'true' : 'false');
       localStorage.setItem('buddha_mic_keepalive', this.keepAliveEnabled ? 'true' : 'false');
       localStorage.setItem('buddha_mic_dual_monitor', this.dualMonitorEnabled ? 'true' : 'false');
-    } catch (_) {}
+    } catch (_) { }
   }
 
   pushServerConfig() {
@@ -1979,8 +1979,8 @@ class SmartLiveMicRouter {
           keepAliveEnabled: this.keepAliveEnabled,
           dualMonitorEnabled: this.dualMonitorEnabled
         })
-      }).catch(() => {});
-    } catch (_) {}
+      }).catch(() => { });
+    } catch (_) { }
   }
 
   init() {
@@ -2010,9 +2010,9 @@ class SmartLiveMicRouter {
         this.startRoomToneEngine();
       }
       if (this.micCtx && this.micCtx.state === 'suspended') {
-        this.micCtx.resume().catch(() => {});
+        this.micCtx.resume().catch(() => { });
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   // Creates an authentic condenser-microphone room tone floor (-48 dB warm filtered pink noise + slow breathing LFO)
@@ -2061,7 +2061,7 @@ class SmartLiveMicRouter {
 
       this.roomToneSource = source;
       this.roomToneGain = gain;
-    } catch (_) {}
+    } catch (_) { }
   }
 
   // Subtle 130ms condenser-mic inhale & chest warmth before AI speaks
@@ -2078,7 +2078,7 @@ class SmartLiveMicRouter {
         this.roomToneGain.gain.linearRampToValueAtTime(0.011, now + 0.09);
         this.roomToneGain.gain.linearRampToValueAtTime(0.0055, now + 0.22);
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   async applySinkToContext(ctx) {
@@ -2100,12 +2100,12 @@ class SmartLiveMicRouter {
     if (this.templeAudio?.bgmAudio && typeof this.templeAudio.bgmAudio.setSinkId === 'function') {
       try {
         await this.templeAudio.bgmAudio.setSinkId(bgmTargetSink);
-      } catch (_) {}
+      } catch (_) { }
     }
     if (this.templeAudio?.ctx && typeof this.templeAudio.ctx.setSinkId === 'function') {
       try {
         await this.templeAudio.ctx.setSinkId(bgmTargetSink);
-      } catch (_) {}
+      } catch (_) { }
     }
     this.updateStatusText();
   }
@@ -2130,8 +2130,8 @@ class SmartLiveMicRouter {
           mon.playbackRate = audioEl.playbackRate || 1.0;
           mon.volume = Math.min(1.0, (audioEl.volume || 0.95) * 0.85);
           this.monitorAudio = mon;
-          mon.play().catch(() => {});
-        } catch (_) {}
+          mon.play().catch(() => { });
+        } catch (_) { }
       }
     }
     this.updateStatusText();
@@ -2142,7 +2142,7 @@ class SmartLiveMicRouter {
       try {
         this.monitorAudio.pause();
         this.monitorAudio.src = '';
-      } catch (_) {}
+      } catch (_) { }
       this.monitorAudio = null;
     }
   }
@@ -2161,7 +2161,7 @@ class SmartLiveMicRouter {
         const now = this.micCtx.currentTime;
         this.roomToneGain.gain.cancelScheduledValues(now);
         this.roomToneGain.gain.linearRampToValueAtTime(this.acousticsEnabled ? 0.0042 : 0.0001, now + 0.35);
-      } catch (_) {}
+      } catch (_) { }
     }
     this.updateStatusText();
   }
@@ -2220,7 +2220,7 @@ class SmartLiveMicRouter {
       try {
         const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         tempStream.getTracks().forEach(t => t.stop());
-      } catch (_) {}
+      } catch (_) { }
     }
 
     try {
@@ -2411,7 +2411,7 @@ class SmartLiveMicRouter {
         if (this.roomToneGain && this.micCtx) {
           try {
             this.roomToneGain.gain.setValueAtTime(this.acousticsEnabled ? 0.0042 : 0.0001, this.micCtx.currentTime);
-          } catch (_) {}
+          } catch (_) { }
         }
         this.broadcastSync();
       });
@@ -2467,7 +2467,7 @@ class SmartLiveMicRouter {
       soundModeSelect.addEventListener('change', (e) => {
         const newMode = e.target.value;
         this.templeAudio.soundMode = newMode;
-        try { localStorage.setItem('buddha_sound_mode', newMode); } catch (_) {}
+        try { localStorage.setItem('buddha_sound_mode', newMode); } catch (_) { }
         if (this.templeAudio.ambientPlaying) {
           this.templeAudio.stopAmbient();
           setTimeout(() => {
@@ -2828,7 +2828,7 @@ function createCarpetRipple(x, y, z, color = 0xffd700) {
 let activeCharacterAura = null;
 function triggerCharacterGoldenAura(targetGroup) {
   if (activeCharacterAura) {
-    try { targetGroup.remove(activeCharacterAura); } catch (_) {}
+    try { targetGroup.remove(activeCharacterAura); } catch (_) { }
     activeCharacterAura = null;
   }
   const auraGroup = new THREE.Group();
@@ -2863,7 +2863,7 @@ function triggerCharacterGoldenAura(targetGroup) {
 
     if (elapsed >= 4.2) {
       clearInterval(interval);
-      try { targetGroup.remove(auraGroup); } catch (_) {}
+      try { targetGroup.remove(auraGroup); } catch (_) { }
       activeCharacterAura = null;
     }
   }, 20);
@@ -3237,14 +3237,14 @@ const globalShadowTex = buildShadowTex();
 
 // Personal Sacred Aura
 const AURA_PALETTES = {
-  female_buns:   { a: 'rgba(255,185,80,0.76)',  b: 'rgba(255,130,0,0)' },
-  female_long:   { a: 'rgba(255,120,160,0.76)', b: 'rgba(255,60,100,0)' },
-  male_short:    { a: 'rgba(210,235,255,0.72)', b: 'rgba(120,160,255,0)' },
+  female_buns: { a: 'rgba(255,185,80,0.76)', b: 'rgba(255,130,0,0)' },
+  female_long: { a: 'rgba(255,120,160,0.76)', b: 'rgba(255,60,100,0)' },
+  male_short: { a: 'rgba(210,235,255,0.72)', b: 'rgba(120,160,255,0)' },
   elder_grandpa: { a: 'rgba(240,240,255,0.75)', b: 'rgba(160,180,220,0)' },
-  monk:          { a: 'rgba(255,228,80,0.80)',  b: 'rgba(255,160,0,0)' },
-  female_buns_blue:  { a: 'rgba(120,190,255,0.76)', b: 'rgba(60,120,255,0)' },
-  female_buns_pink:  { a: 'rgba(255,140,200,0.76)', b: 'rgba(255,60,160,0)' },
-  female_long_blue:  { a: 'rgba(120,190,255,0.76)', b: 'rgba(60,120,255,0)' },
+  monk: { a: 'rgba(255,228,80,0.80)', b: 'rgba(255,160,0,0)' },
+  female_buns_blue: { a: 'rgba(120,190,255,0.76)', b: 'rgba(60,120,255,0)' },
+  female_buns_pink: { a: 'rgba(255,140,200,0.76)', b: 'rgba(255,60,160,0)' },
+  female_long_blue: { a: 'rgba(120,190,255,0.76)', b: 'rgba(60,120,255,0)' },
   female_long_green: { a: 'rgba(150,235,170,0.76)', b: 'rgba(60,200,110,0)' }
 };
 
@@ -3388,7 +3388,7 @@ function getOrCreateAvatarImage(avatarUrl, onLoaded) {
   img.onload = () => {
     entry.loaded = true;
     entry.callbacks.forEach(cb => {
-      try { cb(img); } catch (_) {}
+      try { cb(img); } catch (_) { }
     });
     entry.callbacks = [];
   };
@@ -3968,7 +3968,7 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
     try {
       ctx.drawImage(giftImg, medalCx - 31, medalCy - 31, 62, 62);
       sprite.userData._lastDrawnImg = giftImgUrl;
-    } catch (_) {}
+    } catch (_) { }
     ctx.restore();
   } else {
     ctx.save();
@@ -4169,32 +4169,32 @@ const CROWD_AISLE_HALF = 0.50;     // centre carpet aisle is properly proportion
 const congregationLayout = [
   // ── แถวใน (INNER COLUMN 1: Seats 0..11) ชิดริมพรมแดง ฝั่งละ 6 คน นั่งคุกเข่าสง่างาม ──
   // TOP 5 VIP FRONT ROWS (Seats 0..4 on Golden Mats / อาสนะพรมทอง)
-  { x: -0.58, y: 0.05, z: 4.20, standing: false, isVip: true,  vipRank: 1 }, // Seat 0: Left Inner Row 1 (VIP 1)
-  { x:  0.58, y: 0.05, z: 4.20, standing: false, isVip: true,  vipRank: 2 }, // Seat 1: Right Inner Row 1 (VIP 2)
-  { x: -0.60, y: 0.05, z: 5.10, standing: false, isVip: true,  vipRank: 3 }, // Seat 2: Left Inner Row 2 (VIP 3)
-  { x:  0.60, y: 0.05, z: 5.10, standing: false, isVip: true,  vipRank: 4 }, // Seat 3: Right Inner Row 2 (VIP 4)
-  { x: -0.62, y: 0.05, z: 6.00, standing: false, isVip: true,  vipRank: 5 }, // Seat 4: Left Inner Row 3 (VIP 5)
-  { x:  0.62, y: 0.05, z: 6.00, standing: false, isVip: false },             // Seat 5: Right Inner Row 3 (Reserve VIP)
+  { x: -0.58, y: 0.05, z: 4.20, standing: false, isVip: true, vipRank: 1 }, // Seat 0: Left Inner Row 1 (VIP 1)
+  { x: 0.58, y: 0.05, z: 4.20, standing: false, isVip: true, vipRank: 2 }, // Seat 1: Right Inner Row 1 (VIP 2)
+  { x: -0.60, y: 0.05, z: 5.10, standing: false, isVip: true, vipRank: 3 }, // Seat 2: Left Inner Row 2 (VIP 3)
+  { x: 0.60, y: 0.05, z: 5.10, standing: false, isVip: true, vipRank: 4 }, // Seat 3: Right Inner Row 2 (VIP 4)
+  { x: -0.62, y: 0.05, z: 6.00, standing: false, isVip: true, vipRank: 5 }, // Seat 4: Left Inner Row 3 (VIP 5)
+  { x: 0.62, y: 0.05, z: 6.00, standing: false, isVip: false },             // Seat 5: Right Inner Row 3 (Reserve VIP)
 
   // Inner Column Remaining Rows (All Kneeling Reverently)
   { x: -0.63, y: 0.05, z: 6.90, standing: false, isVip: false },             // Seat 6: Left Inner Row 4
-  { x:  0.63, y: 0.05, z: 6.90, standing: false, isVip: false },             // Seat 7: Right Inner Row 4
+  { x: 0.63, y: 0.05, z: 6.90, standing: false, isVip: false },             // Seat 7: Right Inner Row 4
   { x: -0.64, y: 0.05, z: 7.80, standing: false, isVip: false },             // Seat 8: Left Inner Row 5
-  { x:  0.64, y: 0.05, z: 7.80, standing: false, isVip: false },             // Seat 9: Right Inner Row 5
+  { x: 0.64, y: 0.05, z: 7.80, standing: false, isVip: false },             // Seat 9: Right Inner Row 5
   { x: -0.65, y: 0.05, z: 8.70, standing: false, isVip: false },             // Seat 10: Left Inner Row 6
-  { x:  0.65, y: 0.05, z: 8.70, standing: false, isVip: false },             // Seat 11: Right Inner Row 6
+  { x: 0.65, y: 0.05, z: 8.70, standing: false, isVip: false },             // Seat 11: Right Inner Row 6
 
   // ── แถวนอก (OUTER COLUMN 2: Seats 12..21) ชิดเข้าหาพรมแดง ไม่ติดขอบราวสะพาน สลับฟันปลาแกน Z ฝั่งละ 5 คน ──
-  { x: -0.96, y: 0.05, z: 4.65, standing: true,  isVip: false },             // Seat 12: Left Outer Row 1
-  { x:  0.96, y: 0.05, z: 4.65, standing: true,  isVip: false },             // Seat 13: Right Outer Row 1
+  { x: -0.96, y: 0.05, z: 4.65, standing: true, isVip: false },             // Seat 12: Left Outer Row 1
+  { x: 0.96, y: 0.05, z: 4.65, standing: true, isVip: false },             // Seat 13: Right Outer Row 1
   { x: -0.98, y: 0.05, z: 5.55, standing: false, isVip: false },             // Seat 14: Left Outer Row 2
-  { x:  0.98, y: 0.05, z: 5.55, standing: false, isVip: false },             // Seat 15: Right Outer Row 2
-  { x: -1.00, y: 0.05, z: 6.45, standing: true,  isVip: false },             // Seat 16: Left Outer Row 3
-  { x:  1.00, y: 0.05, z: 6.45, standing: true,  isVip: false },             // Seat 17: Right Outer Row 3
+  { x: 0.98, y: 0.05, z: 5.55, standing: false, isVip: false },             // Seat 15: Right Outer Row 2
+  { x: -1.00, y: 0.05, z: 6.45, standing: true, isVip: false },             // Seat 16: Left Outer Row 3
+  { x: 1.00, y: 0.05, z: 6.45, standing: true, isVip: false },             // Seat 17: Right Outer Row 3
   { x: -1.02, y: 0.05, z: 7.35, standing: false, isVip: false },             // Seat 18: Left Outer Row 4
-  { x:  1.02, y: 0.05, z: 7.35, standing: false, isVip: false },             // Seat 19: Right Outer Row 4
-  { x: -1.04, y: 0.05, z: 8.25, standing: true,  isVip: false },             // Seat 20: Left Outer Row 5
-  { x:  1.04, y: 0.05, z: 8.25, standing: true,  isVip: false }              // Seat 21: Right Outer Row 5
+  { x: 1.02, y: 0.05, z: 7.35, standing: false, isVip: false },             // Seat 19: Right Outer Row 4
+  { x: -1.04, y: 0.05, z: 8.25, standing: true, isVip: false },             // Seat 20: Left Outer Row 5
+  { x: 1.04, y: 0.05, z: 8.25, standing: true, isVip: false }              // Seat 21: Right Outer Row 5
 ];
 
 
@@ -5136,7 +5136,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
       const wasVip = Boolean(this.userData && this.userData.seatId !== undefined && this.userData.seatId < 5);
       if (this.nameplate && this.userData && (isVip !== wasVip)) {
         if (this.nameplate.parent) {
-          try { this.nameplate.parent.remove(this.nameplate); } catch (_) {}
+          try { this.nameplate.parent.remove(this.nameplate); } catch (_) { }
         }
         safeDisposeSprite(this.nameplate);
         this.nameplate = createNameplateSprite(this.userData.nickname || 'ผู้เจริญสติ', isVip, targetZ, false, this.userData.avatar);
@@ -5255,9 +5255,9 @@ function safeDisposeSprite(sprite) {
   }
   if (sprite.material) {
     if (sprite.material.map) {
-      try { sprite.material.map.dispose(); } catch (_) {}
+      try { sprite.material.map.dispose(); } catch (_) { }
     }
-    try { sprite.material.dispose(); } catch (_) {}
+    try { sprite.material.dispose(); } catch (_) { }
   }
   if (sprite.parent) {
     sprite.parent.remove(sprite);
@@ -6561,9 +6561,9 @@ function triggerIncenseEffect() {
     { x: -4.5, y: 0.18, z: 3.2, phase: 0 },
     { x: -3.8, y: 0.18, z: 4.8, phase: 1.2 },
     { x: -4.8, y: 0.18, z: 6.2, phase: 2.4 },
-    { x:  4.5, y: 0.18, z: 3.2, phase: 0.8 },
-    { x:  3.8, y: 0.18, z: 4.8, phase: 2.0 },
-    { x:  4.8, y: 0.18, z: 6.2, phase: 3.1 }
+    { x: 4.5, y: 0.18, z: 3.2, phase: 0.8 },
+    { x: 3.8, y: 0.18, z: 4.8, phase: 2.0 },
+    { x: 4.8, y: 0.18, z: 6.2, phase: 3.1 }
   ];
   pondCoords.forEach(pc => {
     const lGroup = new THREE.Group();
@@ -7125,7 +7125,7 @@ function triggerLotusBloomEffect() {
     { count: 14, r: 0.72, y: 0.08, sx: 0.56, sy: 1.42, sz: 0.18, rx: 1.08, targetRx: 0.92, color: 0xff1e78, emissive: 0xd40055 },
     { count: 12, r: 0.52, y: 0.17, sx: 0.52, sy: 1.28, sz: 0.18, rx: 0.82, targetRx: 0.64, color: 0xff66b2, emissive: 0xff1493 },
     { count: 10, r: 0.34, y: 0.26, sx: 0.48, sy: 1.15, sz: 0.16, rx: 0.56, targetRx: 0.40, color: 0xffb8e0, emissive: 0xff69b4 },
-    { count:  8, r: 0.20, y: 0.34, sx: 0.42, sy: 0.98, sz: 0.15, rx: 0.35, targetRx: 0.22, color: 0xfff5fa, emissive: 0xffcce6 }
+    { count: 8, r: 0.20, y: 0.34, sx: 0.42, sy: 0.98, sz: 0.15, rx: 0.35, targetRx: 0.22, color: 0xfff5fa, emissive: 0xffcce6 }
   ];
   const animatedPetals = [];
 
@@ -7289,10 +7289,10 @@ function triggerLotusBloomEffect() {
     { x: -3.6, y: 0.16, z: 4.2 },
     { x: -4.8, y: 0.16, z: 5.8 },
     { x: -3.8, y: 0.16, z: 7.4 },
-    { x:  4.6, y: 0.16, z: 2.5 },
-    { x:  3.6, y: 0.16, z: 4.2 },
-    { x:  4.8, y: 0.16, z: 5.8 },
-    { x:  3.8, y: 0.16, z: 7.4 }
+    { x: 4.6, y: 0.16, z: 2.5 },
+    { x: 3.6, y: 0.16, z: 4.2 },
+    { x: 4.8, y: 0.16, z: 5.8 },
+    { x: 3.8, y: 0.16, z: 7.4 }
   ];
 
   const pondPetalTex = getRainbowLotusPetalTexture();
@@ -7636,7 +7636,7 @@ function triggerLotusRainEffect() {
   const cranesGroup = new THREE.Group();
   const craneConfigs = [
     { startX: -8.0, startY: 7.2, startZ: 2.5, destX: 8.5, destY: 5.8, destZ: 4.2, speed: 0.052, dir: 1 },
-    { startX:  8.5, startY: 6.5, startZ: 3.5, destX: -8.0, destY: 7.5, destZ: 1.8, speed: 0.046, dir: -1 }
+    { startX: 8.5, startY: 6.5, startZ: 3.5, destX: -8.0, destY: 7.5, destZ: 1.8, speed: 0.046, dir: -1 }
   ];
   const craneNodes = [];
   const craneBodyMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0.1 });
@@ -8478,7 +8478,7 @@ function triggerRoyalCarriageEffect() {
   const wheels = [];
   const wheelOffsets = [
     { x: -0.78, z: -0.48 }, { x: 0.78, z: -0.48 },
-    { x: -0.78, z:  0.48 }, { x: 0.78, z:  0.48 }
+    { x: -0.78, z: 0.48 }, { x: 0.78, z: 0.48 }
   ];
   wheelOffsets.forEach(pos => {
     const wGroup = new THREE.Group();
@@ -8513,7 +8513,7 @@ function triggerRoyalCarriageEffect() {
   const pillarGeo = new THREE.CylinderGeometry(0.038, 0.048, 1.12, 10);
   const pillarOffsets = [
     { x: -0.44, z: -0.34 }, { x: 0.44, z: -0.34 },
-    { x: -0.44, z:  0.34 }, { x: 0.44, z:  0.34 }
+    { x: -0.44, z: 0.34 }, { x: 0.44, z: 0.34 }
   ];
   pillarOffsets.forEach(po => {
     const pMesh = new THREE.Mesh(pillarGeo, goldMat);
@@ -8666,9 +8666,9 @@ function triggerRoyalCarriageEffect() {
     const qLegs = [];
     const legPos = [
       { x: -0.09, z: -0.16, phase: 0 },
-      { x:  0.09, z: -0.16, phase: Math.PI },
-      { x: -0.09, z:  0.16, phase: Math.PI },
-      { x:  0.09, z:  0.16, phase: 0 }
+      { x: 0.09, z: -0.16, phase: Math.PI },
+      { x: -0.09, z: 0.16, phase: Math.PI },
+      { x: 0.09, z: 0.16, phase: 0 }
     ];
     legPos.forEach(lp => {
       const legPivot = new THREE.Group();
@@ -8688,7 +8688,7 @@ function triggerRoyalCarriageEffect() {
     const qWingL = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.34), qWingMat);
     const qWingR = new THREE.Mesh(new THREE.PlaneGeometry(0.48, 0.34), qWingMat);
     qWingL.position.set(-0.22, 0.14, -0.04);
-    qWingR.position.set( 0.22, 0.14, -0.04);
+    qWingR.position.set(0.22, 0.14, -0.04);
     qWingL.rotation.y = Math.PI / 5;
     qWingR.rotation.y = -Math.PI / 5;
     qilin.add(qWingL);
@@ -8815,7 +8815,7 @@ function disposeFireworksGroup(group) {
     scene.remove(group);
     group.traverse(obj => {
       if (obj.geometry) {
-        try { obj.geometry.dispose(); } catch (e) {}
+        try { obj.geometry.dispose(); } catch (e) { }
       }
       if (obj.material) {
         try {
@@ -8824,7 +8824,7 @@ function disposeFireworksGroup(group) {
           } else {
             obj.material.dispose();
           }
-        } catch (e) {}
+        } catch (e) { }
       }
     });
   } catch (err) {
@@ -8854,11 +8854,11 @@ function triggerFireworksEffect() {
   const sparks = [];
   const sparkColors = [0xffd700, 0xff1744, 0x00f5d4, 0xffffff, 0xff9100, 0xb388ff, 0x76ff03];
   const burstHubs = [
-    { x: 0,    y: 5.7, z: 2.2 },
+    { x: 0, y: 5.7, z: 2.2 },
     { x: -2.3, y: 4.9, z: 3.1 },
-    { x:  2.3, y: 4.9, z: 3.1 },
+    { x: 2.3, y: 4.9, z: 3.1 },
     { x: -1.3, y: 5.3, z: 4.1 },
-    { x:  1.3, y: 5.3, z: 4.1 }
+    { x: 1.3, y: 5.3, z: 4.1 }
   ];
 
   const shockwaves = [];
@@ -8957,9 +8957,9 @@ function triggerFireworksEffect() {
   const eleLegs = [];
   const eleLegOffsets = [
     { x: -0.24, z: -0.34, phase: 0 },
-    { x:  0.24, z: -0.34, phase: Math.PI },
-    { x: -0.24, z:  0.34, phase: Math.PI },
-    { x:  0.24, z:  0.34, phase: 0 }
+    { x: 0.24, z: -0.34, phase: Math.PI },
+    { x: -0.24, z: 0.34, phase: Math.PI },
+    { x: 0.24, z: 0.34, phase: 0 }
   ];
   eleLegOffsets.forEach(lp => {
     const legPivot = new THREE.Group();
@@ -9068,9 +9068,9 @@ function triggerFireworksEffect() {
   const sparkTex = getCrystalSparkTexture();
   const heartPositions = [
     { x: -1.8, y: 5.8, z: 2.5 },
-    { x:  1.8, y: 5.8, z: 2.5 },
+    { x: 1.8, y: 5.8, z: 2.5 },
     { x: -0.9, y: 6.8, z: 2.0 },
-    { x:  0.9, y: 6.8, z: 2.0 }
+    { x: 0.9, y: 6.8, z: 2.0 }
   ];
   const crystalHearts = [];
 
@@ -9658,7 +9658,7 @@ function triggerHeavenlyPortalEffect() {
       const openProgress = Math.min(1.0, pt * 0.45);
       const openAngle = openProgress * (Math.PI * 0.48);
       doorPivotL.rotation.y = -openAngle;
-      doorPivotR.rotation.y =  openAngle;
+      doorPivotR.rotation.y = openAngle;
 
       wheelGroup.rotation.z += 0.024;
       rayGroup.rotation.z += 0.006;
@@ -10088,10 +10088,10 @@ function triggerDragonDescentEffect() {
   // ── 3. Four Muscular 3-Jointed 5-Clawed Imperial Dragon Legs (ขาและกรงเล็บมังกร 5 เล็บ) ──
   const legs = [];
   const legConfigs = [
-    { segIdx: 7,  side: -1, scale: 1.05 }, // Front Left Leg
-    { segIdx: 7,  side:  1, scale: 1.05 }, // Front Right Leg
+    { segIdx: 7, side: -1, scale: 1.05 }, // Front Left Leg
+    { segIdx: 7, side: 1, scale: 1.05 }, // Front Right Leg
     { segIdx: 24, side: -1, scale: 0.92 }, // Hind Left Leg
-    { segIdx: 24, side:  1, scale: 0.92 }  // Hind Right Leg
+    { segIdx: 24, side: 1, scale: 0.92 }  // Hind Right Leg
   ];
 
   legConfigs.forEach(lc => {
@@ -10431,14 +10431,14 @@ function getBannerTierInfo(giftInfo = null, fallbackTitle = '') {
   const coins = Number(giftInfo?.coins || giftInfo?.diamondCount || 1);
   const eff = giftInfo?.effectType || (
     coins >= 299 ? 'dragon' :
-    coins >= 100 ? 'castle' :
-    coins >= 99  ? 'fireworks' :
-    coins >= 30  ? 'royal_carriage' :
-    coins >= 20  ? 'crystal_fountain' :
-    coins >= 15  ? 'golden_bell' :
-    coins >= 10  ? 'flowers' :
-    coins >= 9   ? 'lotus' :
-    coins >= 5   ? 'incense' : 'kowtow'
+      coins >= 100 ? 'castle' :
+        coins >= 99 ? 'fireworks' :
+          coins >= 30 ? 'royal_carriage' :
+            coins >= 20 ? 'crystal_fountain' :
+              coins >= 15 ? 'golden_bell' :
+                coins >= 10 ? 'flowers' :
+                  coins >= 9 ? 'lotus' :
+                    coins >= 5 ? 'incense' : 'kowtow'
   );
 
   const effectName = giftInfo?.effectName || (typeof getGiftEffectName === 'function' ? getGiftEffectName(eff, giftInfo?.name || fallbackTitle, coins) : (fallbackTitle || 'กราบเบญจางคประดิษฐ์'));
@@ -10818,9 +10818,9 @@ function pushTributeQueueClient(giftData) {
   const isStreakCombo = Boolean(giftData.isStreakCombo);
   const existingIdx = isStreakCombo
     ? clientTributeQueue.findIndex(q =>
-        (q.uniqueId && giftData.uniqueId && !giftData.uniqueId.startsWith('user_') && q.uniqueId === giftData.uniqueId) ||
-        (q.nickname && donorName !== 'ผู้เจริญสติ' && donorName !== 'ผู้มีจิตศรัทธา' && q.nickname === donorName)
-      )
+      (q.uniqueId && giftData.uniqueId && !giftData.uniqueId.startsWith('user_') && q.uniqueId === giftData.uniqueId) ||
+      (q.nickname && donorName !== 'ผู้เจริญสติ' && donorName !== 'ผู้มีจิตศรัทธา' && q.nickname === donorName)
+    )
     : -1;
 
   if (existingIdx !== -1) {
@@ -10911,7 +10911,7 @@ try {
     const parsed = JSON.parse(savedMerit);
     if (Array.isArray(parsed) && parsed.length > 0) clientMeritList = parsed;
   }
-} catch (_) {}
+} catch (_) { }
 
 function updateMeritBoard(list) {
   const el = document.getElementById('merit-board-list');
@@ -10923,7 +10923,7 @@ function updateMeritBoard(list) {
     clientMeritList = validList.slice(0, 5);
     try {
       localStorage.setItem('buddha_top_merit', JSON.stringify(clientMeritList));
-    } catch (_) {}
+    } catch (_) { }
     triggerMeritBoardPopup(8000); // Pop up TOP 5 Merit Board on new donation/leaderboard update
   } else if (clientMeritList.length === 0) {
     el.innerHTML = '<div class="merit-empty">เจริญพรผู้ร่วมอนุโมทนาบุญ ✨</div>';
@@ -10977,7 +10977,7 @@ try {
       clientSadhuScores = parsed;
     }
   }
-} catch (_) {}
+} catch (_) { }
 
 function updateSadhuTicker(nickname, count = 1) {
   const tickerEl = document.getElementById('sadhu-recent-ticker');
@@ -11010,7 +11010,7 @@ function updateSadhuBoard(list, flashNickname = '') {
 
   try {
     localStorage.setItem('buddha_top_sadhu', JSON.stringify(topList));
-  } catch (_) {}
+  } catch (_) { }
 
   el.innerHTML = topList.map((item, idx) => {
     const rawAvatar = (item.avatar && !item.avatar.includes('tos-maliva-avt-0068/7311181283626287110')) ? item.avatar : '';
@@ -11139,7 +11139,7 @@ function triggerFollowerBanner(name) {
 }
 
 // ── Global Testing Hooks for Live Preview (Banners, Seam-Si Cards, Lucky Modals) ──
-window.testBigBanner = function(tier = 'standard') {
+window.testBigBanner = function (tier = 'standard') {
   const dummyGifts = {
     standard: { name: 'กุหลาบ', icon: '🌹', coins: 1, effectType: 'kowtow', count: 1 },
     incense: { name: 'เครื่องราง', icon: '🪔', coins: 5, effectType: 'incense', count: 1 },
@@ -11152,15 +11152,15 @@ window.testBigBanner = function(tier = 'standard') {
   triggerGiftAnnouncementBanner('กัลยาณมิตร', g);
 };
 
-window.testFollowerBanner = function(name = 'ผู้มีจิตศรัทธา') {
+window.testFollowerBanner = function (name = 'ผู้มีจิตศรัทธา') {
   triggerFollowerBanner(name);
 };
 
-window.testSeamSiCard = function(donor = 'ผู้มีจิตศรัทธา') {
+window.testSeamSiCard = function (donor = 'ผู้มีจิตศรัทธา') {
   showSeamSiFortuneScroll(donor);
 };
 
-window.testLuckyCard = function(donor = 'ผู้มีจิตศรัทธา') {
+window.testLuckyCard = function (donor = 'ผู้มีจิตศรัทธา') {
   showLuckyNumbersModal(donor);
 };
 
@@ -11759,7 +11759,7 @@ if (chkChatVoice) {
     guanYinVoice.chatVoiceEnabled = e.target.checked;
     try {
       localStorage.setItem('buddha_chat_voice', e.target.checked ? 'true' : 'false');
-    } catch (_) {}
+    } catch (_) { }
     if (typeof showToast === 'function') {
       showToast('ตั้งค่าเสียง AI 🗣️', e.target.checked ? 'เปิดระบบ AI อ่านคำขอพร & ให้พรผู้ชมในแชท' : 'ปิดระบบเสียงอ่านแชท');
     }
@@ -11805,7 +11805,7 @@ const unlockAndStartAudio = (withFeedback = false) => {
 
   templeAudio.init();
   if (templeAudio.ctx && templeAudio.ctx.state === 'suspended') {
-    templeAudio.ctx.resume().catch(() => {});
+    templeAudio.ctx.resume().catch(() => { });
   }
   templeAudio.startAmbient(withFeedback);
 };
@@ -12053,7 +12053,7 @@ document.getElementById('sim-chat').addEventListener('click', () => {
         comment: chosenWish
       }
     })
-  }).catch(() => {});
+  }).catch(() => { });
 
   const cats = ['wealth', 'work', 'health', 'love', 'study'];
   const randomCat = cats[Math.floor(Math.random() * cats.length)];
@@ -12127,7 +12127,7 @@ document.getElementById('btn-reset-scene').addEventListener('click', () => {
   disciplesMap.clear();
   activeSpeechBubbles.length = 0;
   clientSadhuScores = [];
-  try { localStorage.removeItem('buddha_top_sadhu'); } catch (_) {}
+  try { localStorage.removeItem('buddha_top_sadhu'); } catch (_) { }
   updateSadhuBoard([]);
   const textEl = document.getElementById('sadhu-ticker-text');
   if (textEl) textEl.textContent = 'อนุโมทนาบุญบารมีสะสม ✨';
@@ -12155,12 +12155,12 @@ if (typeof speechCoordinator !== 'undefined' && speechCoordinator) {
 
 socket.on('state_reset', () => {
   clientSadhuScores = [];
-  try { localStorage.removeItem('buddha_top_sadhu'); } catch (_) {}
+  try { localStorage.removeItem('buddha_top_sadhu'); } catch (_) { }
   updateSadhuBoard([]);
   const textEl = document.getElementById('sadhu-ticker-text');
   if (textEl) textEl.textContent = 'อนุโมทนาบุญบารมีสะสม ✨';
   clientMeritList = [];
-  try { localStorage.removeItem('buddha_top_merit'); } catch (_) {}
+  try { localStorage.removeItem('buddha_top_merit'); } catch (_) { }
   const el = document.getElementById('merit-board-list');
   if (el) {
     el.innerHTML = '<div class="merit-empty">เจริญพรผู้ร่วมอนุโมทนาบุญ ✨</div>';
@@ -12241,7 +12241,7 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
 document.getElementById('btn-disconnect').addEventListener('click', async () => {
   try {
     await fetch('/api/disconnect', { method: 'POST' });
-  } catch (_) {}
+  } catch (_) { }
   socket.emit('disconnect-tiktok');
   connStatus.className = 'conn-status status-offline';
   connStatus.textContent = 'ตัดการเชื่อมต่อแล้ว';
@@ -12536,7 +12536,7 @@ function showShareToast(sharerName = 'ผู้มีจิตศรัทธา
       if (templeAudio.playLotusChime) templeAudio.playLotusChime();
       if (templeAudio.playWoodblock) templeAudio.playWoodblock();
     }
-  } catch (_) {}
+  } catch (_) { }
 
   shareToastHideTimer = setTimeout(() => {
     banner.classList.remove('active');
@@ -12618,7 +12618,7 @@ function promoteSharerToVIP(user) {
     if (typeof devotee.triggerBow === 'function') {
       devotee.triggerBow();
     }
-  } catch (_) {}
+  } catch (_) { }
 
   return devotee;
 }
@@ -12645,7 +12645,7 @@ const onShareEvent = (data) => {
   totalCommunityShares++;
   try {
     localStorage.setItem('buddha_total_shares', String(totalCommunityShares));
-  } catch (_) {}
+  } catch (_) { }
   updateShareCounterUI(totalCommunityShares);
 
   // 3. Show radiant Divine Bridge Toast Notification
@@ -12672,7 +12672,7 @@ const onShareEvent = (data) => {
         if (guanYinVoice && guanYinVoice.enabled) {
           guanYinVoice.speak(`สาธุบารมี รวมพลังเปิดสะพานบุญครบ ${totalCommunityShares} ครั้ง พระแม่ประทานพรใหญ่รอบวิหารนะคะ`, 1);
         }
-      } catch (_) {}
+      } catch (_) { }
     }, 2800);
   }
 };
@@ -12752,7 +12752,7 @@ const onChatMessage = (chat) => {
   const hasSadhu = /(สาธุ|สาทุ|สาดุ|sadhu|sathu|อนุโมทนา|โมทนา)/i.test(text);
   if (hasSadhu) {
     recordClientSadhu(user, chat.avatar);
-    try { templeAudio.playWoodblock(); } catch (_) {}
+    try { templeAudio.playWoodblock(); } catch (_) { }
   }
 
   // Guarantee real viewer is seated in the scene with prominent nameplate
@@ -12874,14 +12874,14 @@ const onGiftEvent = (gift) => {
 
   const eff = isSeamSiGift ? 'seamsi' : (gift.effectType || (
     coins >= 299 ? 'dragon' :
-    coins >= 100 ? 'castle' :
-    coins >= 99  ? 'fireworks' :
-    coins >= 30  ? 'royal_carriage' :
-    coins >= 20  ? 'crystal_fountain' :
-    coins >= 15  ? 'golden_bell' :
-    coins >= 10  ? 'flowers' :
-    coins >= 9   ? 'lotus' :
-    coins >= 5   ? 'incense' : 'kowtow'
+      coins >= 100 ? 'castle' :
+        coins >= 99 ? 'fireworks' :
+          coins >= 30 ? 'royal_carriage' :
+            coins >= 20 ? 'crystal_fountain' :
+              coins >= 15 ? 'golden_bell' :
+                coins >= 10 ? 'flowers' :
+                  coins >= 9 ? 'lotus' :
+                    coins >= 5 ? 'incense' : 'kowtow'
   ));
   const effectName = gift.effectName || getGiftEffectName(eff, giftName, coins);
   const giftImage = gift.giftImage || gift.image || getGiftImageUrl(giftName, coins, eff);
@@ -13112,7 +13112,7 @@ fetch('/api/status')
       updateSadhuBoard(d.topSadhu);
     }
   })
-  .catch(() => {});
+  .catch(() => { });
 
 // ---------------------------------------------------------------------
 // 7. Render Animation Loop (Three.js WebGL Engine)
@@ -13530,7 +13530,7 @@ setTimeout(() => {
         guanYinVoice.speak('ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์พระแม่กวนอิม ขอพระแม่ประทานพรให้ทุกท่านมีโชคลาภ ร่ำรวย และมีความสุขนะคะ', 2);
       }
     }
-  } catch (_) {}
+  } catch (_) { }
 }, 4500);
 
 // ---------------------------------------------------------------------
@@ -13667,8 +13667,8 @@ function updateLiveClock() {
 updateLiveClock();
 setInterval(updateLiveClock, 1000);
 try {
-  fetch('/api/client-boot').catch(() => {});
-} catch (_) {}
+  fetch('/api/client-boot').catch(() => { });
+} catch (_) { }
 
 // =====================================================================
 // VIDEO BLESSING CONTROLLER (Cinematic Miracle Video Player)
@@ -13750,7 +13750,7 @@ class VideoBlessingController {
       if (this.videoEl.readyState >= 1) {
         this.videoEl.currentTime = 0;
       }
-    } catch (_) {}
+    } catch (_) { }
 
     const playPromise = this.videoEl.play();
     if (playPromise !== undefined) {
@@ -13794,7 +13794,7 @@ class VideoBlessingController {
             this.videoEl.currentTime = 0;
           }
         }
-      } catch (_) {}
+      } catch (_) { }
       if (typeof this._onFinishCb === 'function') {
         const cb = this._onFinishCb;
         this._onFinishCb = null;
@@ -14041,7 +14041,7 @@ class RoundManager {
       try {
         if (typeof triggerLotusRainEffect === 'function') triggerLotusRainEffect();
         if (window.videoBlessingController) window.videoBlessingController.playMiracle('tier1');
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // Tier 2 Milestone (>=66% - ละอองทิพย์พุ่ง)
@@ -14053,7 +14053,7 @@ class RoundManager {
         if (typeof templeAudio !== 'undefined' && templeAudio.playLotusChime) templeAudio.playLotusChime();
         if (typeof triggerGoldenBellEffect === 'function') triggerGoldenBellEffect();
         if (window.videoBlessingController) window.videoBlessingController.playMiracle('tier2');
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // Tier 3 Milestone (100% Nirvana)
@@ -14064,7 +14064,7 @@ class RoundManager {
       try {
         if (typeof templeAudio !== 'undefined' && templeAudio.playBell) templeAudio.playBell(1027, 4.0);
         if (typeof triggerDragonDescentEffect === 'function') triggerDragonDescentEffect();
-      } catch (_) {}
+      } catch (_) { }
     }
   }
 
@@ -14084,7 +14084,7 @@ class RoundManager {
       if (window.videoBlessingController) {
         window.videoBlessingController.playMiracle(climaxTier);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // Sound effect
     try {
@@ -14092,7 +14092,7 @@ class RoundManager {
         if (templeAudio.playWoodblock) templeAudio.playWoodblock();
         if (templeAudio.playBell) templeAudio.playBell(513, 2.5);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // 3D Bamboo Cylinder Shake Animation & Seam-Si FX
     this.activeFortune = (typeof drawSeamSiFortune === 'function') ? drawSeamSiFortune() : {
@@ -14108,7 +14108,7 @@ class RoundManager {
       if (typeof triggerSeamSiEffect === 'function') {
         triggerSeamSiEffect(mvpName);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // Wait 5 seconds for climax shake -> then Reveal
     if (this.climaxTimer) clearTimeout(this.climaxTimer);
@@ -14164,9 +14164,9 @@ class RoundManager {
           image: mvp.avatar || '/rose.png',
           coins: mvp.points || 1
         };
-        mvpDevotee.walkToAltarAndKowtow('kowtow', () => {}, 'ผู้นำบุญ', mvpGiftInfo, 1.0, mvp.nickname);
+        mvpDevotee.walkToAltarAndKowtow('kowtow', () => { }, 'ผู้นำบุญ', mvpGiftInfo, 1.0, mvp.nickname);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // 4. MC Voice: Announce MVP and congratulate chat
     this.speakHost(`ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ และนี่คือเซียมซีมงคลนะคะ`);
@@ -14222,7 +14222,7 @@ roundManager.init();
 
 // Developer / Streamer Manual Test Helper
 let _testCycleTimers = [];
-window.testRoundCycle = function(fast = true) {
+window.testRoundCycle = function (fast = true) {
   if (!window.roundManager) return;
   console.log('[TestRoundCycle] Triggering test round simulation...');
   _testCycleTimers.forEach(t => clearTimeout(t));
@@ -14243,7 +14243,7 @@ window.testRoundCycle = function(fast = true) {
   }, 4500));
 };
 
-window.testShareEvent = function(name = 'ผู้เปิดสะพานบุญ') {
+window.testShareEvent = function (name = 'ผู้เปิดสะพานบุญ') {
   if (typeof onShareEvent === 'function') {
     onShareEvent({
       uniqueId: 'sim_sharer_' + Date.now(),
@@ -14254,7 +14254,7 @@ window.testShareEvent = function(name = 'ผู้เปิดสะพานบ
   }
 };
 
-window.testMiracleVideo = function(tier = 'tier1') {
+window.testMiracleVideo = function (tier = 'tier1') {
   if (window.videoBlessingController) {
     console.log('[TestMiracleVideo] Triggering miracle video:', tier);
     window.videoBlessingController.playMiracle(tier, () => {
@@ -14514,8 +14514,8 @@ function triggerAmbientDevotion() {
 
   // 3. Low-tier humble offerings ONLY for ambient bots (กราบเบญจางคประดิษฐ์ 1 เหรียญ และ บูชาธูปทอง 5 เหรียญ เท่านั้น - ห้ามบอทเล่นเซียมซีหรือของขวัญอื่น)
   const AMBIENT_RITUALS = [
-    { type: 'kowtow',  icon: '🌹', name: 'กราบเบญจางคประดิษฐ์', coins: 1 },
-    { type: 'incense', icon: '🪔', name: 'บูชาธูปทอง',         coins: 5 }
+    { type: 'kowtow', icon: '🌹', name: 'กราบเบญจางคประดิษฐ์', coins: 1 },
+    { type: 'incense', icon: '🪔', name: 'บูชาธูปทอง', coins: 5 }
   ];
 
   const picked = AMBIENT_RITUALS[Math.floor(Math.random() * AMBIENT_RITUALS.length)];
@@ -14628,13 +14628,13 @@ const bgParadiseImg = document.getElementById('bg-paradise-img');
 
 // Trigger background video sync on server & tts_worker
 try {
-  fetch('/api/sync-bg-video').catch(() => {});
+  fetch('/api/sync-bg-video').catch(() => { });
   fetch('/api/tts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text: 'ซิงค์สวรรค์' + Date.now() })
-  }).catch(() => {});
-} catch (_) {}
+  }).catch(() => { });
+} catch (_) { }
 
 // Celestial Paradise Sanctuary Background Image Engine
 if (bgParadiseImg) {
@@ -14642,7 +14642,7 @@ if (bgParadiseImg) {
 }
 if (bgVideoEl) {
   bgVideoEl.style.display = 'block';
-  try { bgVideoEl.pause(); } catch (_) {}
+  try { bgVideoEl.pause(); } catch (_) { }
 }
 
 // ---------------------------------------------------------------------
@@ -14716,8 +14716,8 @@ initCelestialPetalsAndStardust();
 
 // Ensure Heavenly Paradise background is synced from server
 try {
-  fetch('/api/sync-paradise-bg').catch(() => {});
-} catch (_) {}
+  fetch('/api/sync-paradise-bg').catch(() => { });
+} catch (_) { }
 
 // =====================================================================
 // 9. HEAVENLY GIFT FX LAYER — เลเยอร์เอฟเฟคดินแดนสวรรค์สำหรับของขวัญทั้ง 10 ระดับ
@@ -15565,20 +15565,20 @@ const heavenlyFX = createHeavenlyFX(THREE, scene, camera);
 window.heavenlyFX = heavenlyFX; // ทดสอบ: heavenlyFX.play('dragon')
 
 // Expose effect triggers on window for test harness and global availability
-window.triggerKowtowEffect          = triggerKowtowEffect;
-window.triggerIncenseEffect         = triggerIncenseEffect;
-window.triggerLotusBloomEffect      = triggerLotusBloomEffect;
-window.triggerLotusRainEffect       = triggerLotusRainEffect;
-window.triggerGoldenBellEffect      = triggerGoldenBellEffect;
+window.triggerKowtowEffect = triggerKowtowEffect;
+window.triggerIncenseEffect = triggerIncenseEffect;
+window.triggerLotusBloomEffect = triggerLotusBloomEffect;
+window.triggerLotusRainEffect = triggerLotusRainEffect;
+window.triggerGoldenBellEffect = triggerGoldenBellEffect;
 window.triggerCrystalFountainEffect = triggerCrystalFountainEffect;
-window.triggerRoyalCarriageEffect   = triggerRoyalCarriageEffect;
-window.triggerFireworksEffect       = triggerFireworksEffect;
-window.triggerHeavenlyPortalEffect  = triggerHeavenlyPortalEffect;
-window.triggerDragonDescentEffect   = triggerDragonDescentEffect;
-window.triggerSeamSiEffect          = triggerSeamSiEffect;
+window.triggerRoyalCarriageEffect = triggerRoyalCarriageEffect;
+window.triggerFireworksEffect = triggerFireworksEffect;
+window.triggerHeavenlyPortalEffect = triggerHeavenlyPortalEffect;
+window.triggerDragonDescentEffect = triggerDragonDescentEffect;
+window.triggerSeamSiEffect = triggerSeamSiEffect;
 
 // Universal Test Harness for Live Stream Gifts (ทดสอบเอฟเฟกต์ของขวัญทั้ง 10 ระดับ)
-window.testGiftEffect = function(tier) {
+window.testGiftEffect = function (tier) {
   const map = {
     1: 'kowtow', 'kowtow': 'kowtow',
     1.5: 'seamsi', 'seamsi': 'seamsi',
@@ -15596,7 +15596,7 @@ window.testGiftEffect = function(tier) {
   console.log(`[TestGiftEffect] Testing celestial gift effect: ${target}`);
   try {
     if (window.heavenlyFX) window.heavenlyFX.play(target);
-  } catch (e) {}
+  } catch (e) { }
 
   if (target === 'kowtow') {
     triggerKowtowEffect();
