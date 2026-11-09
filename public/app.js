@@ -2778,7 +2778,8 @@ function createCarpetRipple(x, y, z, color = 0xffd700) {
     side: THREE.DoubleSide,
     transparent: true,
     opacity: 0.85,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
   });
   const ring = new THREE.Mesh(rippleGeo, rMat);
   ring.rotation.x = -Math.PI / 2;
@@ -2811,7 +2812,8 @@ function triggerCharacterGoldenAura(targetGroup) {
     side: THREE.DoubleSide,
     transparent: true,
     opacity: 0.60,
-    blending: THREE.AdditiveBlending
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
   });
   const auraRing = new THREE.Mesh(auraRingGeo, auraRingMat);
   auraRing.rotation.x = -Math.PI / 2;
