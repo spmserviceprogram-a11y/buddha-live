@@ -662,12 +662,12 @@ const state = {
     study: 0
   },
   micRouterConfig: {
-    mode: 'voice_split', // Default: auto-route voice into virtual mic cable
+    mode: 'stereo_mix', // Default: play voice directly on primary speakers & stereo mix
     sinkId: 'default',
-    deviceName: 'cable', // Preferred device label keyword (CABLE Input / VB-Audio / Virtual)
+    deviceName: 'default',
     acousticsEnabled: true,
     keepAliveEnabled: true,
-    dualMonitorEnabled: false, // Disabled by default to prevent audio duplication / reverb / echo
+    dualMonitorEnabled: true, // Guarantees broadcaster always hears AI voice on PC speakers/headphones
     updatedAt: Date.now()
   },
   historyEvents: []
