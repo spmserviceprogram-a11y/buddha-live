@@ -11184,6 +11184,10 @@ let activeStageAction = null;
 
 function performStageAction(type, name = 'ผู้มีจิตศรัทธา', wish = null, giftInfo = null) {
   const isAmbient = Boolean(giftInfo?.isAmbient);
+  // Ambient bot safety clamp: bots are strictly limited to kowtow and incense only
+  if (isAmbient && type !== 'kowtow' && type !== 'incense') {
+    type = 'kowtow';
+  }
   const isStreakCombo = Boolean(giftInfo?.isStreakCombo);
   if (!isAmbient) {
     lastRitualActivityTime = Date.now();
