@@ -3809,13 +3809,13 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   if (!sprite || !sprite.userData || !sprite.userData.canvas) return;
   const { canvas, ctx, tex } = sprite.userData;
 
-  const W = 410;
-  const H = 114;
+  const W = 440;
+  const H = 124;
   ctx.clearRect(0, 0, W, H);
 
-  const bx = 16, by = 14, bw = 378, bh = 86, br = 43;
+  const bx = 16, by = 14, bw = 408, bh = 96, br = 48;
 
-  // 1. Ethereal Soft Golden Aura strictly within canvas bounds (ไร้ขอบดำและขอบกล่องทึบ 100%)
+  // 1. Ethereal Soft Celestial Golden Lotus Aura (ไร้ขอบดำและขอบกล่องทึบ 100%)
   ctx.save();
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
@@ -3824,22 +3824,22 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
     ctx.rect(bx - 6, by - 6, bw + 12, bh + 12);
   }
   const auraGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
-  auraGrad.addColorStop(0.0, 'rgba(255, 238, 130, 0.28)');
-  auraGrad.addColorStop(0.5, 'rgba(255, 195, 55, 0.16)');
+  auraGrad.addColorStop(0.0, 'rgba(255, 240, 150, 0.42)');
+  auraGrad.addColorStop(0.45, 'rgba(255, 195, 60, 0.24)');
   auraGrad.addColorStop(1.0, 'rgba(255, 140, 20, 0.0)');
   ctx.fillStyle = auraGrad;
   ctx.fill();
   ctx.restore();
 
-  // 2. High-Transparency Translucent Imperial Ruby Glassmorphic Pill Body (ไร้เงาดำขอบกล่อง)
+  // 2. Radiant Imperial Lotus Crimson & Velvet Glassmorphic Body (สวยงาม เข้ากับธีมศาลเจ้าแม่กวนอิม)
   ctx.save();
-  ctx.shadowColor = 'rgba(255, 215, 0, 0.25)';
-  ctx.shadowBlur = 6;
+  ctx.shadowColor = 'rgba(255, 215, 0, 0.35)';
+  ctx.shadowBlur = 8;
   ctx.shadowOffsetY = 1;
   const bodyGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
-  bodyGrad.addColorStop(0.0, 'rgba(68, 12, 28, 0.32)');   // Translucent Imperial Ruby
-  bodyGrad.addColorStop(0.40, 'rgba(42, 9, 22, 0.30)');   // Translucent Velvet Burgundy
-  bodyGrad.addColorStop(1.0, 'rgba(25, 6, 14, 0.28)');    // Translucent Deep Plum
+  bodyGrad.addColorStop(0.0, 'rgba(152, 20, 52, 0.65)');   // Radiant Imperial Lotus Crimson
+  bodyGrad.addColorStop(0.48, 'rgba(102, 12, 36, 0.58)');  // Velvet Burgundy Rose
+  bodyGrad.addColorStop(1.0, 'rgba(50, 6, 20, 0.68)');    // Deep Lotus Plum Wine
   ctx.fillStyle = bodyGrad;
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
@@ -3850,7 +3850,7 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.fill();
   ctx.restore();
 
-  // 3. Top Specular Crystal Glass Sheen & Diagonal Highlight (ส่วนโค้งแสงสะท้อนแก้วคริสตัลเงาวับ)
+  // 3. Top Specular Crystal Glass Sheen & Diagonal Highlight (แสงเงากระจกคริสตัลเงาวาว)
   ctx.save();
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
@@ -3862,20 +3862,20 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
 
   // Curved upper sheen
   const sheenGrad = ctx.createLinearGradient(bx, by, bx, by + bh * 0.52);
-  sheenGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.35)');
-  sheenGrad.addColorStop(0.28, 'rgba(255, 245, 200, 0.18)');
-  sheenGrad.addColorStop(0.70, 'rgba(255, 235, 180, 0.04)');
+  sheenGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.42)');
+  sheenGrad.addColorStop(0.28, 'rgba(255, 245, 210, 0.22)');
+  sheenGrad.addColorStop(0.70, 'rgba(255, 235, 190, 0.05)');
   sheenGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)');
   ctx.fillStyle = sheenGrad;
   ctx.beginPath();
-  ctx.ellipse(bx + bw / 2, by + 6, bw * 0.49, bh * 0.44, 0, 0, Math.PI * 2);
+  ctx.ellipse(bx + bw / 2, by + 6, bw * 0.49, bh * 0.45, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // Fine diagonal light sweep across the glass
-  const sweepGrad = ctx.createLinearGradient(bx + 40, by, bx + 160, by + bh);
+  const sweepGrad = ctx.createLinearGradient(bx + 40, by, bx + 180, by + bh);
   sweepGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.0)');
   sweepGrad.addColorStop(0.48, 'rgba(255, 255, 255, 0.08)');
-  sweepGrad.addColorStop(0.50, 'rgba(255, 255, 255, 0.22)');
+  sweepGrad.addColorStop(0.50, 'rgba(255, 255, 255, 0.26)');
   sweepGrad.addColorStop(0.52, 'rgba(255, 255, 255, 0.08)');
   sweepGrad.addColorStop(1.0, 'rgba(255, 255, 255, 0.0)');
   ctx.fillStyle = sweepGrad;
@@ -3902,9 +3902,9 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   }
   ctx.stroke();
 
-  // Inner warm gold hairline with warm champagne tone (ไร้ขอบดำทึบ)
+  // Inner warm gold hairline with champagne tone (ไร้ขอบดำทึบ)
   ctx.lineWidth = 1.0;
-  ctx.strokeStyle = 'rgba(255, 248, 195, 0.45)';
+  ctx.strokeStyle = 'rgba(255, 248, 195, 0.50)';
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
     ctx.roundRect(bx + 2.2, by + 2.2, bw - 4.4, bh - 4.4, br - 2.2);
@@ -3914,18 +3914,18 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.stroke();
 
   // 5. Sacred Reliquary Medal Pedestal on Left (เหรียญตราทองคำประดิษฐานของขวัญ)
-  const medalCx = 60;
-  const medalCy = 57;
-  const medalRad = 33;
+  const medalCx = 64;
+  const medalCy = 62;
+  const medalRad = 36;
 
   // Sunburst radiant glow behind emblem
-  const sunburst = ctx.createRadialGradient(medalCx, medalCy, 6, medalCx, medalCy, medalRad + 8);
-  sunburst.addColorStop(0.0, 'rgba(255, 240, 150, 0.65)');
-  sunburst.addColorStop(0.55, 'rgba(255, 190, 50, 0.28)');
+  const sunburst = ctx.createRadialGradient(medalCx, medalCy, 6, medalCx, medalCy, medalRad + 10);
+  sunburst.addColorStop(0.0, 'rgba(255, 245, 160, 0.75)');
+  sunburst.addColorStop(0.55, 'rgba(255, 195, 55, 0.32)');
   sunburst.addColorStop(1.0, 'rgba(255, 150, 0, 0.0)');
   ctx.fillStyle = sunburst;
   ctx.beginPath();
-  ctx.arc(medalCx, medalCy, medalRad + 8, 0, Math.PI * 2);
+  ctx.arc(medalCx, medalCy, medalRad + 10, 0, Math.PI * 2);
   ctx.fill();
 
   // Outer gold embossed ring
@@ -3935,11 +3935,11 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.arc(medalCx, medalCy, medalRad, 0, Math.PI * 2);
   ctx.stroke();
 
-  // Jewel ruby medallion base (ไร้สีดำทึบ)
+  // Jewel ruby medallion base (ไร้สีดำทึบ สีทับทิมดอกบัวสว่างสง่างาม)
   const medalBase = ctx.createRadialGradient(medalCx, medalCy, 3, medalCx, medalCy, medalRad - 2);
-  medalBase.addColorStop(0.0, '#a8152e');
-  medalBase.addColorStop(0.65, '#6e0c1e');
-  medalBase.addColorStop(1.0, '#420610');
+  medalBase.addColorStop(0.0, '#c21844');
+  medalBase.addColorStop(0.65, '#880e2a');
+  medalBase.addColorStop(1.0, '#4a0614');
   ctx.fillStyle = medalBase;
   ctx.beginPath();
   ctx.arc(medalCx, medalCy, medalRad - 2, 0, Math.PI * 2);
@@ -3947,7 +3947,7 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
 
   // Inner gold beaded ring
   ctx.lineWidth = 1.0;
-  ctx.strokeStyle = 'rgba(255, 248, 190, 0.70)';
+  ctx.strokeStyle = 'rgba(255, 248, 190, 0.75)';
   ctx.beginPath();
   ctx.arc(medalCx, medalCy, medalRad - 4.5, 0, Math.PI * 2);
   ctx.stroke();
@@ -3966,13 +3966,13 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
     ctx.arc(medalCx, medalCy, medalRad - 5.5, 0, Math.PI * 2);
     ctx.clip();
     try {
-      ctx.drawImage(giftImg, medalCx - 28, medalCy - 28, 56, 56);
+      ctx.drawImage(giftImg, medalCx - 31, medalCy - 31, 62, 62);
       sprite.userData._lastDrawnImg = giftImgUrl;
     } catch (_) {}
     ctx.restore();
   } else {
     ctx.save();
-    ctx.font = '34px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+    ctx.font = '38px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
@@ -3983,14 +3983,14 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
 
   // 7. Auspicious Royal Typography (ริบบิ้นหัวข้อถวายสักการะมงคล & ชื่อของขวัญ)
   // Header Ribbon Pill: ✨ ถวายสักการะมงคล ✨
-  const pillHeaderX = 106;
+  const pillHeaderX = 114;
   const pillHeaderY = 24;
-  const pillHeaderW = 126;
-  const pillHeaderH = 19;
-  const pillHeaderR = 9.5;
+  const pillHeaderW = 142;
+  const pillHeaderH = 21;
+  const pillHeaderR = 10.5;
 
   ctx.save();
-  ctx.fillStyle = 'rgba(42, 8, 18, 0.50)';
+  ctx.fillStyle = 'rgba(60, 10, 24, 0.62)';
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
     ctx.roundRect(pillHeaderX, pillHeaderY, pillHeaderW, pillHeaderH, pillHeaderR);
@@ -3998,14 +3998,14 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
     ctx.rect(pillHeaderX, pillHeaderY, pillHeaderW, pillHeaderH);
   }
   ctx.fill();
-  ctx.lineWidth = 0.9;
-  ctx.strokeStyle = 'rgba(255, 215, 0, 0.65)';
+  ctx.lineWidth = 1.0;
+  ctx.strokeStyle = 'rgba(255, 220, 80, 0.85)';
   ctx.stroke();
 
-  ctx.font = '700 11.5px "Kanit", "Sarabun", sans-serif';
+  ctx.font = '800 12.5px "Kanit", "Sarabun", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffea79';
+  ctx.fillStyle = '#fff299';
   ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
   ctx.shadowBlur = 3;
   ctx.fillText('✨ ถวายสักการะมงคล ✨', pillHeaderX + pillHeaderW / 2, pillHeaderY + pillHeaderH / 2 + 0.5);
@@ -4013,7 +4013,7 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
 
   // Main Gift Name
   ctx.save();
-  ctx.font = '800 24px "Kanit", "Sarabun", sans-serif';
+  ctx.font = '800 25px "Kanit", "Sarabun", sans-serif';
   ctx.textAlign = 'left';
   ctx.textBaseline = 'middle';
 
@@ -4021,31 +4021,32 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   if (displayGiftName.length > 9) displayGiftName = displayGiftName.slice(0, 8) + '…';
 
   // Dual-Stroke 3D Lettering
-  ctx.lineWidth = 3.5;
-  ctx.strokeStyle = 'rgba(14, 2, 6, 0.95)';
+  ctx.lineWidth = 3.8;
+  ctx.strokeStyle = 'rgba(18, 2, 8, 0.95)';
   ctx.shadowColor = 'rgba(255, 215, 0, 0.55)';
   ctx.shadowBlur = 8;
-  ctx.strokeText(displayGiftName, 108, 68);
+  ctx.strokeText(displayGiftName, 116, 75);
 
-  const textGrad = ctx.createLinearGradient(108, 56, 108, 80);
+  const textGrad = ctx.createLinearGradient(116, 60, 116, 88);
   textGrad.addColorStop(0.0, '#ffffff');
-  textGrad.addColorStop(0.55, '#fff6db');
-  textGrad.addColorStop(1.0, '#ffe89e');
+  textGrad.addColorStop(0.48, '#fffbe0');
+  textGrad.addColorStop(0.80, '#ffe885');
+  textGrad.addColorStop(1.0, '#ffd54f');
   ctx.fillStyle = textGrad;
-  ctx.fillText(displayGiftName, 108, 68);
+  ctx.fillText(displayGiftName, 116, 75);
   ctx.restore();
 
   // 8. Dynamic Golden Sunset / Ruby Flame Combo Capsule (ป้ายคอมโบ x{count} หรือ +1 ทางขวา)
   const isCombo = count > 1;
-  const pillW = count > 99 ? 94 : (count > 9 ? 86 : (isCombo ? 78 : 74));
-  const pillH = 36;
-  const pillX = 380 - pillW;
-  const pillY = 57 - pillH / 2;
+  const pillW = count > 99 ? 100 : (count > 9 ? 92 : (isCombo ? 84 : 80));
+  const pillH = 38;
+  const pillX = (bx + bw - 14) - pillW;
+  const pillY = 62 - pillH / 2;
   const pillR = pillH / 2;
 
   ctx.save();
-  ctx.shadowColor = isCombo ? 'rgba(255, 42, 109, 0.75)' : 'rgba(255, 215, 0, 0.65)';
-  ctx.shadowBlur = isCombo ? 10 : 8;
+  ctx.shadowColor = isCombo ? 'rgba(255, 42, 109, 0.85)' : 'rgba(255, 215, 0, 0.75)';
+  ctx.shadowBlur = isCombo ? 12 : 9;
 
   const comboGrad = ctx.createLinearGradient(pillX, pillY, pillX + pillW, pillY + pillH);
   if (isCombo) {
@@ -4054,8 +4055,8 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
     comboGrad.addColorStop(1.0, '#6a001a');
   } else {
     comboGrad.addColorStop(0.0, '#ffe066');
-    comboGrad.addColorStop(0.48, '#e5a50a');
-    comboGrad.addColorStop(1.0, '#8c5e00');
+    comboGrad.addColorStop(0.48, '#f59e0b');
+    comboGrad.addColorStop(1.0, '#92400e');
   }
   ctx.fillStyle = comboGrad;
   ctx.beginPath();
@@ -4072,7 +4073,7 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.restore();
 
   ctx.save();
-  ctx.font = `800 ${isCombo ? (count > 99 ? 18 : 21) : 16}px "Kanit", sans-serif`;
+  ctx.font = `800 ${isCombo ? (count > 99 ? 19 : 22) : 17}px "Kanit", sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffffff';
@@ -4088,14 +4089,14 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.shadowColor = '#ffd700';
   ctx.shadowBlur = 8;
   ctx.font = '16px sans-serif';
-  ctx.fillText('✦', 372, 25);
+  ctx.fillText('✦', 396, 26);
 
   ctx.fillStyle = '#ffe57f';
   ctx.shadowBlur = 5;
-  ctx.font = '11px sans-serif';
-  ctx.fillText('✦', 242, 28);
-  ctx.fillText('✦', 104, 30);
-  ctx.fillText('✦', medalCx + 24, medalCy - 24);
+  ctx.font = '12px sans-serif';
+  ctx.fillText('✦', 266, 29);
+  ctx.fillText('✦', 110, 31);
+  ctx.fillText('✦', medalCx + 26, medalCy - 26);
   ctx.restore();
 
   tex.needsUpdate = true;
@@ -4105,8 +4106,8 @@ function createFloatingGiftBadge(icon = '🌹', giftName = 'กุหลาบ',
   try {
     const canvas = document.createElement('canvas');
     const SS = 2;
-    const W = 410;
-    const H = 114;
+    const W = 440;
+    const H = 124;
     canvas.width = W * SS;
     canvas.height = H * SS;
     const ctx = canvas.getContext('2d');
@@ -4120,8 +4121,8 @@ function createFloatingGiftBadge(icon = '🌹', giftName = 'กุหลาบ',
     sprite.renderOrder = 135000;
     sprite.center.set(0.5, 0.0);
 
-    const baseW = 0.70;
-    const baseH = 0.195;
+    const baseW = 0.96;
+    const baseH = 0.27;
     sprite.scale.set(0.01, 0.01, 1); // Start small for pop-in entrance
     const giftImgUrl = image || getGiftImageUrl(giftName, 1);
     sprite.userData = { canvas, ctx, tex, icon, giftName, count, image: giftImgUrl, baseW, baseH, isPopping: true, punchScale: 1.0 };
