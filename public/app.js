@@ -1250,7 +1250,7 @@ class GuanYinDivineVoice {
       }
 
       const audio = new Audio(url);
-      audio.playbackRate = 1.15; // Brisk, fluid, responsive pace (พูดไวขึ้นอย่างเป็นธรรมชาติและคล่องแคล่ว)
+      audio.playbackRate = 1.05; // Calm, fluid, dignified natural pace (พูดช้าลงอย่างสง่างาม ชัดเจน)
       audio.volume = Math.min(1.0, this.volume * 1.15);
       this.currentAudio = audio;
       this.isSpeaking = true;
