@@ -1169,6 +1169,7 @@ class GuanYinDivineVoice {
 
       if (abortSignal.aborted) return;
 
+      this.lastSpokenText = textToDisplay || '';
       if (textToDisplay && typeof showToast === 'function') {
         showToast('พระแม่กวนอิมประสาทพร 🙏', textToDisplay);
       }
