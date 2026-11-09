@@ -5969,6 +5969,14 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
     });
   }
 
+  // Mutual exclusion: Close MVP celebration modal if currently open
+  const mvpModal = document.getElementById('round-mvp-modal');
+  if (mvpModal) {
+    mvpModal.classList.remove('active');
+    mvpModal.classList.add('hidden');
+    mvpModal.style.display = 'none';
+  }
+
   // Guarantee card is display:flex and trigger animation
   card.style.display = 'flex';
   card.classList.remove('hidden');
