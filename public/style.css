@@ -2410,13 +2410,13 @@ body {
 
 .effect-banner.hidden {
   opacity: 0;
-  transform: translateX(-50%) translateY(16px) scale(0.82);
+  transform: translate(-50%, calc(-50% + 16px)) scale(0.82);
   pointer-events: none;
 }
 
 .effect-banner.active {
   opacity: 1;
-  transform: translateX(-50%) translateY(0) scale(1);
+  transform: translate(-50%, -50%) scale(1);
   animation:
     celestialBannerEntrance 0.48s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
     celestialBannerBreath 2.6s ease-in-out 0.48s infinite;
