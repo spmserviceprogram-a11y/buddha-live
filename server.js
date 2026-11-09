@@ -1612,7 +1612,7 @@ async function connectToTikTok(username, sessionId, apiKey) {
 
     const stickMatch = comment.match(/(?:เลข|เบอร์)?\s*([1-9]|[12][0-9]|3[0-6])\b/);
     const stickNum = stickMatch ? parseInt(stickMatch[1], 10) : null;
-    const meritDelta = hasSadhu ? 1 : 0.5;
+    const meritDelta = hasSadhu ? 1 : 0; // คะแนนบารมีรอบสะสมเฉพาะเมื่อพิมพ์ "สาธุ" หรือคำมงคลเท่านั้น
 
     const cat = classifyWish(comment);
     if (state.prayerCategories[cat] !== undefined) {

@@ -4780,7 +4780,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           this.charSprite.position.y = 0.05;
           this.charSprite.material.rotation = 0;
         }
-        if (onComplete) onComplete();
+        if (typeof onComplete === 'function') onComplete();
         return;
       }
       const expectedRunId = this._ritualRunId;
@@ -4868,10 +4868,17 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
         wishText = onFinish;
         onFinish = ritualType;
         ritualType = 'kowtow';
-      } else if (typeof onFinish !== 'function' && typeof wishText === 'function') {
-        const tempCb = wishText;
-        wishText = typeof onFinish === 'string' ? onFinish : null;
-        onFinish = tempCb;
+      } else if (typeof onFinish !== 'function') {
+        if (typeof wishText === 'function') {
+          const tempCb = wishText;
+          wishText = typeof onFinish === 'string' ? onFinish : null;
+          onFinish = tempCb;
+        } else {
+          if (typeof onFinish === 'string') {
+            wishText = onFinish;
+          }
+          onFinish = null;
+        }
       }
 
       if (this.isPerformingAltarRitual) {
@@ -5143,7 +5150,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
       // If actor is currently in the middle of walkToAltarAndKowtow ritual, DO NOT interrupt their walking or altar ritual!
       // They will smoothly return to this.finalPos when their ritual completes!
       if (this.isPerformingAltarRitual) {
-        if (onComplete) onComplete();
+        if (typeof onComplete === 'function') onComplete();
         return;
       }
 
@@ -5163,7 +5170,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
         this.smoothPoseTransition(finalPose, 110, () => {
           this.isWalking = false;
           this.isMovingSeat = false;
-          if (onComplete) onComplete();
+          if (typeof onComplete === 'function') onComplete();
         });
         return;
       }
@@ -5218,7 +5225,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
             this.smoothPoseTransition(finalPose, 100, () => {
               this.isWalking = false;
               this.isMovingSeat = false;
-              if (onComplete) onComplete();
+              if (typeof onComplete === 'function') onComplete();
             });
           }
         }, 16);
@@ -12624,8 +12631,8 @@ const onShareEvent = (data) => {
 
   unlockAndStartAudio();
 
-  // 1. Approach 1: +5 Merit Points directly into active round gauge
-  if (window.roundManager) {
+  // 1. Approach 1: Merit Points into active round gauge (ปิดการบวกแต้มรอบจากแชร์อัตโนมัติ เพื่อให้แต้มรอบขึ้นจากการพิมพ์ "สาธุ" เท่านั้น)
+  if (window.roundManager && window.ENABLE_SHARE_MERIT_POINTS) {
     window.roundManager.addMerit({
       uniqueId: data.uniqueId,
       nickname: user,
@@ -12797,14 +12804,7 @@ const onChatMessage = (chat) => {
     }
   }
 
-  // Credit round merit points from live comment
-  if (window.roundManager) {
-    window.roundManager.addMerit({
-      uniqueId: chat.uniqueId,
-      nickname: user,
-      avatar: chat.avatar
-    }, hasSadhu ? 1 : 0.5, text);
-  }
+  // Note: Round merit points are credited authoritatively via socket event 'round_action_chat' below
 };
 socket.on('action_chat', onChatMessage);
 socket.on('chat-message', onChatMessage);
@@ -13972,23 +13972,28 @@ class RoundManager {
       }
     }, 1000);
 
-    // Fallback Ambient Devotee Auto-Contribution (if chat is idle > 5s, ambient devotee chips in 1 point so gauge keeps flowing)
+    // Ambient Devotee Visual Prayer (แสดงบอลลูนสาธุเพื่อความสงบร่มเย็น แต่ไม่เพิ่มแต้มหลอกเข้าหลอดคะแนน เว้นแต่เปิดโหมดจำลอง)
     if (this.ambientBotInterval) clearInterval(this.ambientBotInterval);
     this.ambientBotInterval = setInterval(() => {
       if (this.state !== 'GATHERING') return;
       const now = Date.now();
-      if (now - this.lastCommentTime >= 4500) {
+      if (now - this.lastCommentTime >= 5000) {
         this.lastCommentTime = now;
         const randomSeat = Math.floor(Math.random() * 8);
         const devotee = disciplesMap.get(randomSeat);
-        const name = (devotee && devotee.userData && devotee.userData.nickname) ? devotee.userData.nickname : 'ผู้เจริญสติ';
-        this.addMerit({
-          uniqueId: `amb_${randomSeat}`,
-          nickname: name,
-          avatar: ''
-        }, 1, 'สาธุ 🙏 (จำลอง)');
+        if (devotee && devotee.showChatBubble) {
+          devotee.showChatBubble('สาธุ 🙏');
+        }
+        if (window.ENABLE_AMBIENT_BOT_POINTS) {
+          const name = (devotee && devotee.userData && devotee.userData.nickname) ? devotee.userData.nickname : 'ผู้เจริญสติ';
+          this.addMerit({
+            uniqueId: `amb_${randomSeat}`,
+            nickname: name,
+            avatar: ''
+          }, 1, 'สาธุ 🙏 (จำลอง)');
+        }
       }
-    }, 4000);
+    }, 5000);
   }
 
   addMerit(user, points, text = '') {

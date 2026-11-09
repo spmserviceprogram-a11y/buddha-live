@@ -2776,7 +2776,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   width: clamp(320px, 88vw, 380px);
-  z-index: 55;
+  z-index: 260;
   pointer-events: auto;
   display: none;
   flex-direction: column;
@@ -3137,7 +3137,7 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
   width: clamp(310px, 88vw, 370px);
-  z-index: 56;
+  z-index: 260;
   pointer-events: auto;
   display: none;
   flex-direction: column;
