@@ -10089,15 +10089,15 @@ function triggerDragonDescentEffect() {
   );
   const pearlAura = new THREE.Mesh(
     new THREE.SphereGeometry(0.28, 16, 16),
-    new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending })
+    new THREE.MeshBasicMaterial({ color: 0x00f5d4, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   const flameRing1 = new THREE.Mesh(
     new THREE.RingGeometry(0.28, 0.44, 28),
-    new THREE.MeshBasicMaterial({ color: 0xffd700, side: THREE.DoubleSide, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending })
+    new THREE.MeshBasicMaterial({ color: 0xffd700, side: THREE.DoubleSide, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   const flameRing2 = new THREE.Mesh(
     new THREE.RingGeometry(0.26, 0.40, 28),
-    new THREE.MeshBasicMaterial({ color: 0xff5500, side: THREE.DoubleSide, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending })
+    new THREE.MeshBasicMaterial({ color: 0xff5500, side: THREE.DoubleSide, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   flameRing2.rotation.x = Math.PI / 2;
   pearlGroup.add(pearlCore);
@@ -10124,7 +10124,7 @@ function triggerDragonDescentEffect() {
     cloudSprites.push({ sprite: sp, segIdx: Math.min(segCount - 1, c * 2 + 2), phase: c * 0.9 });
   }
 
-  const stardustMat = new THREE.MeshBasicMaterial({ color: 0xfff099, blending: THREE.AdditiveBlending });
+  const stardustMat = new THREE.MeshBasicMaterial({ color: 0xfff099, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
   const stardustGeo = new THREE.SphereGeometry(0.042, 6, 6);
   const stardusts = [];
   for (let i = 0; i < 44; i++) {
