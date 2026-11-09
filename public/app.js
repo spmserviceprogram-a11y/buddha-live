@@ -7889,7 +7889,13 @@ function triggerGoldenBellEffect() {
   // 5. 28 Swirling Harmonic Resonance Sparks (ละอองคลื่นเสียงมงคล)
   const bellSparks = [];
   const bSparkGeo = new THREE.SphereGeometry(0.045, 8, 8);
-  const bSparkMat = new THREE.MeshBasicMaterial({ color: 0xfff4b8, blending: THREE.AdditiveBlending });
+  const bSparkMat = new THREE.MeshBasicMaterial({
+    color: 0xfff4b8,
+    transparent: true,
+    opacity: 0.90,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
   for (let s = 0; s < 28; s++) {
     const spk = new THREE.Mesh(bSparkGeo, bSparkMat);
     const sAng = (s / 28) * Math.PI * 2;
