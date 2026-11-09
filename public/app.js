@@ -14353,9 +14353,7 @@ class RoundManager {
       if (this.dom.mvpModal) {
         this.dom.mvpModal.classList.remove('active');
         this.dom.mvpModal.classList.add('hidden');
-        setTimeout(() => {
-          if (this.dom.mvpModal) this.dom.mvpModal.style.display = 'none';
-        }, 300);
+        this.dom.mvpModal.style.display = 'none'; // Force hide synchronously: 100% immune to overlap
       }
 
       // Now open Fortune Scroll with zero overlapping modals (autoShowLucky = false)!
