@@ -3377,26 +3377,26 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
 
   const cleanName = sanitizeDisplayName(nickname, isVip ? 'ผู้มีจิตศรัทธา' : 'ผู้เจริญสติ');
 
-  // Standardized Fixed Geometry: Beautifully enlarged, perfectly balanced nameplates
-  const canvasWidth = 290;
-  const canvasHeight = 78;
+  // Enlarged Standardized Geometry: Prominent, perfectly balanced nameplate without gold borders
+  const canvasWidth = 320;
+  const canvasHeight = 84;
   const rx = 4, ry = 4;
-  const rw = canvasWidth - 8; // 282px
-  const rh = canvasHeight - 8; // 70px
-  const radius = rh / 2; // 35px pill corner radius
+  const rw = canvasWidth - 8; // 312px
+  const rh = canvasHeight - 8; // 76px
+  const radius = rh / 2; // 38px pill corner radius
 
   // Circular avatar on left
-  const avatarDiameter = 58;
-  const avatarRadius = avatarDiameter / 2; // 29px
-  const avatarCx = rx + 6 + avatarRadius; // 39px
-  const avatarCy = ry + rh / 2; // 39px
+  const avatarDiameter = 64;
+  const avatarRadius = avatarDiameter / 2; // 32px
+  const avatarCx = rx + 6 + avatarRadius; // 42px
+  const avatarCy = ry + rh / 2; // 42px
 
   // Text layout: starts to the right of avatar with a clean gap
-  const textX = avatarCx + avatarRadius + 10; // 78px
-  const maxTextW = canvasWidth - textX - 14; // 198px
+  const textX = avatarCx + avatarRadius + 12; // 86px
+  const maxTextW = canvasWidth - textX - 16; // 218px
 
-  const fontSize = 32;
-  const fontStyle = `600 ${fontSize}px "Kanit", "Sarabun", "Segoe UI", sans-serif`;
+  const fontSize = 36;
+  const fontStyle = `700 ${fontSize}px "Kanit", "Sarabun", "Segoe UI", sans-serif`;
   ctx.font = fontStyle;
 
   // Fit the name within maxTextW with ellipsis
@@ -3423,21 +3423,16 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
   function renderPill(avatarImg = null) {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    // 1. Background: 65% Translucent Dark Glass Pill with 24K Gold Filigree Border (กรอบเดิม)
+    // 1. Background: Clean, elegant translucent soft glass pill (ไร้กรอบสีทอง)
     const bgGrad = ctx.createLinearGradient(rx, ry, rx + rw, ry + rh);
-    bgGrad.addColorStop(0, 'rgba(20, 10, 6, 0.65)');
-    bgGrad.addColorStop(1, 'rgba(35, 14, 8, 0.65)');
+    bgGrad.addColorStop(0, 'rgba(14, 7, 4, 0.40)');
+    bgGrad.addColorStop(1, 'rgba(24, 10, 6, 0.40)');
     ctx.fillStyle = bgGrad;
     ctx.beginPath();
     ctx.roundRect(rx, ry, rw, rh, radius);
     ctx.fill();
 
-    // 2. The Original 24K Gold Filigree Border (กรอบสีทองเดิม)
-    ctx.strokeStyle = isVip ? '#f59e0b' : '#ffd700';
-    ctx.lineWidth = isVip ? 3.0 : 2.2;
-    ctx.stroke();
-
-    // 3. Circular Profile Avatar on Left
+    // 2. Circular Profile Avatar on Left
     ctx.save();
     ctx.beginPath();
     ctx.arc(avatarCx, avatarCy, avatarRadius, 0, Math.PI * 2);
@@ -3474,7 +3469,7 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
       ctx.fill();
 
       // Stylized Initial Character / Icon
-      ctx.font = `700 ${isVip ? 28 : 26}px "Kanit", "Sarabun", sans-serif`;
+      ctx.font = `700 ${isVip ? 30 : 28}px "Kanit", "Sarabun", sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = isVip ? '#2a0e06' : '#ffffff';
@@ -3483,25 +3478,18 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
     }
     ctx.restore();
 
-    // 4. Original 24K Gold Ring around avatar (กรอบเดิม)
-    ctx.strokeStyle = isVip ? '#f59e0b' : '#ffd700';
-    ctx.lineWidth = 2.0;
-    ctx.beginPath();
-    ctx.arc(avatarCx, avatarCy, avatarRadius, 0, Math.PI * 2);
-    ctx.stroke();
-
-    // 5. Razor-Sharp Typography on Right (Original Colors: Gold for VIP, White for regular, with Drop Shadow)
+    // 3. Razor-Sharp Typography on Right (ข้อความสีขาว 100% พร้อมเงาคมชัด Contrast สูง ไม่ใช้กรอบทอง)
     ctx.save();
     ctx.font = fontStyle;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
 
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.90)';
-    ctx.shadowBlur = 4;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+    ctx.shadowBlur = 6;
     ctx.shadowOffsetX = 1;
     ctx.shadowOffsetY = 1;
 
-    ctx.fillStyle = isVip ? '#ffd700' : '#ffffff';
+    ctx.fillStyle = '#ffffff'; // Pure white text as requested
     ctx.fillText(label, textX, avatarCy);
     ctx.restore();
   }
@@ -3513,8 +3501,7 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
   });
   renderPill(cachedImg);
 
-  // 6. Three.js Sprite Setup: Standardized Uniform World-Space Scaling
-  // Standardized height & width ensures nameplates scale naturally with 3D perspective identical to the character body
+  // 4. Three.js Sprite Setup: Standardized Uniform World-Space Scaling (Enlarged Proportional Scale)
   const spriteMat = new THREE.SpriteMaterial({
     map: texture,
     transparent: true,
@@ -3527,8 +3514,8 @@ function createNameplateSprite(nickname, isVip = false, z = 5.0, isOuterRow = fa
   const safeZ = (z !== undefined && z !== null) ? Number(z) : 5.0;
   sprite.renderOrder = 95000 + Math.round(safeZ * 1000);
 
-  // Enlarged proportional scale: clearly readable on mobile & stream while harmoniously matching the character model
-  const baseSpriteH = isVip ? 0.138 : 0.125;
+  // Prominently enlarged scale: ~38% larger for clear readability across mobile & live stream
+  const baseSpriteH = isVip ? 0.188 : 0.172;
   const spriteW = baseSpriteH * (canvasWidth / canvasHeight);
   sprite.scale.set(spriteW, baseSpriteH, 1);
   sprite.position.set(0, 0.50, 0);
