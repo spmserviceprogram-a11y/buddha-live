@@ -5076,7 +5076,7 @@ body {
   font-weight: 700;
 }
 
-/* Merit Progress Bar Track & Milestones */
+/* Merit Progress Bar Track & Milestones (ลบตัวเลข 33% 66% 100% ที่ทับซ้อน ปรับเป็นขีดขั้นเกจพลังสวรรค์สะอาดตา) */
 .round-hud-body {
   width: 100%;
 }
@@ -5084,19 +5084,19 @@ body {
 .merit-bar-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .merit-bar-track {
   position: relative;
   width: 100%;
-  height: 7px;
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 215, 0, 0.35);
+  height: 8px;
+  background: rgba(0, 0, 0, 0.60);
+  border: 1px solid rgba(255, 215, 0, 0.40);
   border-radius: 4px;
-  overflow: visible;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
-  margin-top: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.85);
+  margin-top: 5px;
   margin-bottom: 2px;
 }
 
@@ -5116,57 +5116,39 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Milestone Pins (33%, 66%, 100%) - จัดไว้ด้านบนเกจพลัง ไม่ทับซ้อนกับตัวเลขสถิติด้านล่าง */
+/* Milestone Notch Pins (เส้นขั้นเป้าหมายระดับ 33%, 66%, 100% แบบสะอาดตา ไม่ทับซ้อนข้อความด้านล่าง 100%) */
 .milestone-pin {
   position: absolute;
-  top: -2px;
+  top: 0;
   transform: translateX(-50%);
   width: 2px;
-  height: 11px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
-  z-index: 2;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+  z-index: 3;
   pointer-events: none;
+  border-radius: 1px;
 }
 
 .milestone-pin.pin-silver {
-  background: #e2e8f0;
-  box-shadow: 0 0 6px #94a3b8;
+  background: rgba(226, 232, 240, 0.65);
 }
 
 .milestone-pin.pin-gold {
-  background: #fbbf24;
-  box-shadow: 0 0 8px #f59e0b;
+  background: rgba(251, 191, 36, 0.80);
 }
 
 .milestone-pin.pin-nirvana {
-  background: #c084fc;
-  box-shadow: 0 0 10px #a855f7;
+  background: rgba(192, 132, 252, 0.85);
+}
+
+.milestone-pin.unlocked {
+  background: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.95);
 }
 
 .milestone-pin .pin-tag {
-  position: absolute;
-  top: -12px;
-  bottom: auto;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 7.5px;
-  font-weight: 800;
-  color: rgba(255, 255, 255, 0.75);
-  text-shadow: 0 1px 2px #000;
-  white-space: nowrap;
-}
-
-.milestone-pin.pin-nirvana .pin-tag {
-  left: auto;
-  right: 0;
-  transform: none;
-}
-
-.milestone-pin.unlocked .pin-tag {
-  color: #ffd700;
-  font-weight: 900;
-  text-shadow: 0 0 5px rgba(255, 215, 0, 0.85);
+  display: none !important;
 }
 
 .merit-bar-labels {
@@ -5177,7 +5159,7 @@ body {
   font-weight: 700;
   color: #cbd5e1;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-  padding: 0 2px;
+  padding: 1px 2px 0;
   line-height: 1.2;
 }
 
@@ -5203,6 +5185,8 @@ body {
   flex: 0.8;
   text-align: right;
   color: #fbcfe8;
+  white-space: nowrap;
+}
   white-space: nowrap;
 }
 
