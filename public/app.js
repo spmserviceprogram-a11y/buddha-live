@@ -5846,6 +5846,14 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
     }
   });
 
+  // Mutual exclusion: Close MVP celebration modal if currently open
+  const mvpModal = document.getElementById('round-mvp-modal');
+  if (mvpModal) {
+    mvpModal.classList.remove('active');
+    mvpModal.classList.add('hidden');
+    mvpModal.style.display = 'none';
+  }
+
   // Display card
   luckyCard.style.display = 'flex';
   luckyCard.classList.remove('hidden');
