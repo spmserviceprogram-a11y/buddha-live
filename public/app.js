@@ -14250,10 +14250,10 @@ class RoundManager {
         }, 300);
       }
 
-      // Now open Fortune Scroll with zero overlapping modals!
+      // Now open Fortune Scroll with zero overlapping modals (autoShowLucky = false)!
       if (this.dom.phaseText) this.dom.phaseText.textContent = 'คำทำนายเซียมซี';
       if (typeof showSeamSiFortuneScroll === 'function') {
-        showSeamSiFortuneScroll(mvp.nickname, this.activeFortune);
+        showSeamSiFortuneScroll(mvp.nickname, this.activeFortune, false);
       }
     }, 3800);
 
@@ -14273,24 +14273,8 @@ class RoundManager {
       this.revealStepTimer = null;
     }
     if (window.videoBlessingController) window.videoBlessingController.stopMiracle();
-    if (this.dom.mvpModal) {
-      this.dom.mvpModal.classList.remove('active');
-      this.dom.mvpModal.classList.add('hidden');
-      setTimeout(() => {
-        if (this.dom.mvpModal) this.dom.mvpModal.style.display = 'none';
-      }, 350);
-    }
-    const seamsiCard = document.getElementById('seamsi-fortune-card');
-    if (seamsiCard && seamsiCard.classList.contains('active')) {
-      seamsiCard.classList.remove('active');
-      seamsiCard.classList.add('hidden');
-      setTimeout(() => { seamsiCard.style.display = 'none'; }, 300);
-    }
-    const luckyCard = document.getElementById('seamsi-lucky-card');
-    if (luckyCard && luckyCard.classList.contains('active')) {
-      luckyCard.classList.remove('active');
-      luckyCard.classList.add('hidden');
-      setTimeout(() => { luckyCard.style.display = 'none'; }, 300);
+    if (typeof hideCeremonyModals === 'function') {
+      hideCeremonyModals();
     }
 
     // Start next round
