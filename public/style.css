@@ -2313,10 +2313,10 @@ body {
 .effect-banner {
   display: flex;
   position: absolute;
-  top: 50%;
+  top: auto;
+  bottom: clamp(170px, 21.5vh, 185px);
   left: 50%;
-  bottom: auto;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   max-width: calc(100% - 16px);
   width: auto;
   box-sizing: border-box;
