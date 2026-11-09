@@ -3799,10 +3799,10 @@ function updateFloatingGiftBadge(sprite, icon = '🌹', giftName = 'กุหล
   ctx.shadowBlur = 14;
   ctx.shadowOffsetY = 4;
   const bodyGrad = ctx.createLinearGradient(bx, by, bx, by + bh);
-  bodyGrad.addColorStop(0.0, 'rgba(68, 12, 28, 0.50)');   // 50% Translucent Imperial Ruby
-  bodyGrad.addColorStop(0.38, 'rgba(38, 8, 20, 0.50)');   // 50% Translucent Velvet Burgundy
-  bodyGrad.addColorStop(0.75, 'rgba(20, 5, 12, 0.50)');   // 50% Translucent Deep Plum
-  bodyGrad.addColorStop(1.0, 'rgba(10, 2, 6, 0.50)');     // 50% Translucent Obsidian Lacquer
+  bodyGrad.addColorStop(0.0, 'rgba(68, 12, 28, 0.26)');   // High-Transparency Translucent Imperial Ruby
+  bodyGrad.addColorStop(0.38, 'rgba(38, 8, 20, 0.26)');   // High-Transparency Translucent Velvet Burgundy
+  bodyGrad.addColorStop(0.75, 'rgba(20, 5, 12, 0.26)');   // High-Transparency Translucent Deep Plum
+  bodyGrad.addColorStop(1.0, 'rgba(10, 2, 6, 0.26)');     // High-Transparency Translucent Obsidian Lacquer
   ctx.fillStyle = bodyGrad;
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') {
