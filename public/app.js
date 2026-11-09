@@ -580,16 +580,18 @@ class TempleAudio {
             this.syncUIState(true);
             startHarmonicTimer();
           })
-          .catch(async () => {
+          .catch(async (playErr) => {
+            console.warn('[TempleAudio] bgmAudio.play() rejected:', playErr?.message);
             const webAudioStarted = await this.startWebAudioBgmFallback();
             if (webAudioStarted) {
               startHarmonicTimer();
               return;
             }
-            // If file playback fails or not found, stay silent until user uploads a new track
-            this.ambientPlaying = false;
+            // CRITICAL: If file playback cannot start, smoothly fall back to 100% Original Zen Soundscape
+            // Guarantees the live stream NEVER encounters dead silence!
+            console.log('[TempleAudio] File playback unavailable; activating 100% Original Zen Soundscape fallback');
             this.isStartingBgm = false;
-            this.syncUIState(false);
+            this.startOriginalZenSoundscape(false);
           });
       } else {
         this.isStartingBgm = false;
