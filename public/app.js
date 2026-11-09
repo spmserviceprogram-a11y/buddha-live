@@ -5875,6 +5875,9 @@ function spawnLuckySparkles() {
 
 // ── Phase 2 Modal: Royal 3-Digit Lucky Numbers (ตำหนักขุมทรัพย์สวรรค์ - รหัสมงคลประจำวัน) ──
 function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัทธา', fortune = null) {
+  // CRITICAL: Immediately hide all other ceremony modals (Fortune card, MVP modal)
+  hideCeremonyModals({ except: 'lucky' });
+
   const luckyCard = document.getElementById('seamsi-lucky-card');
   if (!luckyCard) return;
 
@@ -5888,14 +5891,6 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
   const d3El = document.getElementById('lucky-d3');
   const digits = Array.isArray(f.lucky3) ? f.lucky3 : [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)];
 
-  // Clear existing timers
-  if (luckyNumbersHideTimer) {
-    clearTimeout(luckyNumbersHideTimer);
-    luckyNumbersHideTimer = null;
-  }
-  luckyRollIntervals.forEach(t => { if (t) clearTimeout(t); });
-  luckyRollIntervals = [null, null, null];
-
   // Reset elements with sacred star emblem (avoids slot-machine spinning OCR detection)
   [d1El, d2El, d3El].forEach(el => {
     if (el) {
@@ -5905,15 +5900,7 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
     }
   });
 
-  // Mutual exclusion: Close MVP celebration modal if currently open
-  const mvpModal = document.getElementById('round-mvp-modal');
-  if (mvpModal) {
-    mvpModal.classList.remove('active');
-    mvpModal.classList.add('hidden');
-    mvpModal.style.display = 'none';
-  }
-
-  // Display card
+  // Display card cleanly
   luckyCard.style.display = 'flex';
   luckyCard.classList.remove('hidden');
   luckyCard.classList.remove('active');
@@ -5926,7 +5913,10 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
       clearTimeout(luckyNumbersHideTimer);
       luckyNumbersHideTimer = null;
     }
-    luckyRollIntervals.forEach(t => { if (t) clearTimeout(t); });
+    luckyRollIntervals.forEach((t, i) => {
+      if (t) clearTimeout(t);
+      luckyRollIntervals[i] = null;
+    });
     luckyCard.classList.remove('active');
     luckyCard.classList.add('hidden');
     setTimeout(() => {
@@ -5937,19 +5927,11 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
   };
 
   const closeBtn = document.getElementById('btn-lucky-close');
-  if (closeBtn && !closeBtn._bound) {
-    closeBtn._bound = true;
-    closeBtn.addEventListener('click', (e) => {
+  if (closeBtn) {
+    closeBtn.onclick = (e) => {
       e.stopPropagation();
       hideLucky();
-    });
-  }
-
-  if (!luckyCard._boundClick) {
-    luckyCard._boundClick = true;
-    luckyCard.addEventListener('click', () => {
-      hideLucky();
-    });
+    };
   }
 
   // Serene Lotus Glow Reveal for the 3 golden blocks (Zero slot-machine spin -> 100% TikTok AI Safe)
@@ -5984,7 +5966,11 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
 }
 
 // ── Phase 1 Modal: Royal Seam-Si Fortune Scroll (ตรงตามแบบรูปที่ 2 — ผู้เล่นอ่านกลอนคำทำนายด้วยตัวเอง) ──
-function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรัทธา', fortune = null) {
+function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรัทธา', fortune = null, autoShowLucky = false) {
+  // CRITICAL: Immediately hide all other ceremony modals (Lucky card, MVP modal)
+  // This guarantees #seamsi-lucky-card is 100% CLOSED and CANNOT block the fortune card!
+  hideCeremonyModals({ except: 'fortune' });
+
   const card = document.getElementById('seamsi-fortune-card');
   if (!card) return;
   const f = fortune || drawSeamSiFortune();
@@ -5995,11 +5981,6 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
 
   if (stickNumEl) stickNumEl.textContent = f.stickTitle;
   if (verseTextEl) verseTextEl.innerHTML = escapeHtml(f.verse).replace(/\n/g, '<br />');
-
-  if (seamSiScrollHideTimer) {
-    clearTimeout(seamSiScrollHideTimer);
-    seamSiScrollHideTimer = null;
-  }
 
   // Transition to Phase 2 (Lucky 3-digit number card)
   let transitioned = false;
@@ -6012,36 +5993,22 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
     }
     card.classList.remove('active');
     card.classList.add('hidden');
-    setTimeout(() => {
+    if (seamSiTransitionTimer) clearTimeout(seamSiTransitionTimer);
+    seamSiTransitionTimer = setTimeout(() => {
+      seamSiTransitionTimer = null;
       card.style.display = 'none';
       // Pop in Phase 2: Lucky Numbers Modal!
       showLuckyNumbersModal(cleanDonor, f);
     }, 280);
   };
 
-  // Wire dismiss button and card click
+  // Wire dismiss button: Only clicking the button explicitly transitions to the lucky numbers card!
   const closeBtn = document.getElementById('btn-seamsi-close');
-  if (closeBtn && !closeBtn._bound) {
-    closeBtn._bound = true;
-    closeBtn.addEventListener('click', (e) => {
+  if (closeBtn) {
+    closeBtn.onclick = (e) => {
       e.stopPropagation();
       transitionToLucky();
-    });
-  }
-
-  if (!card._boundClick) {
-    card._boundClick = true;
-    card.addEventListener('click', () => {
-      transitionToLucky();
-    });
-  }
-
-  // Mutual exclusion: Close MVP celebration modal if currently open
-  const mvpModal = document.getElementById('round-mvp-modal');
-  if (mvpModal) {
-    mvpModal.classList.remove('active');
-    mvpModal.classList.add('hidden');
-    mvpModal.style.display = 'none';
+    };
   }
 
   // Guarantee card is display:flex and trigger animation
@@ -6058,9 +6025,11 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
     if (templeAudio.playLotusChime) templeAudio.playLotusChime();
   }
 
-  // Keep fortune scroll open for 5.5s so viewer can read the 6-line poem & screenshot before lucky numbers roll
-  ++seamSiScrollToken;
-  seamSiScrollHideTimer = setTimeout(transitionToLucky, 5500);
+  // Only auto-transition if explicitly requested (default is false so viewer can peacefully read without interruption)
+  if (autoShowLucky) {
+    ++seamSiScrollToken;
+    seamSiScrollHideTimer = setTimeout(transitionToLucky, 6500);
+  }
 }
 
 let activeSeamSiGroup = null;
