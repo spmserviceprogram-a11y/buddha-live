@@ -14124,11 +14124,11 @@ class RoundManager {
       lucky3: [7, 8, 9]
     };
 
-    // Trigger 3D Ceremony in Three.js
+    // Trigger 3D Ceremony in Three.js (Play 3D cylinder shake without popping 2D modal prematurely)
     const mvpName = this.currentMVP ? this.currentMVP.nickname : 'ผู้มีจิตศรัทธา';
     try {
       if (typeof triggerSeamSiEffect === 'function') {
-        triggerSeamSiEffect(mvpName);
+        triggerSeamSiEffect(mvpName, this.activeFortune, false);
       }
     } catch (_) { }
 
@@ -14145,7 +14145,7 @@ class RoundManager {
     if (this.dom.phasePill) {
       this.dom.phasePill.className = 'round-phase-pill phase-reveal';
     }
-    if (this.dom.phaseText) this.dom.phaseText.textContent = 'เปิดคำทำนาย & ผู้นำบุญ';
+    if (this.dom.phaseText) this.dom.phaseText.textContent = 'ผู้นำบุญ & คำทำนาย';
 
     const mvp = this.currentMVP || {
       nickname: 'ผู้มีจิตศรัทธา',
@@ -14153,12 +14153,7 @@ class RoundManager {
       points: this.meritPoints
     };
 
-    // 1. Show Fortune Parchment Scroll
-    if (typeof showSeamSiFortuneScroll === 'function') {
-      showSeamSiFortuneScroll(mvp.nickname, this.activeFortune);
-    }
-
-    // 2. Show Round MVP Celebration Modal
+    // 1. Act 1: Show Round MVP Celebration Modal FIRST (0s to 3.8s - ป้องกันการทับซ้อนกับใบเซียมซี 100%)
     if (this.dom.mvpModal) {
       if (this.dom.mvpModalName) this.dom.mvpModalName.textContent = mvp.nickname;
       if (this.dom.mvpModalRoundTag) this.dom.mvpModalRoundTag.textContent = `รอบที่ ${this.roundNum} สำเร็จบารมี (${this.meritPoints} แต้ม)`;
@@ -14171,7 +14166,7 @@ class RoundManager {
       this.dom.mvpModal.classList.add('active');
     }
 
-    // 3. Make MVP Avatar walk to altar on the red carpet
+    // 2. Make MVP Avatar walk to altar on the red carpet
     try {
       let mvpDevotee = null;
       disciplesMap.forEach(d => {
@@ -14190,20 +14185,43 @@ class RoundManager {
       }
     } catch (_) { }
 
-    // 4. MC Voice: Announce MVP and congratulate chat
-    this.speakHost(`ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ และนี่คือเซียมซีมงคลนะคะ`);
+    // 3. MC Voice: Announce MVP and congratulate chat
+    this.speakHost(`ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ ขออนุโมทนาบุญด้วยนะคะ`);
 
-    // 5. Transition to next round after 7 seconds
+    // 4. Act 2: After 3.8s, smoothly fade out MVP Modal and Unveil Fortune Scroll!
+    if (this.revealStepTimer) clearTimeout(this.revealStepTimer);
+    this.revealStepTimer = setTimeout(() => {
+      this.revealStepTimer = null;
+      if (this.dom.mvpModal) {
+        this.dom.mvpModal.classList.remove('active');
+        this.dom.mvpModal.classList.add('hidden');
+        setTimeout(() => {
+          if (this.dom.mvpModal) this.dom.mvpModal.style.display = 'none';
+        }, 300);
+      }
+
+      // Now open Fortune Scroll with zero overlapping modals!
+      if (this.dom.phaseText) this.dom.phaseText.textContent = 'คำทำนายเซียมซี';
+      if (typeof showSeamSiFortuneScroll === 'function') {
+        showSeamSiFortuneScroll(mvp.nickname, this.activeFortune);
+      }
+    }, 3800);
+
+    // 5. Transition to next round after 10.5 seconds total
     if (this.transitionTimer) clearTimeout(this.transitionTimer);
     this.transitionTimer = setTimeout(() => {
       this.transitionTimer = null;
       this.transitionToNextRound();
-    }, 7000);
+    }, 10500);
   }
 
   transitionToNextRound() {
     this.state = 'TRANSITION';
     this.gatheringDuration = 45; // Restore standard 45s gathering duration for live broadcast
+    if (this.revealStepTimer) {
+      clearTimeout(this.revealStepTimer);
+      this.revealStepTimer = null;
+    }
     if (window.videoBlessingController) window.videoBlessingController.stopMiracle();
     if (this.dom.mvpModal) {
       this.dom.mvpModal.classList.remove('active');
@@ -14211,6 +14229,18 @@ class RoundManager {
       setTimeout(() => {
         if (this.dom.mvpModal) this.dom.mvpModal.style.display = 'none';
       }, 350);
+    }
+    const seamsiCard = document.getElementById('seamsi-fortune-card');
+    if (seamsiCard && seamsiCard.classList.contains('active')) {
+      seamsiCard.classList.remove('active');
+      seamsiCard.classList.add('hidden');
+      setTimeout(() => { seamsiCard.style.display = 'none'; }, 300);
+    }
+    const luckyCard = document.getElementById('seamsi-lucky-card');
+    if (luckyCard && luckyCard.classList.contains('active')) {
+      luckyCard.classList.remove('active');
+      luckyCard.classList.add('hidden');
+      setTimeout(() => { luckyCard.style.display = 'none'; }, 300);
     }
 
     // Start next round
