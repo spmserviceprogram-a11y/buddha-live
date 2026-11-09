@@ -1856,7 +1856,7 @@ class SmartLiveMicRouter {
     this.sinkId = 'default';
     this.acousticsEnabled = true;
     this.keepAliveEnabled = true;
-    this.dualMonitorEnabled = false; // Disabled by default to prevent audio duplication / reverb / echo
+    this.dualMonitorEnabled = true; // Enabled so broadcaster always hears AI voice on PC speakers/headphones
     this.isTransmittingSpeech = false;
     this.monitorAudio = null;
     this.micCtx = null;
