@@ -1274,9 +1274,9 @@ body {
 }
 
 .queue-row.active {
-  background: linear-gradient(90deg, rgba(180, 83, 9, 0.30), rgba(245, 158, 11, 0.30));
-  border-color: #ffd700;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
+  background: linear-gradient(90deg, rgba(220, 100, 20, 0.22), rgba(255, 190, 50, 0.18));
+  outline-color: rgba(255, 215, 0, 0.55);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.30), 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 
 .queue-row .q-avatar {
