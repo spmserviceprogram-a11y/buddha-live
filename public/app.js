@@ -14138,6 +14138,9 @@ class RoundManager {
     this.state = 'CLIMAX';
     if (this.timerInterval) clearInterval(this.timerInterval);
     if (this.ambientBotInterval) clearInterval(this.ambientBotInterval);
+    if (typeof hideCeremonyModals === 'function') {
+      hideCeremonyModals();
+    }
 
     if (this.dom.phasePill) {
       this.dom.phasePill.className = 'round-phase-pill phase-climax';
