@@ -6434,7 +6434,9 @@ function triggerSeamSiEffect(donorName = 'ผู้มีจิตศรัท�
 
       if (!scrollShown && elapsed >= 1.18) {
         scrollShown = true;
-        showSeamSiFortuneScroll(donorName, f);
+        if (showScrollImmediately) {
+          showSeamSiFortuneScroll(donorName, f);
+        }
       }
     }
 
