@@ -3168,8 +3168,8 @@ const spriteRatios = {
   female_long_green: { walk: 0.514, kneel: 0.588, kowtow: 0.846 }
 };
 
-// Tiny cute chibi crowd: every devotee is drawn at ~55% of the old size (like the reference stream)
-const CHIBI_SCALE = 0.55;
+// Chibi crowd at 78% scale — clearly visible on 9:16 TikTok live stream
+const CHIBI_SCALE = 0.78;
 const POSE_H = { walk: 0.98, kneel: 0.80, kowtow: 0.56 };
 
 // Preload all 2D transparent PNG textures
