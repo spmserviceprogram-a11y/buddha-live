@@ -10664,6 +10664,42 @@ function triggerLiveGiftFloat(donor, icon = '🌹', giftName = 'กุหลา�
   // Coordinated with top announcement banner
 }
 
+let tributeQueuePopupTimer = null;
+function triggerTributeQueuePopup(duration = 7500) {
+  const panel = document.getElementById('panel-tribute-queue');
+  if (!panel) return;
+  panel.classList.add('popup-active');
+  if (tributeQueuePopupTimer) clearTimeout(tributeQueuePopupTimer);
+  tributeQueuePopupTimer = setTimeout(() => {
+    panel.classList.remove('popup-active');
+  }, duration);
+}
+window.triggerTributeQueuePopup = triggerTributeQueuePopup;
+
+let recentWishesPopupTimer = null;
+function triggerRecentWishesPopup(duration = 7000) {
+  const panel = document.getElementById('panel-recent-wishes');
+  if (!panel) return;
+  panel.classList.add('popup-active');
+  if (recentWishesPopupTimer) clearTimeout(recentWishesPopupTimer);
+  recentWishesPopupTimer = setTimeout(() => {
+    panel.classList.remove('popup-active');
+  }, duration);
+}
+window.triggerRecentWishesPopup = triggerRecentWishesPopup;
+
+let meritBoardPopupTimer = null;
+function triggerMeritBoardPopup(duration = 8000) {
+  const panel = document.getElementById('panel-merit-board');
+  if (!panel) return;
+  panel.classList.add('popup-active');
+  if (meritBoardPopupTimer) clearTimeout(meritBoardPopupTimer);
+  meritBoardPopupTimer = setTimeout(() => {
+    panel.classList.remove('popup-active');
+  }, duration);
+}
+window.triggerMeritBoardPopup = triggerMeritBoardPopup;
+
 let clientTributeQueue = [];
 
 function updateTributeQueue(queueOrData) {
@@ -10746,6 +10782,7 @@ function pushTributeQueueClient(giftData) {
     }
   }
   updateTributeQueue(clientTributeQueue);
+  triggerTributeQueuePopup(7500); // Pop up Tribute Queue when viewer sends gift
 }
 
 function advanceTributeQueue(finishedName) {
