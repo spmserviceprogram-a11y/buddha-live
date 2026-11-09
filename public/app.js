@@ -12221,6 +12221,7 @@ if (typeof speechCoordinator !== 'undefined' && speechCoordinator) {
 }
 
 socket.on('state_reset', () => {
+  if (typeof hideCeremonyModals === 'function') hideCeremonyModals();
   clientSadhuScores = [];
   try { localStorage.removeItem('buddha_top_sadhu'); } catch (_) { }
   updateSadhuBoard([]);
