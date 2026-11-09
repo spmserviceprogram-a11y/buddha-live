@@ -11266,10 +11266,19 @@ function spawnFollowerSparkleBurst() {
 }
 
 function triggerFollowerBanner(name) {
+  // P3 Priority: Do not display or clash if higher-priority Gift (P1) or Share (P2) banner is active
+  if (typeof isBottomEffectBannerActive === 'function' && isBottomEffectBannerActive()) {
+    return;
+  }
+  if (typeof isBottomShareToastActive === 'function' && isBottomShareToastActive()) {
+    return;
+  }
+
   const banner = document.getElementById('follower-banner');
   const nameEl = document.getElementById('follower-banner-name');
   if (nameEl) nameEl.textContent = name || 'ผู้มีจิตศรัทธา';
   if (banner) {
+    _activeBottomBanner = 'follower';
     banner.style.display = 'flex';
     banner.classList.remove('hidden');
     banner.classList.remove('pulse');
@@ -11282,7 +11291,12 @@ function triggerFollowerBanner(name) {
     if (banner._timer) clearTimeout(banner._timer);
     banner._timer = setTimeout(() => {
       banner.classList.add('hidden');
-      setTimeout(() => { banner.style.display = 'none'; }, 600);
+      setTimeout(() => {
+        if (banner.classList.contains('hidden')) {
+          banner.style.display = 'none';
+        }
+        if (_activeBottomBanner === 'follower') _activeBottomBanner = null;
+      }, 600);
     }, 7000);
   }
 }
