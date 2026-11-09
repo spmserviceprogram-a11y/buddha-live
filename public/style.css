@@ -539,8 +539,9 @@ body {
   align-items: center;
   justify-content: flex-end;
   width: auto;
-  z-index: 25;
-  margin-right: -4px;
+  z-index: 125;
+  margin-right: 0;
+  pointer-events: auto;
 }
 
 /* Real-Time Interactive 3D Simulation Badge (Defeats TikTok Static Video & Replay Bots) */
