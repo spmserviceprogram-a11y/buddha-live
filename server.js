@@ -2283,11 +2283,11 @@ io.on('connection', socket => {
 
   const now = Date.now();
   if (!isVoiceDisabled) {
-    if (!activeSpeechMasterSocketId || !io.sockets.sockets.has(activeSpeechMasterSocketId) || (now - speechMasterLastSeen > 8000)) {
+    if (io.sockets.sockets.size <= 1 || !activeSpeechMasterSocketId || !io.sockets.sockets.has(activeSpeechMasterSocketId) || (now - speechMasterLastSeen > 3500)) {
       activeSpeechMasterSocketId = socket.id;
       activeSpeechMasterTabId = clientTabId;
       speechMasterLastSeen = now;
-      console.log(`[Speech Master] Assigned initial Speech Master to socket ${socket.id} (${clientTabId || 'unknown tab'})`);
+      console.log(`[Speech Master] Assigned Speech Master to socket ${socket.id} (${clientTabId || 'active tab'})`);
     }
   }
 
