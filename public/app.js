@@ -4906,7 +4906,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           const giftImg = giftInfo.image || getGiftImageUrl(giftInfo.name, giftInfo.coins);
           giftBadge = createFloatingGiftBadge(giftInfo.icon, giftInfo.name, this.userData.giftCount, giftImg);
           if (giftBadge) {
-            giftBadge.position.set(0, 0.88, 0);
+            giftBadge.position.set(0, 1.12, 0);
             this.root.add(giftBadge);
             this.giftBadgeSprite = giftBadge;
           }
