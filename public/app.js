@@ -6025,10 +6025,25 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
     if (templeAudio.playLotusChime) templeAudio.playLotusChime();
   }
 
-  // Only auto-transition if explicitly requested (default is false so viewer can peacefully read without interruption)
+  // Auto-dismiss safety: In unattended live streams, ensure fortune scroll does not stay stuck indefinitely!
+  if (seamSiScrollHideTimer) {
+    clearTimeout(seamSiScrollHideTimer);
+    seamSiScrollHideTimer = null;
+  }
   if (autoShowLucky) {
     ++seamSiScrollToken;
     seamSiScrollHideTimer = setTimeout(transitionToLucky, 6500);
+  } else {
+    // Unattended fallback: Smoothly hide after 8.5 seconds so it never collides with next round
+    seamSiScrollHideTimer = setTimeout(() => {
+      card.classList.remove('active');
+      card.classList.add('hidden');
+      setTimeout(() => {
+        if (card.classList.contains('hidden')) {
+          card.style.display = 'none';
+        }
+      }, 300);
+    }, 8500);
   }
 }
 
