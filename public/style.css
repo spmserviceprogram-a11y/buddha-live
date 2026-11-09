@@ -879,10 +879,10 @@ body {
   letter-spacing: 0.2px;
 }
 
-/* Left Panel Dock: Stacked Clean HUD Containers (Slim & Compact - Uncovers Guan Yin Altar) */
+/* Left Panel Dock: Stacked Clean HUD Containers (Slim & Compact - Lowered to avoid gift banner overlap) */
 .left-panel-dock {
   position: absolute;
-  top: 52px;
+  top: 160px;
   left: 8px;
   width: clamp(122px, 27vw, 138px);
   display: flex;
