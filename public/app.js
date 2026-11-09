@@ -11653,7 +11653,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
   if (type === 'kowtow') {
     // Authentic 3-Phase Benjangkhapradit Prostrations in 2D Chibi with dynamic queue pacing
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `กราบเบญจางคประดิษฐ์`, `${name} เข้ากราบสักการะบูชาพระรัตนตรัย`, activeGiftInfo);
       templeAudio.playBell(432, 4.0);
     } else {
       templeAudio.playBell(432, 3.0);
@@ -11710,16 +11709,8 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
     }
     const seamFortune = activeGiftInfo.seamsiFortune || drawSeamSiFortune();
     activeGiftInfo.seamsiFortune = seamFortune;
-    if (!isAmbient) {
-      showBigEffectBanner(
-        giftImg || '🎋',
-        `เสี่ยงเซียมซีมหาโชค`,
-        `${name} เสี่ยงทายรับคำทำนายมงคล`,
-        activeGiftInfo
-      );
-    }
     actor.smoothPoseTransition('kneel', 260, () => {
-      triggerSeamSiEffect(name, seamFortune);
+      triggerSeamSiEffect(name, seamFortune, false);
       triggerCharacterGoldenAura(actor.root);
       createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
       createLotusBloomDecal(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
@@ -11729,7 +11720,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'incense') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `จุดประทีปบูชาธูปทอง`, `${name} ถวาย${giftName} จุดประทีปบูชา`, activeGiftInfo);
       templeAudio.playBell(432, 3.5);
     } else {
       templeAudio.playBell(432, 3.0);
@@ -11743,7 +11733,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'lotus') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `สระดอกบัวทิพย์`, `${name} ถวาย${giftName} สระดอกบัวทิพย์ผุดบานสะพรั่ง`, activeGiftInfo);
       templeAudio.playBell(513.6, 4.0);
     } else {
       templeAudio.playBell(513.6, 3.0);
@@ -11757,7 +11746,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'flowers') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `โปรยบุปผามงคล`, `${name} ถวาย${giftName} โปรยบุปผาทิพย์ทั่ววิหาร`, activeGiftInfo);
       templeAudio.playBell(513.6, 4.5);
     } else {
       templeAudio.playBell(513.6, 3.0);
@@ -11785,7 +11773,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'golden_bell') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `สั่นระฆังทอง`, `${name} ถวาย${giftName} เสียงระฆังดังก้องทั่วแดนพุทธ`, activeGiftInfo);
       templeAudio.playBell(108, 6.0);
     } else {
       templeAudio.playBell(108, 4.5);
@@ -11800,7 +11787,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'crystal_fountain') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `ธารน้ำพุมณี`, `${name} ถวาย${giftName} บันดาลโชคลาภมั่งคั่งไม่ขาดสาย`, activeGiftInfo);
       templeAudio.playLotusChime();
     } else {
       templeAudio.playLotusChime();
@@ -11815,7 +11801,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'royal_carriage') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `ขบวนราชรถ`, `${name} ถวาย${giftName} ประดิษฐานผ้าไตรทองคำบูชาพระรัตนตรัย`, activeGiftInfo);
       templeAudio.playBell(432, 6.0);
     } else {
       templeAudio.playBell(432, 4.5);
@@ -11830,7 +11815,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'fireworks') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `พลุเพลิงบุญ`, `${name} ถวาย${giftName} สว่างไสวทั่วอนันตจักรวาล`, activeGiftInfo);
       templeAudio.playBell(639, 6.0);
     } else {
       templeAudio.playBell(639, 4.5);
@@ -11845,7 +11829,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'castle') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `เปิดวิมานทิพย์`, `${name} ถวาย${giftName} พระแม่กวนอิมประทานพรวิมานทิพย์`, activeGiftInfo);
       templeAudio.playBell(741, 7.0);
     } else {
       templeAudio.playBell(741, 5.0);
@@ -11860,7 +11843,6 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
 
   } else if (type === 'dragon') {
     if (!isAmbient) {
-      showBigEffectBanner(giftImg || giftIcon, `มังกรทองเหิน`, `${name} ถวาย${giftName} มังกรทองสถิต พรชัยสูงสุดสัมฤทธิ์ผล`, activeGiftInfo);
       templeAudio.playBell(852, 8.0);
     } else {
       templeAudio.playBell(852, 6.0);
