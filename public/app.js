@@ -14162,6 +14162,19 @@ class RoundManager {
     };
 
     // 1. Act 1: Show Round MVP Celebration Modal FIRST (0s to 3.8s - ป้องกันการทับซ้อนกับใบเซียมซี 100%)
+    const fortuneCard = document.getElementById('seamsi-fortune-card');
+    if (fortuneCard) {
+      fortuneCard.classList.remove('active');
+      fortuneCard.classList.add('hidden');
+      fortuneCard.style.display = 'none';
+    }
+    const luckyCard = document.getElementById('seamsi-lucky-card');
+    if (luckyCard) {
+      luckyCard.classList.remove('active');
+      luckyCard.classList.add('hidden');
+      luckyCard.style.display = 'none';
+    }
+
     if (this.dom.mvpModal) {
       if (this.dom.mvpModalName) this.dom.mvpModalName.textContent = mvp.nickname;
       if (this.dom.mvpModalRoundTag) this.dom.mvpModalRoundTag.textContent = `รอบที่ ${this.roundNum} สำเร็จบารมี (${this.meritPoints} แต้ม)`;
