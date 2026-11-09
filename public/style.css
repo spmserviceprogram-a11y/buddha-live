@@ -871,18 +871,18 @@ body {
 }
 
 .panel-header-gold {
-  background: linear-gradient(90deg, rgba(157, 23, 77, 0.25) 0%, rgba(219, 39, 119, 0.25) 45%, rgba(180, 83, 9, 0.25) 100%);
-  padding: 4px 7px;
-  font-size: 11.5px;
+  background: linear-gradient(90deg, rgba(120, 20, 55, 0.18) 0%, rgba(180, 60, 20, 0.18) 100%);
+  padding: 5px 9px 4px;
+  font-size: 11px;
   font-family: 'Kanit', 'Sarabun', sans-serif;
   font-weight: 800;
-  color: #ffffff;
+  color: rgba(255, 230, 150, 0.95);
   display: flex;
   align-items: center;
   gap: 4px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.40);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
-  letter-spacing: 0.2px;
+  border-bottom: none;
+  text-shadow: 0 0 10px rgba(255, 200, 80, 0.70), 0 1px 3px rgba(0, 0, 0, 0.95);
+  letter-spacing: 0.4px;
 }
 
 /* Left Panel Dock: Stacked Clean HUD Containers (Slim & Compact - Lowered to avoid gift banner overlap) */
