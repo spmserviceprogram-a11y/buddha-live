@@ -1261,8 +1261,8 @@ class GuanYinDivineVoice {
       audio.onended = endPlayback;
       audio.onerror = (err) => {
         console.warn('[GuanYin Voice] Audio error:', err, url);
-        if (textToDisplay && this.synth) {
-          this.playBrowserTTS(textToDisplay).then(endPlayback).catch(endPlayback);
+        if (this.lastSpokenText && this.synth) {
+          this.playBrowserTTS(this.lastSpokenText).then(endPlayback).catch(endPlayback);
           return;
         }
         endPlayback();
@@ -1275,8 +1275,8 @@ class GuanYinDivineVoice {
         if (hasEnded) return;
         audio.play().catch(err => {
           console.warn('[GuanYin Voice] Audio autoplay waiting or blocked:', err);
-          if (textToDisplay && this.synth) {
-            this.playBrowserTTS(textToDisplay).then(endPlayback).catch(endPlayback);
+          if (this.lastSpokenText && this.synth) {
+            this.playBrowserTTS(this.lastSpokenText).then(endPlayback).catch(endPlayback);
             return;
           }
           endPlayback();
