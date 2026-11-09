@@ -4833,22 +4833,22 @@ body {
    ===================================================================== */
 .round-hud {
   position: absolute;
-  top: 54px;
+  top: 32px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 20px);
-  max-width: 440px;
-  background: linear-gradient(135deg, rgba(20, 14, 32, 0.82) 0%, rgba(35, 18, 48, 0.78) 100%);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 215, 0, 0.42);
-  border-radius: 16px;
-  padding: 8px 12px 6px 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 0 16px rgba(255, 215, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  width: calc(100% - 16px);
+  max-width: 430px;
+  background: linear-gradient(135deg, rgba(16, 9, 24, 0.52) 0%, rgba(28, 14, 36, 0.46) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 215, 0, 0.38);
+  border-radius: 12px;
+  padding: 4px 8px 3px 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   z-index: 110;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 2.5px;
   pointer-events: auto;
   user-select: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -4856,25 +4856,25 @@ body {
 
 .round-hud:hover {
   border-color: rgba(255, 215, 0, 0.65);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.75), 0 0 22px rgba(255, 215, 0, 0.32);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 0 16px rgba(255, 215, 0, 0.25);
 }
 
 .round-hud-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 4px;
 }
 
 .round-badge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.32), rgba(180, 83, 9, 0.32));
   border: 1px solid rgba(255, 215, 0, 0.55);
-  border-radius: 20px;
-  padding: 2px 9px;
-  font-size: 11.5px;
+  border-radius: 14px;
+  padding: 1.5px 7px;
+  font-size: 10px;
   font-weight: 800;
   color: #fff9db;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
@@ -4882,19 +4882,19 @@ body {
 
 .round-badge .round-title strong {
   color: #ffd700;
-  font-size: 13px;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.85);
+  font-size: 11px;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.85);
 }
 
 .round-phase-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   background: rgba(16, 185, 129, 0.22);
   border: 1px solid rgba(16, 185, 129, 0.6);
-  border-radius: 20px;
-  padding: 2px 8px;
-  font-size: 11px;
+  border-radius: 14px;
+  padding: 1.5px 6px;
+  font-size: 9.5px;
   font-weight: 700;
   color: #a7f3d0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
@@ -4902,11 +4902,11 @@ body {
 }
 
 .round-phase-pill .phase-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 8px #10b981;
+  box-shadow: 0 0 6px #10b981;
   animation: phaseDotPulse 1.4s ease-in-out infinite;
 }
 
@@ -4918,7 +4918,7 @@ body {
 
 .round-phase-pill.phase-climax .phase-dot {
   background: #ec4899;
-  box-shadow: 0 0 10px #ec4899;
+  box-shadow: 0 0 8px #ec4899;
 }
 
 .round-phase-pill.phase-reveal {
@@ -4929,7 +4929,7 @@ body {
 
 .round-phase-pill.phase-reveal .phase-dot {
   background: #fbbf24;
-  box-shadow: 0 0 12px #fbbf24;
+  box-shadow: 0 0 10px #fbbf24;
 }
 
 @keyframes phaseDotPulse {
@@ -4940,12 +4940,12 @@ body {
 .round-timer-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   background: rgba(0, 0, 0, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 20px;
-  padding: 2px 9px;
-  font-size: 12px;
+  border-radius: 14px;
+  padding: 1.5px 7px;
+  font-size: 10.5px;
   font-weight: 900;
   color: #ffffff;
   font-variant-numeric: tabular-nums;
@@ -4967,12 +4967,12 @@ body {
 .share-counter-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.28), rgba(30, 64, 175, 0.28));
   border: 1px solid rgba(147, 197, 253, 0.65);
-  border-radius: 20px;
-  padding: 2px 8px;
-  font-size: 11px;
+  border-radius: 14px;
+  padding: 1.5px 6px;
+  font-size: 9.5px;
   font-weight: 800;
   color: #dbeafe;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
@@ -4981,20 +4981,20 @@ body {
 
 .share-counter-pill strong {
   color: #60a5fa;
-  font-size: 12px;
-  text-shadow: 0 0 8px rgba(96, 165, 250, 0.85);
+  font-size: 10.5px;
+  text-shadow: 0 0 6px rgba(96, 165, 250, 0.85);
 }
 
 .share-counter-pill.pulse-boost {
-  transform: scale(1.12);
+  transform: scale(1.08);
   border-color: #ffd700;
-  box-shadow: 0 0 14px rgba(255, 215, 0, 0.8);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
 
 /* Floating Golden Share Toast Notification */
 .share-toast-banner {
   position: absolute;
-  top: 110px;
+  top: 32px;
   left: 50%;
   transform: translateX(-50%) translateY(-10px) scale(0.95);
   width: calc(100% - 24px);
@@ -5002,9 +5002,9 @@ body {
   background: linear-gradient(135deg, rgba(25, 14, 40, 0.94) 0%, rgba(65, 30, 15, 0.94) 100%);
   border: 1.5px solid #ffd700;
   border-radius: 24px;
-  padding: 8px 14px;
+  padding: 6px 14px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.75), 0 0 20px rgba(255, 215, 0, 0.45);
-  z-index: 220;
+  z-index: 120;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -5063,26 +5063,26 @@ body {
 .merit-bar-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .merit-bar-track {
   position: relative;
   width: 100%;
-  height: 12px;
+  height: 7px;
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(255, 215, 0, 0.35);
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: visible;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 .merit-bar-fill {
   height: 100%;
-  border-radius: 7px;
+  border-radius: 3px;
   background: linear-gradient(90deg, #10b981 0%, #f59e0b 55%, #ec4899 85%, #8b5cf6 100%);
   background-size: 200% 100%;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.45);
   transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   animation: meritGradientFlow 3s linear infinite;
 }
@@ -5096,37 +5096,37 @@ body {
 /* Milestone Pins (33%, 66%, 100%) */
 .milestone-pin {
   position: absolute;
-  top: -3px;
+  top: -2px;
   transform: translateX(-50%);
-  width: 3px;
-  height: 18px;
+  width: 2px;
+  height: 11px;
   background: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
   z-index: 2;
   pointer-events: none;
 }
 
 .milestone-pin.pin-silver {
   background: #e2e8f0;
-  box-shadow: 0 0 8px #94a3b8;
+  box-shadow: 0 0 6px #94a3b8;
 }
 
 .milestone-pin.pin-gold {
   background: #fbbf24;
-  box-shadow: 0 0 10px #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
 }
 
 .milestone-pin.pin-nirvana {
   background: #c084fc;
-  box-shadow: 0 0 12px #a855f7;
+  box-shadow: 0 0 10px #a855f7;
 }
 
 .milestone-pin .pin-tag {
   position: absolute;
-  bottom: -15px;
+  bottom: -11px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 8.5px;
+  font-size: 7.5px;
   font-weight: 800;
   color: rgba(255, 255, 255, 0.65);
   text-shadow: 0 1px 2px #000;
@@ -5136,18 +5136,18 @@ body {
 .milestone-pin.unlocked .pin-tag {
   color: #ffd700;
   font-weight: 900;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.8);
 }
 
 .merit-bar-labels {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 8.5px;
   font-weight: 700;
   color: #cbd5e1;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-  padding: 2px 2px 0 2px;
+  padding: 1px 2px 0 2px;
 }
 
 .merit-label-left {
@@ -5156,7 +5156,7 @@ body {
 
 .merit-label-center strong {
   color: #ffd700;
-  font-size: 11px;
+  font-size: 9.5px;
 }
 
 .merit-label-right {
@@ -5168,23 +5168,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 2px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  padding-top: 1px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .round-mvp-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 10.5px;
+  gap: 4px;
+  font-size: 9px;
   font-weight: 800;
   color: #f1f5f9;
   text-shadow: 0 1px 2px #000;
 }
 
 .round-mvp-pill .mvp-crown {
-  font-size: 12px;
-  filter: drop-shadow(0 0 4px #ffd700);
+  font-size: 10px;
+  filter: drop-shadow(0 0 3px #ffd700);
 }
 
 .round-mvp-pill .mvp-title {
@@ -5195,7 +5195,7 @@ body {
 .round-mvp-pill .mvp-name {
   color: #ffd700;
   font-weight: 900;
-  max-width: 160px;
+  max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -5203,6 +5203,9 @@ body {
 
 .round-mvp-pill .mvp-pts {
   color: #34d399;
+  font-size: 8.5px;
+  margin-left: 2px;
+}
   font-size: 9.5px;
   margin-left: 2px;
 }
