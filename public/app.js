@@ -12189,6 +12189,7 @@ if (btnSimVideoClimax) {
 }
 
 document.getElementById('btn-reset-scene').addEventListener('click', () => {
+  if (typeof hideCeremonyModals === 'function') hideCeremonyModals();
   disciplesMap.forEach(d => disciplesGroup.remove(d.root));
   disciplesMap.clear();
   activeSpeechBubbles.length = 0;
