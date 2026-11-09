@@ -12679,6 +12679,16 @@ function updateShareCounterUI(count) {
 }
 
 function showShareToast(sharerName = 'ผู้มีจิตศรัทธา', avatar = '') {
+  // P2 Priority: Do not clobber higher-priority Gift (P1) announcement banner
+  if (typeof isBottomEffectBannerActive === 'function' && isBottomEffectBannerActive()) {
+    return;
+  }
+
+  // Dismiss P3 Follower banner immediately
+  if (typeof hideBottomFollowerBanner === 'function') {
+    hideBottomFollowerBanner(true);
+  }
+
   const banner = document.getElementById('share-toast-banner');
   if (!banner) return;
   const nameEl = document.getElementById('share-toast-name');
@@ -12690,6 +12700,7 @@ function showShareToast(sharerName = 'ผู้มีจิตศรัทธา
     shareToastHideTimer = null;
   }
 
+  _activeBottomBanner = 'share';
   banner.style.display = 'flex';
   banner.classList.remove('hidden');
   banner.classList.remove('active');
@@ -12710,6 +12721,7 @@ function showShareToast(sharerName = 'ผู้มีจิตศรัทธา
       if (banner.classList.contains('hidden')) {
         banner.style.display = 'none';
       }
+      if (_activeBottomBanner === 'share') _activeBottomBanner = null;
     }, 400);
   }, 4500);
 }
