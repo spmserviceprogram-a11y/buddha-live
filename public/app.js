@@ -9038,7 +9038,8 @@ function triggerFireworksEffect() {
       color: 0xffe066,
       transparent: true,
       opacity: 0.90,
-      blending: THREE.AdditiveBlending
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     }));
     sparkSprite.scale.set(1.4, 1.4, 1);
     hGroup.add(sparkSprite);
