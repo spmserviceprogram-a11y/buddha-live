@@ -47,7 +47,10 @@
     </div>
 
     <!-- Sacred Da Bei Zhou Chant (บทสวดไต่ปุยจิ่ว ทิเบต พระแม่กวนอิม - DOM Audio for TikTok LIVE Studio & OBS) -->
-    <audio id="bgm-audio" src="/bgm.mp3" autoplay loop preload="auto" playsinline></audio>
+    <audio id="bgm-audio" loop preload="auto" playsinline>
+      <source src="/bgm.m4a" type="audio/mp4">
+      <source src="/bgm.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- 3D WebGL Canvas Container -->
     <div id="canvas-container"></div>
