@@ -8129,7 +8129,7 @@ function triggerCrystalFountainEffect() {
   // Central Glowing Ambrosia Column & 8 Animated Parabolic Cascading Water Streams (สายน้ำพุโค้ง 8 ทิศ)
   const coreStream = new THREE.Mesh(
     new THREE.CylinderGeometry(0.045, 0.16, 0.62, 16),
-    new THREE.MeshBasicMaterial({ color: 0x96fff2, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending })
+    new THREE.MeshBasicMaterial({ color: 0x96fff2, transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending })
   );
   coreStream.position.set(0.08, 1.18, 0);
   fountainGroup.add(coreStream);
