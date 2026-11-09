@@ -1369,22 +1369,19 @@ body {
   color: #ffffff;
   font-weight: 700;
   padding: 2px 5px;
-  background: rgba(255, 215, 0, 0.04);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.03);
   border: none;
-  outline: 1px solid rgba(255, 215, 0, 0.12);
+  outline: 1px solid rgba(255, 215, 0, 0.08);
   border-radius: 8px;
   box-sizing: border-box;
   min-height: 20px;
   transition: all 0.25s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14), 0 0 8px rgba(255, 200, 80, 0.06);
 }
 
 .queue-row.active {
-  background: linear-gradient(90deg, rgba(220, 100, 20, 0.22), rgba(255, 190, 50, 0.18));
-  outline-color: rgba(255, 215, 0, 0.55);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.30), 0 2px 8px rgba(0, 0, 0, 0.18);
+  background: linear-gradient(90deg, rgba(225, 29, 72, 0.18), rgba(245, 158, 11, 0.14));
+  outline-color: rgba(255, 215, 0, 0.40);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.20);
 }
 
 .queue-row .q-avatar {
