@@ -13601,11 +13601,10 @@ function triggerAmbientDevotion() {
     recentAmbientDevoteeSeats.shift();
   }
 
-  // 3. Low-tier humble offerings ONLY for ambient bots (1-coin Kowtow, 5-coin Incense, 1-coin Seam-Si)
+  // 3. Low-tier humble offerings ONLY for ambient bots (กราบเบญจางคประดิษฐ์ 1 เหรียญ และ บูชาธูปทอง 5 เหรียญ เท่านั้น - ห้ามบอทเล่นเซียมซีหรือของขวัญอื่น)
   const AMBIENT_RITUALS = [
-    { type: 'kowtow',  icon: '🌹', name: 'กุหลาบมงคล',   coins: 1 },
-    { type: 'incense', icon: '🪔', name: 'ประทีปธูปหอม', coins: 5 },
-    { type: 'seamsi',  icon: '🎋', name: 'รักนะมากๆ',     coins: 1 }
+    { type: 'kowtow',  icon: '🌹', name: 'กราบเบญจางคประดิษฐ์', coins: 1 },
+    { type: 'incense', icon: '🪔', name: 'บูชาธูปทอง',         coins: 5 }
   ];
 
   const picked = AMBIENT_RITUALS[Math.floor(Math.random() * AMBIENT_RITUALS.length)];
