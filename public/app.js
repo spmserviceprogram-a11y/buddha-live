@@ -11830,7 +11830,7 @@ const unlockAndStartAudio = (withFeedback = false) => {
   templeAudio.startAmbient(withFeedback);
 };
 
-const unlockEvents = ['click', 'touchstart', 'pointerdown', 'pointermove', 'mousemove', 'mouseenter', 'wheel', 'keydown', 'focus'];
+const unlockEvents = ['click', 'touchstart', 'pointerdown', 'keydown'];
 const handleUnlockGesture = (e) => {
   if (e && e.target) {
     if (e.target.id === 'btn-audio-toggle' || (e.target.closest && e.target.closest('#control-panel'))) return;
