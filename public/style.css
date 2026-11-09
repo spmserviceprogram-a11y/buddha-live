@@ -479,12 +479,16 @@ body {
 
 /* Top Header Bar */
 .top-bar {
+  position: absolute;
+  top: 6px;
+  right: 8px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  width: 100%;
-  margin-top: 14px;
-  z-index: 25;
+  width: auto;
+  margin-top: 0;
+  z-index: 125;
+  pointer-events: none;
 }
 
 .streamer-info {
