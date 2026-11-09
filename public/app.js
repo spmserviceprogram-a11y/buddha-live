@@ -13300,52 +13300,52 @@ function getAdaptiveAmbientConfig() {
     return {
       mode: 'lively',
       enabled: true,
-      minDelay: 18000,
-      randomRange: 12000, // 18s - 30s: Continuous subtle organic motion ensures TikTok AI never detects a static video loop
+      minDelay: 11000,
+      randomRange: 8000, // 11s - 19s: Continuous subtle organic motion ensures TikTok AI never detects a static video loop
       allowMicroBubbles: true,
-      bubbleIntervalMin: 65000,
-      bubbleIntervalRange: 40000, // 65s - 105s (calm & infrequent)
-      quietRequired: 16000
+      bubbleIntervalMin: 45000,
+      bubbleIntervalRange: 30000,
+      quietRequired: 9000
     };
   } else if (viewers <= 10) {
     return {
       mode: 'audience_first',
       enabled: true,
-      minDelay: 28000,
-      randomRange: 15000, // 28s - 43s
+      minDelay: 15000,
+      randomRange: 9000, // 15s - 24s
       allowMicroBubbles: false, // 100% OFF for bot bubbles, real chatters only
-      quietRequired: 22000
+      quietRequired: 14000
     };
   } else if (viewers <= 25) {
     return {
       mode: 'crowded',
       enabled: true,
-      minDelay: 38000,
-      randomRange: 20000, // 38s - 58s
+      minDelay: 20000,
+      randomRange: 12000, // 20s - 32s
       allowMicroBubbles: false,
-      quietRequired: 28000
+      quietRequired: 18000
     };
   } else {
     // High-audience mode: Keep stage naturally alive when audience is watching quietly
     return {
       mode: 'surge',
       enabled: true,
-      minDelay: 45000,
-      randomRange: 25000, // 45s - 70s
+      minDelay: 26000,
+      randomRange: 14000, // 26s - 40s
       allowMicroBubbles: false,
-      quietRequired: 35000
+      quietRequired: 22000
     };
   }
 }
 
 const recentAmbientDevoteeSeats = [];
-let nextAmbientSeatSwapTime = Date.now() + 2500; // First brisk seat swap begins shortly after load!
-let nextAmbientDevotionTime = Date.now() + 26000 + Math.random() * 8000;
-let nextAmbientMicroActionTime = Date.now() + 11000;
+let nextAmbientSeatSwapTime = Date.now() + 2000; // First brisk seat swap begins immediately after load!
+let nextAmbientDevotionTime = Date.now() + 14000 + Math.random() * 6000;
+let nextAmbientMicroActionTime = Date.now() + 5000;
 
 function scheduleNextAmbientSeatSwap(extraDelayMs = 0) {
-  // Brisk, active 7s - 11s cadence: Keeps the congregation lively, agile & dynamic
-  const baseDelay = 7000 + Math.random() * 4000;
+  // Fast, active 3.5s - 6.5s cadence: Keeps the congregation lively, agile & dynamic
+  const baseDelay = 3500 + Math.random() * 3000;
   nextAmbientSeatSwapTime = Date.now() + baseDelay + extraDelayMs;
 }
 
