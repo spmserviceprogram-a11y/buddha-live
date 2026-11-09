@@ -133,10 +133,10 @@
       <button id="btn-toggle-leaderboard" style="display:none;"></button>
       <span id="drawer-arrow" style="display:none;"></span>
 
-      <!-- Left Panel Dock: Stacked Left HUD Cards (คิวถวาย + คำขอพรล่าสุด & ถวายสักการะ) -->
+      <!-- Left Panel Dock: Stacked Left HUD Pop-Ups (คิวถวาย & คำขอพรล่าสุด แสดงเป็นป็อปอัพชั่วคราว) -->
       <div id="left-panel-dock" class="left-panel-dock">
-        <!-- Top Left: คิวถวาย & คำขอพรล่าสุด (กล่องสีแดงเลือดหมู/ทอง ซ้ายบน) -->
-        <aside id="panel-tribute-queue" class="panel-card panel-left-queue">
+        <!-- ป้ายคิวถวาย (แสดงเฉพาะเมื่อมีคนส่งของขวัญ / อัปเดตคิว) -->
+        <aside id="panel-tribute-queue" class="panel-card panel-left-queue panel-popup">
           <div class="panel-header-gold">
             <span class="header-icon">🙏</span>
             <span class="header-title">คิวถวาย</span>
@@ -144,42 +144,24 @@
           <div id="tribute-queue-list" class="queue-list">
             <div class="queue-empty">ยังไม่มีคิวถวาย (ร่วมบุญเป็นท่านแรก)</div>
           </div>
-          <div class="sub-header-gold">
-            <span>คำขอพรล่าสุด</span>
+        </aside>
+
+        <!-- ป้ายคำขอพรล่าสุด (แสดงเฉพาะเมื่อมีผู้ชมส่งคำขอพร) -->
+        <aside id="panel-recent-wishes" class="panel-card panel-left-wishes panel-popup">
+          <div class="panel-header-gold">
+            <span class="header-icon">✨</span>
+            <span class="header-title">คำขอพรล่าสุด</span>
           </div>
           <div id="recent-wishes-stream" class="wishes-stream">
             <div class="wish-empty">รอรับคำขอพร (ร่วมส่งใจขอพร) ✨</div>
           </div>
         </aside>
-
-        <!-- ด้านล่างคิวถวาย: ทำเนียบกัลยาณมิตร (ร่วมอนุโมทนาบุญสะสมแต้มบารมี) -->
-        <aside id="panel-sadhu-board" class="panel-card panel-left-sadhu">
-          <div class="panel-header-gold">
-            <span class="header-icon">💝</span>
-            <span class="header-title">ทำเนียบกัลยาณมิตร</span>
-          </div>
-          <!-- ป้ายแจ้งเตือนคงที่: ร่วมอนุโมทนาบุญ (ปลอดภัย 100% จากบอท TikTok สแกนจับ Engagement Baiting) -->
-          <div class="sadhu-permanent-notice">
-            <span class="notice-tag">ร่วม</span>
-            <span class="highlight-sadhu">อนุโมทนาบุญ</span>
-            <span class="notice-desc">สาธุบารมี</span>
-          </div>
-          <!-- Live Activity Ticker: แสดงชื่อผู้ชมที่เพิ่งได้รับแต้มสาธุล่าสุดแบบเรียลไทม์ทันที -->
-          <div id="sadhu-recent-ticker" class="sadhu-recent-ticker">
-            <span class="ticker-dot">●</span>
-            <span id="sadhu-ticker-text" class="ticker-text">อนุโมทนาบุญบารมีสะสม ✨</span>
-          </div>
-          <div id="sadhu-board-list" class="sadhu-board-list">
-            <div class="sadhu-empty">ร่วมอนุโมทนาบุญสาธุ 🙏</div>
-          </div>
-        </aside>
-
       </div>
 
-      <!-- Right Panel Dock: Stacked Right HUD Cards (อนุโมทนาผู้มีจิตศรัทธา & ถวายสักการะ & กำลังขอพร) -->
+      <!-- Right Panel Dock: Stacked Right HUD Pop-Ups (อนุโมทนาผู้มีจิตศรัทธา TOP 5 แสดงเป็นป็อปอัพชั่วคราว) -->
       <div id="right-panel-dock" class="right-panel-dock">
-        <!-- Top Right: กระดานทองบุญ (อนุโมทนาผู้มีจิตศรัทธา ด้านขวาบน) -->
-        <aside id="panel-merit-board" class="panel-card panel-right-merit">
+        <!-- ป้าย TOP 5 อนุโมทนาผู้มีจิตศรัทธา (แสดงเฉพาะเมื่อมีคนร่วมบุญ / อัปเดตอันดับ) -->
+        <aside id="panel-merit-board" class="panel-card panel-right-merit panel-popup">
           <div class="panel-header-gold">
             <span class="header-icon">🎊</span>
             <span class="header-title">อนุโมทนาผู้มีจิตศรัทธา</span>
@@ -190,83 +172,6 @@
           <!-- Alias container for existing JS -->
           <div id="leaderboard-list" style="display:none;"></div>
         </aside>
-
-        <!-- Mid-Right: รายการของขวัญ & เอฟเฟกต์มงคล ๑๑ ระดับ (อยู่ด้านบนป้ายกำลังขอพร) -->
-        <aside id="panel-gift-guide" class="panel-card panel-right-guide">
-          <div class="panel-header-gold">
-            <span class="header-icon">🪷</span>
-            <span class="header-title">ถวายสักการะ</span>
-          </div>
-          <div class="gift-guide-list">
-            <!-- 1 (กุหลาบ -> กราบเบญจางคประดิษฐ์) -->
-            <div class="guide-item" title="กุหลาบ">
-              <span class="guide-icon"><img src="rose.png?v=4" class="gift-tiktok-img" alt="กุหลาบ"
-                  onerror="this.outerHTML='🌹'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">กราบเบญจางคประดิษฐ์</span>
-            </div>
-            <!-- 2 (รักนะมากๆ -> เสี่ยงเซียมซีมหาโชค 1 เหรียญ) -->
-            <div class="guide-item" title="รักนะมากๆ (เสี่ยงเซียมซีมหาโชค 1 เหรียญ)">
-              <span class="guide-icon"><img src="seamsi.png?v=6" class="gift-tiktok-img" alt="รักนะมากๆ (เซียมซี)"
-                  onerror="this.outerHTML='🎋'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">เสี่ยงเซียมซีมหาโชค</span>
-            </div>
-            <!-- 3 (เครื่องราง -> จุดประทีปบูชาธูปทอง) -->
-            <div class="guide-item" title="เครื่องราง">
-              <span class="guide-icon"><img src="omamori.png?v=4" class="gift-tiktok-img" alt="เครื่องราง"
-                  onerror="this.outerHTML='🫰'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">จุดประทีปบูชาธูปทอง</span>
-            </div>
-            <!-- 4 (Lucky 9 -> สระดอกบัวทิพย์) -->
-            <div class="guide-item" title="Lucky 9">
-              <span class="guide-icon"><img src="lucky_9.png?v=4" class="gift-tiktok-img" alt="Lucky 9"
-                  onerror="this.outerHTML='9️⃣'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">สระดอกบัวทิพย์</span>
-            </div>
-            <!-- 5 (กุหลาบ ๙๙ -> โปรยบุปผามงคล) -->
-            <div class="guide-item" title="กุหลาบ ๙๙">
-              <span class="guide-icon"><img src="rose_99.png?v=4" class="gift-tiktok-img" alt="กุหลาบ ๙๙"
-                  onerror="this.outerHTML='🌹'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">โปรยบุปผามงคล</span>
-            </div>
-            <!-- 6 (พวงมาลัย -> สั่นระฆังทอง) -->
-            <div class="guide-item" title="พวงมาลัย">
-              <span class="guide-icon"><img src="garland.png?v=4" class="gift-tiktok-img" alt="พวงมาลัย"
-                  onerror="this.outerHTML='📿'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">สั่นระฆังทอง</span>
-            </div>
-            <!-- 7 (โคโลญจน์ -> ธารน้ำพุมณี) -->
-            <div class="guide-item" title="โคโลญจน์">
-              <span class="guide-icon"><img src="cologne.png?v=4" class="gift-tiktok-img" alt="โคโลญจน์"
-                  onerror="this.outerHTML='🎁'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">ธารน้ำพุมณี</span>
-            </div>
-            <!-- 8 (โดนัท -> ขบวนราชรถ) -->
-            <div class="guide-item" title="โดนัท">
-              <span class="guide-icon"><img src="donut.png?v=4" class="gift-tiktok-img" alt="โดนัท"
-                  onerror="this.outerHTML='🍩'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">ขบวนราชรถ</span>
-            </div>
-            <!-- 9 (หัวใจ 4 ดวง -> พลุเพลิงบุญ) -->
-            <div class="guide-item vip-guide-item" title="หัวใจ 4 ดวง">
-              <span class="guide-icon"><img src="four_hearts.png?v=4" class="gift-tiktok-img" alt="หัวใจ 4 ดวง"
-                  onerror="this.outerHTML='🕊️'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">พลุเพลิงบุญ</span>
-            </div>
-            <!-- 10 (ประตูมิติ -> เปิดวิมานทิพย์) -->
-            <div class="guide-item vip-guide-item" title="ประตูมิติ">
-              <span class="guide-icon"><img src="portal.png?v=4" class="gift-tiktok-img" alt="ประตูมิติ"
-                  onerror="this.outerHTML='🧨'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">เปิดวิมานทิพย์</span>
-            </div>
-            <!-- 11 (มังกรแฟนตาซี -> มังกรทองเหิน) -->
-            <div class="guide-item supreme-guide-item" title="มังกรแฟนตาซี">
-              <span class="guide-icon"><img src="dragon.png?v=4" class="gift-tiktok-img" alt="มังกรแฟนตาซี"
-                  onerror="this.outerHTML='🐉'" loading="lazy" decoding="async" /></span>
-              <span class="guide-action">มังกรทองเหิน</span>
-            </div>
-          </div>
-        </aside>
-
       </div>
 
       <!-- Live Gift Float Badges Container (ลอยขึ้นฝั่งซ้ายล่างเหนือแชท เหมือน TikTok จริง) -->
