@@ -12031,17 +12031,78 @@ if (unlockPill) {
   });
 }
 
-// Control Panel Toggle
+// Control Panel Toggle & 4-Pane Navigation
 const controlPanel = document.getElementById('control-panel');
 const btnTogglePanel = document.getElementById('btn-toggle-panel');
 const btnClosePanel = document.getElementById('btn-close-panel');
 
-if (btnTogglePanel) {
-  btnTogglePanel.addEventListener('click', () => controlPanel.classList.toggle('open'));
+function updateControlPanelQuickStatus(isConnected, roundNum) {
+  const miniStatus = document.getElementById('conn-status-mini');
+  if (miniStatus) {
+    if (isConnected) {
+      miniStatus.className = 'status-pill status-mini-online';
+      miniStatus.textContent = '🟢 ออนไลน์';
+    } else {
+      miniStatus.className = 'status-pill status-mini-offline';
+      miniStatus.textContent = '🔴 ออฟไลน์';
+    }
+  }
+  const roundIndicator = document.getElementById('panel-round-indicator');
+  if (roundIndicator) {
+    const rNum = roundNum || (window.roundManager ? window.roundManager.roundNum : 1);
+    roundIndicator.textContent = `🌿 รอบ ${rNum}`;
+  }
 }
-if (btnClosePanel) {
-  btnClosePanel.addEventListener('click', () => controlPanel.classList.remove('open'));
+window.updateControlPanelQuickStatus = updateControlPanelQuickStatus;
+
+function initControlPanelTabs() {
+  const tabButtons = document.querySelectorAll('#control-panel-tabs .tab-btn');
+  const tabPanes = document.querySelectorAll('.panel-tab-pane');
+
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.getAttribute('data-tab');
+      if (!targetTab) return;
+
+      tabButtons.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const activePane = document.getElementById(`pane-${targetTab}`);
+      if (activePane) activePane.classList.add('active');
+    });
+  });
+
+  // Quick Mute BGM button in drawer header
+  const btnQuickMute = document.getElementById('btn-quick-mute-bgm');
+  if (btnQuickMute) {
+    btnQuickMute.addEventListener('click', () => {
+      if (typeof templeAudio !== 'undefined' && templeAudio) {
+        const isPlaying = templeAudio.toggleAmbient();
+        btnQuickMute.textContent = isPlaying ? '🎵' : '🔇';
+        btnQuickMute.title = isPlaying ? 'กดเพื่อปิดเสียงเพลง (Mute)' : 'กดเพื่อเปิดเสียงเพลง (Unmute)';
+      }
+    });
+  }
+
+  const syncStatus = () => {
+    const isConn = connStatus && connStatus.classList.contains('status-online');
+    const round = (window.roundManager && window.roundManager.roundNum) || 1;
+    updateControlPanelQuickStatus(isConn, round);
+  };
+
+  if (btnTogglePanel) {
+    btnTogglePanel.addEventListener('click', () => {
+      controlPanel.classList.toggle('open');
+      syncStatus();
+    });
+  }
+  if (btnClosePanel) {
+    btnClosePanel.addEventListener('click', () => controlPanel.classList.remove('open'));
+  }
 }
+
+initControlPanelTabs();
 
 // Click / Tap LIVE Clock Badge to toggle control panel seamlessly
 const liveClockBadge = document.querySelector('.live-clock-pill');
@@ -12050,6 +12111,9 @@ if (liveClockBadge) {
   liveClockBadge.addEventListener('click', (e) => {
     e.stopPropagation();
     controlPanel.classList.toggle('open');
+    const isConn = connStatus && connStatus.classList.contains('status-online');
+    const round = (window.roundManager && window.roundManager.roundNum) || 1;
+    updateControlPanelQuickStatus(isConn, round);
   });
 }
 
@@ -12424,6 +12488,9 @@ function handleInitialState(data) {
   if (data.isConnected) {
     connStatus.className = 'conn-status status-online';
     connStatus.textContent = `เชื่อมต่อกับ @${data.tiktokUsername} สำเร็จ (LIVE เรียลไทม์)`;
+    updateControlPanelQuickStatus(true, window.roundManager?.roundNum);
+  } else {
+    updateControlPanelQuickStatus(false, window.roundManager?.roundNum);
   }
   if (data.viewersCount !== undefined) {
     updateViewerCount(data.viewersCount);
@@ -12469,11 +12536,13 @@ socket.on('status_change', (data) => {
     if (data.username) {
       document.getElementById('streamer-name').textContent = data.username;
     }
+    updateControlPanelQuickStatus(true, window.roundManager?.roundNum);
     showToast('เชื่อมต่อสำเร็จ ✨', `เชื่อมต่อกับห้อง LIVE ของ @${data.username} เรียบร้อยแล้ว`);
   } else {
     connStatus.className = 'conn-status status-offline';
     const errMsg = data?.error || 'ตัดการเชื่อมต่อ หรือช่องยังไม่ได้เปิด Live';
     connStatus.textContent = errMsg;
+    updateControlPanelQuickStatus(false, window.roundManager?.roundNum);
     showToast('สถานะการเชื่อมต่อ', errMsg);
   }
 });
@@ -12485,6 +12554,7 @@ const onConnected = (data) => {
   if (data && data.streamerName) {
     document.getElementById('streamer-name').textContent = data.streamerName;
   }
+  updateControlPanelQuickStatus(true, window.roundManager?.roundNum);
 };
 socket.on('tiktok-connected', onConnected);
 socket.on('tiktok_connected', onConnected);
@@ -12492,6 +12562,7 @@ socket.on('tiktok_connected', onConnected);
 const onError = (err) => {
   connStatus.className = 'conn-status status-offline';
   connStatus.textContent = `เกิดข้อผิดพลาด: ${err ? (err.message || err) : 'ไม่สามารถเชื่อมต่อได้'}`;
+  updateControlPanelQuickStatus(false, window.roundManager?.roundNum);
 };
 socket.on('tiktok-error', onError);
 socket.on('tiktok_error', onError);
@@ -14099,6 +14170,11 @@ class RoundManager {
     if (this.dom.mvpModal) {
       this.dom.mvpModal.classList.remove('active');
       this.dom.mvpModal.style.display = 'none';
+    }
+
+    if (typeof updateControlPanelQuickStatus === 'function') {
+      const isOnline = (typeof connStatus !== 'undefined' && connStatus) ? connStatus.classList.contains('status-online') : false;
+      updateControlPanelQuickStatus(isOnline, this.roundNum);
     }
 
     // Inform server about round sync
