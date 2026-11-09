@@ -68,18 +68,22 @@ body {
     transform: scale(1.0) translate(0, 0);
     filter: brightness(1.0) saturate(1.02);
   }
+
   25% {
     transform: scale(1.028) translate(-1.1%, -0.6%);
     filter: brightness(1.03) saturate(1.05);
   }
+
   50% {
     transform: scale(1.018) translate(0.7%, -1.2%);
     filter: brightness(0.99) saturate(1.03);
   }
+
   75% {
     transform: scale(1.036) translate(-0.8%, -0.4%);
     filter: brightness(1.04) saturate(1.07);
   }
+
   100% {
     transform: scale(1.045) translate(0.5%, -0.8%);
     filter: brightness(1.02) saturate(1.04);
@@ -101,9 +105,20 @@ body {
 }
 
 @keyframes celestialAuroraWave {
-  0% { transform: scale(1.0) rotate(0deg); opacity: 0.55; }
-  50% { transform: scale(1.06) rotate(1.2deg) translateY(-8px); opacity: 0.88; }
-  100% { transform: scale(0.98) rotate(-1.0deg) translateY(6px); opacity: 0.60; }
+  0% {
+    transform: scale(1.0) rotate(0deg);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: scale(1.06) rotate(1.2deg) translateY(-8px);
+    opacity: 0.88;
+  }
+
+  100% {
+    transform: scale(0.98) rotate(-1.0deg) translateY(6px);
+    opacity: 0.60;
+  }
 }
 
 /* Shimmering Golden Sunbeam God-Rays from the Celestial Heavens */
@@ -113,14 +128,12 @@ body {
   left: -20%;
   width: 140%;
   height: 65%;
-  background: repeating-linear-gradient(
-    -28deg,
-    rgba(255, 240, 160, 0.16) 0px,
-    rgba(255, 215, 60, 0.07) 32px,
-    transparent 65px,
-    rgba(255, 248, 190, 0.18) 110px,
-    transparent 165px
-  );
+  background: repeating-linear-gradient(-28deg,
+      rgba(255, 240, 160, 0.16) 0px,
+      rgba(255, 215, 60, 0.07) 32px,
+      transparent 65px,
+      rgba(255, 248, 190, 0.18) 110px,
+      transparent 165px);
   mask-image: radial-gradient(ellipse at 50% 15%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.45) 55%, transparent 85%);
   -webkit-mask-image: radial-gradient(ellipse at 50% 15%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.45) 55%, transparent 85%);
   animation: celestialGodrayShimmer 10s ease-in-out infinite alternate;
@@ -130,9 +143,20 @@ body {
 }
 
 @keyframes celestialGodrayShimmer {
-  0% { opacity: 0.40; transform: rotate(0deg) scale(1.0); }
-  50% { opacity: 0.80; transform: rotate(1.4deg) scale(1.05); }
-  100% { opacity: 0.48; transform: rotate(-1.0deg) scale(0.98); }
+  0% {
+    opacity: 0.40;
+    transform: rotate(0deg) scale(1.0);
+  }
+
+  50% {
+    opacity: 0.80;
+    transform: rotate(1.4deg) scale(1.05);
+  }
+
+  100% {
+    opacity: 0.48;
+    transform: rotate(-1.0deg) scale(0.98);
+  }
 }
 
 /* Sacred Lotus Pond Living Water Surface Shimmer (ระลอกคลื่นประกายน้ำสระบัวทิพย์) */
@@ -142,13 +166,11 @@ body {
   left: 0;
   width: 100%;
   height: 38%;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(255, 255, 255, 0.08) 0px,
-    rgba(255, 240, 180, 0.05) 5px,
-    transparent 10px,
-    transparent 20px
-  );
+  background: repeating-linear-gradient(0deg,
+      rgba(255, 255, 255, 0.08) 0px,
+      rgba(255, 240, 180, 0.05) 5px,
+      transparent 10px,
+      transparent 20px);
   mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 60%, transparent 100%);
   -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.25) 60%, transparent 100%);
   mix-blend-mode: overlay;
@@ -158,9 +180,20 @@ body {
 }
 
 @keyframes celestialWaterShimmer {
-  0% { transform: scaleY(1.0) translateY(0); opacity: 0.45; }
-  50% { transform: scaleY(1.08) translateY(-5px); opacity: 0.90; }
-  100% { transform: scaleY(0.95) translateY(3px); opacity: 0.55; }
+  0% {
+    transform: scaleY(1.0) translateY(0);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: scaleY(1.08) translateY(-5px);
+    opacity: 0.90;
+  }
+
+  100% {
+    transform: scaleY(0.95) translateY(3px);
+    opacity: 0.55;
+  }
 }
 
 /* 3-Layer Parallax Undulating Sea of Clouds & Sacred Mist over Lotus Ponds */
@@ -201,13 +234,23 @@ body {
 }
 
 @keyframes celestialMistFloat1 {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(25%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(25%);
+  }
 }
 
 @keyframes celestialMistFloat2 {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-25%); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-25%);
+  }
 }
 
 /* Gracefully Soaring Celestial White Cranes */
@@ -245,24 +288,63 @@ body {
 }
 
 @keyframes craneFlight1 {
-  0% { transform: translate(-50px, 35px) scale(0.68); opacity: 0; }
-  10% { opacity: 0.95; }
-  85% { opacity: 0.95; }
-  100% { transform: translate(470px, -45px) scale(0.88); opacity: 0; }
+  0% {
+    transform: translate(-50px, 35px) scale(0.68);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.95;
+  }
+
+  85% {
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: translate(470px, -45px) scale(0.88);
+    opacity: 0;
+  }
 }
 
 @keyframes craneFlight2 {
-  0% { transform: translate(470px, -25px) scale(0.58) scaleX(-1); opacity: 0; }
-  10% { opacity: 0.92; }
-  85% { opacity: 0.92; }
-  100% { transform: translate(-50px, 45px) scale(0.75) scaleX(-1); opacity: 0; }
+  0% {
+    transform: translate(470px, -25px) scale(0.58) scaleX(-1);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.92;
+  }
+
+  85% {
+    opacity: 0.92;
+  }
+
+  100% {
+    transform: translate(-50px, 45px) scale(0.75) scaleX(-1);
+    opacity: 0;
+  }
 }
 
 @keyframes craneFlight3 {
-  0% { transform: translate(-50px, 20px) scale(0.52); opacity: 0; }
-  12% { opacity: 0.90; }
-  82% { opacity: 0.90; }
-  100% { transform: translate(470px, -20px) scale(0.78); opacity: 0; }
+  0% {
+    transform: translate(-50px, 20px) scale(0.52);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0.90;
+  }
+
+  82% {
+    opacity: 0.90;
+  }
+
+  100% {
+    transform: translate(470px, -20px) scale(0.78);
+    opacity: 0;
+  }
 }
 
 /* Falling Sacred Lotus Petals & Floating Golden Stardust Container */
@@ -300,8 +382,15 @@ body {
     transform: translateY(-25px) translateX(0) rotate(0deg) scale(0.75);
     opacity: 0;
   }
-  15% { opacity: 0.90; }
-  85% { opacity: 0.90; }
+
+  15% {
+    opacity: 0.90;
+  }
+
+  85% {
+    opacity: 0.90;
+  }
+
   100% {
     transform: translateY(105vh) translateX(65px) rotate(420deg) scale(1.05);
     opacity: 0;
@@ -313,8 +402,15 @@ body {
     transform: translateY(105vh) translateX(0) scale(0.5);
     opacity: 0;
   }
-  20% { opacity: 0.92; }
-  80% { opacity: 0.92; }
+
+  20% {
+    opacity: 0.92;
+  }
+
+  80% {
+    opacity: 0.92;
+  }
+
   100% {
     transform: translateY(-25px) translateX(-45px) scale(1.25);
     opacity: 0;
@@ -494,10 +590,13 @@ body {
 }
 
 @keyframes pulseLiveDot {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(0.85);
     opacity: 0.8;
   }
+
   50% {
     transform: scale(1.2);
     opacity: 1;
@@ -721,14 +820,17 @@ body {
     opacity: 0;
     filter: brightness(2) blur(3px);
   }
+
   65% {
     transform: translateX(-50%) translateY(2px) scale(1.06);
     opacity: 1;
     filter: brightness(1.2) blur(0);
   }
+
   85% {
     transform: translateX(-50%) translateY(-1px) scale(0.985);
   }
+
   100% {
     transform: translateX(-50%) translateY(0) scale(1);
     opacity: 1;
@@ -737,7 +839,9 @@ body {
 }
 
 @keyframes followerBannerBreath {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(-50%) translateY(0) scale(1);
     box-shadow:
       0 0 22px rgba(255, 215, 0, 0.60),
@@ -745,6 +849,7 @@ body {
       0 8px 24px rgba(0, 0, 0, 0.65),
       inset 0 0 10px rgba(255, 215, 0, 0.35);
   }
+
   50% {
     transform: translateX(-50%) translateY(-2px) scale(1.02);
     box-shadow:
@@ -785,11 +890,10 @@ body {
   width: 70%;
   height: 160%;
   background: linear-gradient(115deg,
-    transparent 15%,
-    rgba(255, 255, 255, 0.25) 45%,
-    rgba(255, 248, 200, 0.65) 55%,
-    transparent 85%
-  );
+      transparent 15%,
+      rgba(255, 255, 255, 0.25) 45%,
+      rgba(255, 248, 200, 0.65) 55%,
+      transparent 85%);
   transform: skewX(-22deg);
   animation: bannerShimmerSweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
@@ -1053,8 +1157,14 @@ body {
 }
 
 @keyframes dragonShimmerSweep {
-  0% { left: -120%; }
-  50%, 100% { left: 180%; }
+  0% {
+    left: -120%;
+  }
+
+  50%,
+  100% {
+    left: 180%;
+  }
 }
 
 .supreme-left {
@@ -1799,8 +1909,17 @@ body {
 }
 
 @keyframes tickerDotBlink {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.3; transform: scale(0.8); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
 }
 
 .sadhu-recent-ticker .ticker-text {
@@ -1853,7 +1972,8 @@ body {
   border-color: rgba(205, 127, 50, 0.35);
 }
 
-.sadhu-row.rank-4, .sadhu-row.rank-5 {
+.sadhu-row.rank-4,
+.sadhu-row.rank-5 {
   background: rgba(20, 8, 5, 0.18);
   border-color: rgba(255, 215, 0, 0.25);
 }
@@ -1869,10 +1989,12 @@ body {
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.85);
     transform: scale(1.02);
   }
+
   50% {
     background: linear-gradient(90deg, rgba(160, 40, 20, 0.85), rgba(80, 20, 10, 0.75));
     border-color: #ffd700;
   }
+
   100% {
     transform: scale(1);
   }
@@ -2283,14 +2405,17 @@ body {
     opacity: 0;
     filter: brightness(2) blur(3px);
   }
+
   62% {
     transform: translateX(-50%) translateY(3px) scale(1.06);
     opacity: 1;
     filter: brightness(1.2) blur(0);
   }
+
   84% {
     transform: translateX(-50%) translateY(-1px) scale(0.985);
   }
+
   100% {
     transform: translateX(-50%) translateY(0) scale(1);
     opacity: 1;
@@ -2299,10 +2424,13 @@ body {
 }
 
 @keyframes celestialBannerBreath {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(-50%) translateY(0) scale(1);
     filter: brightness(1);
   }
+
   50% {
     transform: translateX(-50%) translateY(-2px) scale(1.015);
     filter: brightness(1.08);
@@ -2329,11 +2457,9 @@ body {
   transform: translate(-50%, -50%);
   width: 140%;
   height: 240%;
-  background: repeating-conic-gradient(
-    from 0deg,
-    rgba(255, 235, 120, 0.16) 0deg 12deg,
-    transparent 12deg 24deg
-  );
+  background: repeating-conic-gradient(from 0deg,
+      rgba(255, 235, 120, 0.16) 0deg 12deg,
+      transparent 12deg 24deg);
   border-radius: 50%;
   pointer-events: none;
   z-index: -2;
@@ -2359,12 +2485,11 @@ body {
   width: 75%;
   height: 160%;
   background: linear-gradient(115deg,
-    transparent 15%,
-    rgba(255, 255, 255, 0.20) 38%,
-    rgba(255, 244, 160, 0.65) 50%,
-    rgba(255, 255, 255, 0.20) 62%,
-    transparent 85%
-  );
+      transparent 15%,
+      rgba(255, 255, 255, 0.20) 38%,
+      rgba(255, 244, 160, 0.65) 50%,
+      rgba(255, 255, 255, 0.20) 62%,
+      transparent 85%);
   transform: skewX(-20deg);
   animation: bannerShimmerSweep 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
@@ -2446,12 +2571,15 @@ body {
     transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
     opacity: 0;
   }
+
   20% {
     opacity: 1;
   }
+
   75% {
     opacity: 0.95;
   }
+
   100% {
     transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, -28px))) scale(var(--sc, 1.15)) rotate(var(--rot, 90deg));
     opacity: 0;
@@ -2484,8 +2612,8 @@ body {
   position: absolute;
   inset: -14px;
   background: repeating-conic-gradient(from 0deg,
-    rgba(255, 215, 0, 0.45) 0deg 15deg,
-    transparent 15deg 30deg);
+      rgba(255, 215, 0, 0.45) 0deg 15deg,
+      transparent 15deg 30deg);
   border-radius: 50%;
   pointer-events: none;
   animation: spinSacredHalo 8s linear infinite;
@@ -2655,11 +2783,13 @@ body {
     transform: translate(-50%, -46%) scale(0.88);
     filter: drop-shadow(0 0 45px rgba(255, 215, 0, 0.95)) blur(3px);
   }
+
   65% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1.03);
     filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.75)) blur(0);
   }
+
   100% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
@@ -2805,24 +2935,28 @@ body {
   border-style: solid;
   z-index: 3;
 }
+
 .seamsi-sheet-corner.corner-tl {
   top: 7px;
   left: 7px;
   border-width: 1.8px 0 0 1.8px;
   border-top-left-radius: 5px;
 }
+
 .seamsi-sheet-corner.corner-tr {
   top: 7px;
   right: 7px;
   border-width: 1.8px 1.8px 0 0;
   border-top-right-radius: 5px;
 }
+
 .seamsi-sheet-corner.corner-bl {
   bottom: 7px;
   left: 7px;
   border-width: 0 0 1.8px 1.8px;
   border-bottom-left-radius: 5px;
 }
+
 .seamsi-sheet-corner.corner-br {
   bottom: 7px;
   right: 7px;
@@ -3010,11 +3144,13 @@ body {
     transform: translate(-50%, -44%) scale(0.84);
     filter: brightness(2);
   }
+
   65% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1.06);
     filter: brightness(1.2);
   }
+
   100% {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
@@ -3085,12 +3221,10 @@ body {
   left: -120%;
   width: 70%;
   height: 180%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.35) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 100%);
   transform: rotate(24deg);
   animation: seamsiPopupShimmerSweep 3.0s ease-in-out infinite;
 }
@@ -3181,10 +3315,12 @@ body {
     transform: scale(0.86);
     filter: brightness(2) drop-shadow(0 0 20px #ffd700);
   }
+
   50% {
     transform: scale(1.18);
     filter: brightness(1.5) drop-shadow(0 0 32px #fff);
   }
+
   100% {
     transform: scale(1);
     filter: brightness(1);
@@ -3239,12 +3375,15 @@ body {
     transform: translate(0, 0) scale(0.2);
     opacity: 0;
   }
+
   25% {
     opacity: 1;
   }
+
   80% {
     opacity: 0.95;
   }
+
   100% {
     transform: translate(var(--sx, 0px), var(--sy, -24px)) scale(1.20);
     opacity: 0;
@@ -3915,38 +4054,116 @@ body {
 }
 
 @keyframes hfxScreenLife {
-  0% { opacity: 0; }
-  7% { opacity: 1; }
-  68% { opacity: 0.86; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+
+  7% {
+    opacity: 1;
+  }
+
+  68% {
+    opacity: 0.86;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
+
 @keyframes hfxGlowPulse {
-  from { opacity: 0.72; transform: scale(0.985); }
-  to { opacity: 1; transform: scale(1.03); }
+  from {
+    opacity: 0.72;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.03);
+  }
 }
+
 @keyframes hfxRaysSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
+
 @keyframes hfxShine {
-  0% { left: -40%; }
-  70%, 100% { left: 130%; }
+  0% {
+    left: -40%;
+  }
+
+  70%,
+  100% {
+    left: 130%;
+  }
 }
 
 /* สีประจำของขวัญแต่ละระดับ (c1 = แสงหลัก, c2 = แสงขอบ) */
-.hfx-incense          { --hfx-c1: 255, 200, 110; --hfx-c2: 255, 140, 40; }
-.hfx-lotus            { --hfx-c1: 255, 160, 205; --hfx-c2: 255, 120, 170; }
-.hfx-flowers          { --hfx-c1: 255, 150, 190; --hfx-c2: 255, 90, 140; }
-.hfx-golden_bell      { --hfx-c1: 255, 224, 110; --hfx-c2: 255, 180, 40; }
-.hfx-crystal_fountain { --hfx-c1: 160, 220, 255; --hfx-c2: 150, 140, 255; }
-.hfx-royal_carriage   { --hfx-c1: 255, 215, 90;  --hfx-c2: 255, 80, 60; }
-.hfx-fireworks        { --hfx-c1: 255, 150, 200; --hfx-c2: 150, 170, 255; }
-.hfx-castle           { --hfx-c1: 255, 238, 170; --hfx-c2: 255, 200, 90; }
-.hfx-dragon           { --hfx-c1: 255, 205, 70;  --hfx-c2: 255, 110, 20; }
-.hfx-seamsi           { --hfx-c1: 150, 255, 200; --hfx-c2: 255, 210, 80; }
+.hfx-incense {
+  --hfx-c1: 255, 200, 110;
+  --hfx-c2: 255, 140, 40;
+}
 
-.hfx-dragon .hfx-rays, .hfx-castle .hfx-rays { background: repeating-conic-gradient(from 0deg at 50% 36%, rgba(var(--hfx-c1), 0.20) 0deg 4deg, transparent 4deg 10deg); animation-duration: 18s; }
-.hfx-dragon .hfx-edge { box-shadow: inset 0 0 110px 16px rgba(var(--hfx-c2), 0.48), inset 0 0 240px 30px rgba(var(--hfx-c1), 0.2); }
+.hfx-lotus {
+  --hfx-c1: 255, 160, 205;
+  --hfx-c2: 255, 120, 170;
+}
+
+.hfx-flowers {
+  --hfx-c1: 255, 150, 190;
+  --hfx-c2: 255, 90, 140;
+}
+
+.hfx-golden_bell {
+  --hfx-c1: 255, 224, 110;
+  --hfx-c2: 255, 180, 40;
+}
+
+.hfx-crystal_fountain {
+  --hfx-c1: 160, 220, 255;
+  --hfx-c2: 150, 140, 255;
+}
+
+.hfx-royal_carriage {
+  --hfx-c1: 255, 215, 90;
+  --hfx-c2: 255, 80, 60;
+}
+
+.hfx-fireworks {
+  --hfx-c1: 255, 150, 200;
+  --hfx-c2: 150, 170, 255;
+}
+
+.hfx-castle {
+  --hfx-c1: 255, 238, 170;
+  --hfx-c2: 255, 200, 90;
+}
+
+.hfx-dragon {
+  --hfx-c1: 255, 205, 70;
+  --hfx-c2: 255, 110, 20;
+}
+
+.hfx-seamsi {
+  --hfx-c1: 150, 255, 200;
+  --hfx-c2: 255, 210, 80;
+}
+
+.hfx-dragon .hfx-rays,
+.hfx-castle .hfx-rays {
+  background: repeating-conic-gradient(from 0deg at 50% 36%, rgba(var(--hfx-c1), 0.20) 0deg 4deg, transparent 4deg 10deg);
+  animation-duration: 18s;
+}
+
+.hfx-dragon .hfx-edge {
+  box-shadow: inset 0 0 110px 16px rgba(var(--hfx-c2), 0.48), inset 0 0 240px 30px rgba(var(--hfx-c1), 0.2);
+}
 
 /* ── ป้ายประกาศของขวัญ: ดีเทลเพิ่ม (ประกายดาวระยิบ + กลีบบัวรอบเหรียญของขวัญ) ── */
 .effect-banner::before {
@@ -3965,9 +4182,17 @@ body {
     radial-gradient(circle at 70% 96%, rgba(255, 236, 150, 0.9) 0 1.3px, transparent 2.3px);
   animation: hfxBannerTwinkle 1.7s ease-in-out infinite alternate;
 }
+
 @keyframes hfxBannerTwinkle {
-  from { opacity: 0.35; transform: scale(0.985); }
-  to { opacity: 1; transform: scale(1.015); }
+  from {
+    opacity: 0.35;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.015);
+  }
 }
 
 .effect-banner .effect-icon-badge::after {
@@ -3981,6 +4206,7 @@ body {
   mix-blend-mode: screen;
   animation: spinSacredHalo 3.4s linear infinite;
 }
+
 .effect-banner .effect-icon-img {
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 8px rgba(255, 225, 80, 0.9)) drop-shadow(0 0 16px rgba(255, 190, 60, 0.55));
 }
@@ -4002,10 +4228,46 @@ body {
   --hv-carpet-deep: #4a0710;
 }
 
-@keyframes hvRaysSpin { to { transform: rotate(360deg); } }
-@keyframes hvFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -3px; } }
-@keyframes hvSheen { 0% { transform: translateX(-130%) skewX(-20deg); } 55%, 100% { transform: translateX(260%) skewX(-20deg); } }
-@keyframes hvTwinkle { from { opacity: .35; transform: scale(.985); } to { opacity: 1; transform: scale(1.02); } }
+@keyframes hvRaysSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes hvFloat {
+
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+@keyframes hvSheen {
+  0% {
+    transform: translateX(-130%) skewX(-20deg);
+  }
+
+  55%,
+  100% {
+    transform: translateX(260%) skewX(-20deg);
+  }
+}
+
+@keyframes hvTwinkle {
+  from {
+    opacity: .35;
+    transform: scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
 
 /* ── 1) ป้ายประกาศ: เทวดานำของขวัญลงมาจากฟากฟ้า ───────────────────── */
 .effect-banner {
@@ -4023,22 +4285,29 @@ body {
     inset 0 0 16px rgba(255, 236, 160, 0.3),
     inset 0 1.5px 2px rgba(255, 252, 225, 0.75);
 }
+
 .effect-banner::after {
   border: 1px solid rgba(255, 243, 184, 0.6);
 }
-.effect-banner.tier-royal  { border-color: var(--hv-gold-hi); }
+
+.effect-banner.tier-royal {
+  border-color: var(--hv-gold-hi);
+}
+
 .effect-banner.tier-legend {
   background:
     radial-gradient(ellipse 60% 120% at 50% -30%, rgba(255, 230, 245, 0.5) 0%, transparent 70%),
     linear-gradient(135deg, rgba(170, 26, 88, 0.54) 0%, rgba(100, 18, 90, 0.54) 55%, rgba(44, 8, 52, 0.56) 100%);
   box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.55), 0 0 34px rgba(255, 216, 107, 0.9), 0 0 74px rgba(255, 130, 200, 0.55), 0 10px 28px rgba(60, 10, 40, 0.55), inset 0 0 18px rgba(255, 220, 240, 0.35), inset 0 1.5px 3px rgba(255, 255, 235, 0.8);
 }
+
 .effect-banner.tier-seamsi {
   background:
     radial-gradient(ellipse 60% 120% at 50% -30%, rgba(220, 255, 238, 0.5) 0%, transparent 70%),
     linear-gradient(135deg, rgba(14, 120, 84, 0.54) 0%, rgba(110, 22, 24, 0.54) 55%, rgba(44, 8, 10, 0.56) 100%);
   box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.55), 0 0 34px rgba(63, 209, 163, 0.8), 0 0 68px rgba(255, 216, 107, 0.6), 0 10px 28px rgba(0, 40, 20, 0.5), inset 0 0 18px rgba(160, 255, 220, 0.35), inset 0 1.5px 3px rgba(255, 255, 225, 0.8);
 }
+
 .effect-banner.tier-dragon {
   box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.65), 0 0 44px rgba(255, 216, 107, 1), 0 0 90px rgba(255, 130, 40, 0.7), 0 12px 32px rgba(80, 10, 0, 0.6), inset 0 0 24px rgba(255, 225, 120, 0.55), inset 0 2px 3px rgba(255, 255, 240, 0.95);
 }
@@ -4077,16 +4346,44 @@ body {
     hvBannerDescend 0.8s cubic-bezier(0.22, 1.2, 0.36, 1) both,
     hvBannerBreath 2.8s ease-in-out 0.8s infinite;
 }
+
 @keyframes hvBannerDescend {
-  0%   { opacity: 0; transform: translateX(-50%) translateY(-46px) scale(0.6); filter: brightness(2.6) blur(5px); }
-  45%  { opacity: 1; transform: translateX(-50%) translateY(7px) scale(1.07); filter: brightness(1.5) blur(0); }
-  70%  { transform: translateX(-50%) translateY(-2px) scale(0.985); filter: brightness(1.15); }
-  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); filter: brightness(1); }
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-46px) scale(0.6);
+    filter: brightness(2.6) blur(5px);
+  }
+
+  45% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(7px) scale(1.07);
+    filter: brightness(1.5) blur(0);
+  }
+
+  70% {
+    transform: translateX(-50%) translateY(-2px) scale(0.985);
+    filter: brightness(1.15);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    filter: brightness(1);
+  }
 }
+
 @keyframes hvBannerBreath {
-  0%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(255, 216, 107, 0)); }
-  50%      { filter: brightness(1.12) drop-shadow(0 0 10px rgba(255, 216, 107, 0.7)); }
+
+  0%,
+  100% {
+    filter: brightness(1) drop-shadow(0 0 0 rgba(255, 216, 107, 0));
+  }
+
+  50% {
+    filter: brightness(1.12) drop-shadow(0 0 10px rgba(255, 216, 107, 0.7));
+  }
 }
+
 .effect-banner.hidden {
   transform: translateX(-50%) translateY(-26px) scale(0.86);
   filter: brightness(1.8) blur(3px);
@@ -4112,10 +4409,25 @@ body {
 .seamsi-fortune-card.active {
   animation: hvScrollUnfurl 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
 @keyframes hvScrollUnfurl {
-  0%   { opacity: 0; transform: translate(-50%, -56%) scale(0.86, 0.12); filter: brightness(2.4); }
-  55%  { opacity: 1; transform: translate(-50%, -50%) scale(1.03, 1.03); filter: brightness(1.45); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -56%) scale(0.86, 0.12);
+    filter: brightness(2.4);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.03, 1.03);
+    filter: brightness(1.45);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: brightness(1);
+  }
 }
 
 .seamsi-parchment-frame {
@@ -4131,6 +4443,7 @@ body {
     inset 0 0 12px rgba(0, 0, 0, 0.4);
   animation: hvFloat 4.6s ease-in-out 0.8s infinite;
 }
+
 /* ลายกุญแจจีนสีทองบนขอบแดง (เหมือนขอบพรมและราวหินอ่อน) */
 .seamsi-parchment-frame::before,
 .seamsi-parchment-frame::after {
@@ -4144,8 +4457,14 @@ body {
     repeating-linear-gradient(90deg, var(--hv-gold) 0 5px, transparent 5px 8px, var(--hv-gold) 8px 10px, transparent 10px 14px);
   opacity: 0.85;
 }
-.seamsi-parchment-frame::before { top: 6px; }
-.seamsi-parchment-frame::after  { bottom: 6px; }
+
+.seamsi-parchment-frame::before {
+  top: 6px;
+}
+
+.seamsi-parchment-frame::after {
+  bottom: 6px;
+}
 
 .seamsi-parchment-sheet {
   background:
@@ -4157,18 +4476,27 @@ body {
   border: 1.5px solid #f4d98f;
   box-shadow: inset 0 0 26px rgba(217, 154, 30, 0.28), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
+
 .seamsi-parchment-sheet::after {
   content: '';
   position: absolute;
-  top: 0; bottom: 0; left: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 38%;
   pointer-events: none;
   z-index: 3;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
   animation: hvSheen 4.2s ease-in-out 1s infinite;
 }
-.seamsi-inner-border { border: 1.2px solid rgba(217, 154, 30, 0.7); }
-.seamsi-sheet-corner { border-color: #d99a1e; }
+
+.seamsi-inner-border {
+  border: 1.2px solid rgba(217, 154, 30, 0.7);
+}
+
+.seamsi-sheet-corner {
+  border-color: #d99a1e;
+}
 
 /* รัศมีเหนือเศียรแบบรูปพระ: วงทองหมุนช้า */
 .seamsi-title-halo {
@@ -4190,7 +4518,12 @@ body {
   box-shadow: 0 0 10px rgba(255, 216, 107, 0.7);
   text-shadow: 0 1px 2px rgba(60, 0, 0, 0.9);
 }
-.seamsi-main-title { color: #6b1208; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 14px rgba(255, 216, 107, 0.9); }
+
+.seamsi-main-title {
+  color: #6b1208;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 14px rgba(255, 216, 107, 0.9);
+}
+
 .seamsi-stick-title {
   background: linear-gradient(180deg, #b3220f 0%, #7a1208 45%, #4a0a05 100%);
   -webkit-background-clip: text;
@@ -4200,7 +4533,11 @@ body {
   text-shadow: none;
   filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 0 10px rgba(255, 216, 107, 0.85));
 }
-.seamsi-verse-text { color: #3a1306; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7); }
+
+.seamsi-verse-text {
+  color: #3a1306;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
 
 .btn-seamsi-dismiss,
 .btn-lucky-dismiss {
@@ -4217,11 +4554,27 @@ body {
 .seamsi-lucky-card.active {
   animation: hvLuckyRise 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
+
 @keyframes hvLuckyRise {
-  0%   { opacity: 0; transform: translate(-50%, -38%) scale(0.7); filter: brightness(2.2); }
-  60%  { opacity: 1; transform: translate(-50%, -52%) scale(1.05); filter: brightness(1.4); }
-  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -38%) scale(0.7);
+    filter: brightness(2.2);
+  }
+
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -52%) scale(1.05);
+    filter: brightness(1.4);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: brightness(1);
+  }
 }
+
 .seamsi-lucky-body {
   position: relative;
   overflow: hidden;
@@ -4233,11 +4586,14 @@ body {
   box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.6), 0 0 28px rgba(255, 216, 107, 0.8), 0 0 62px rgba(255, 190, 90, 0.4), 0 12px 28px rgba(60, 10, 0, 0.5), inset 0 0 18px rgba(0, 0, 0, 0.4);
   animation: hvFloat 4.6s ease-in-out 0.7s infinite;
 }
+
 .seamsi-lucky-body::before {
   content: '';
   position: absolute;
-  left: 50%; top: 48%;
-  width: 150%; aspect-ratio: 1;
+  left: 50%;
+  top: 48%;
+  width: 150%;
+  aspect-ratio: 1;
   margin: -75% 0 0 -75%;
   pointer-events: none;
   background: repeating-conic-gradient(from 0deg, rgba(255, 230, 140, 0.2) 0deg 5deg, transparent 5deg 15deg);
@@ -4245,7 +4601,12 @@ body {
   mask-image: radial-gradient(circle, #000 20%, transparent 62%);
   animation: hvRaysSpin 24s linear infinite;
 }
-.seamsi-lucky-body > * { position: relative; z-index: 1; }
+
+.seamsi-lucky-body>* {
+  position: relative;
+  z-index: 1;
+}
+
 .seamsi-lucky-header {
   background: linear-gradient(180deg, #fffbe0 0%, #ffd86b 70%, #f0a92a 100%);
   -webkit-background-clip: text;
@@ -4255,7 +4616,10 @@ body {
   text-shadow: none;
   filter: drop-shadow(0 2px 3px rgba(60, 0, 0, 0.9)) drop-shadow(0 0 10px rgba(255, 216, 107, 0.7));
 }
-.seamsi-lucky-donor { color: #fff3d0; }
+
+.seamsi-lucky-donor {
+  color: #fff3d0;
+}
 
 .lucky-digit-card {
   position: relative;
@@ -4270,31 +4634,68 @@ body {
     inset 0 2px 4px rgba(255, 255, 255, 0.95),
     inset 0 -3px 6px rgba(168, 92, 18, 0.5);
 }
+
 .lucky-digit-card::after {
   content: '';
   position: absolute;
-  top: 0; bottom: 0; left: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 45%;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
   animation: hvSheen 3.2s ease-in-out infinite;
 }
-.lucky-digit-card:nth-child(2)::after { animation-delay: 0.35s; }
-.lucky-digit-card:nth-child(3)::after { animation-delay: 0.7s; }
-.lucky-digit-val { color: #7a0f14; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 8px rgba(255, 255, 255, 0.5); }
-.lucky-digit-card.digit-locked { animation: hvDigitLock 0.5s ease-out; }
+
+.lucky-digit-card:nth-child(2)::after {
+  animation-delay: 0.35s;
+}
+
+.lucky-digit-card:nth-child(3)::after {
+  animation-delay: 0.7s;
+}
+
+.lucky-digit-val {
+  color: #7a0f14;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7), 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+.lucky-digit-card.digit-locked {
+  animation: hvDigitLock 0.5s ease-out;
+}
+
 @keyframes hvDigitLock {
-  0%   { transform: scale(0.85); filter: brightness(1); }
-  35%  { transform: scale(1.18); filter: brightness(1.7); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.85), 0 0 34px rgba(255, 240, 160, 1); }
-  100% { transform: scale(1); filter: brightness(1); }
+  0% {
+    transform: scale(0.85);
+    filter: brightness(1);
+  }
+
+  35% {
+    transform: scale(1.18);
+    filter: brightness(1.7);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.85), 0 0 34px rgba(255, 240, 160, 1);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
 }
 
 .seamsi-sparkle-dot {
   background: radial-gradient(circle, #ffffff 0%, #ffe58a 45%, #f2b73a 100%);
   box-shadow: 0 0 8px rgba(255, 246, 200, 1), 0 0 18px rgba(255, 200, 80, 0.85);
 }
+
 /* ประกายที่กระจายออก: ผสมสีชมพูบัวและเขียวหยกให้ดูเป็นกลีบไม้สวรรค์ */
-.seamsi-sparkle-dot:nth-child(3n)   { background: radial-gradient(circle, #fff 0%, #ffc2d9 50%, #ff8fb8 100%); box-shadow: 0 0 8px rgba(255, 160, 200, 0.95); }
-.seamsi-sparkle-dot:nth-child(5n+1) { background: radial-gradient(circle, #fff 0%, #b8ffe6 50%, #3fd1a3 100%); box-shadow: 0 0 8px rgba(63, 209, 163, 0.9); }
+.seamsi-sparkle-dot:nth-child(3n) {
+  background: radial-gradient(circle, #fff 0%, #ffc2d9 50%, #ff8fb8 100%);
+  box-shadow: 0 0 8px rgba(255, 160, 200, 0.95);
+}
+
+.seamsi-sparkle-dot:nth-child(5n+1) {
+  background: radial-gradient(circle, #fff 0%, #b8ffe6 50%, #3fd1a3 100%);
+  box-shadow: 0 0 8px rgba(63, 209, 163, 0.9);
+}
 
 /* ── 4) ป๊อปอัพเสี่ยงเซียมซีมหาโชค ───────────────────────────────── */
 .seamsi-highlight-popup {
@@ -4308,24 +4709,56 @@ body {
   box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.5), 0 4px 14px rgba(60, 10, 0, 0.5), 0 0 16px rgba(255, 216, 107, 0.65), inset 0 0 10px rgba(255, 236, 160, 0.3);
   animation: hvPopupAttention 4.2s ease-in-out infinite;
 }
+
 .seamsi-highlight-popup::before {
   border-radius: 10px;
   border: 1px dotted rgba(255, 243, 184, 0.7);
 }
+
 .seamsi-highlight-popup:hover {
   box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.7), 0 7px 18px rgba(60, 10, 0, 0.5), 0 0 26px rgba(255, 216, 107, 0.95), inset 0 0 14px rgba(255, 240, 180, 0.6);
 }
-.seamsi-highlight-popup.seamsi-popup-burst { animation: hvPopupBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1); }
+
+.seamsi-highlight-popup.seamsi-popup-burst {
+  animation: hvPopupBurst 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 @keyframes hvPopupAttention {
-  0%, 74%, 100% { transform: translateY(0) scale(1); }
-  82% { transform: translateY(-3px) scale(1.05); box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.8), 0 7px 18px rgba(60, 10, 0, 0.5), 0 0 28px rgba(255, 230, 120, 1), 0 0 44px rgba(255, 159, 194, 0.55), inset 0 0 14px rgba(255, 245, 200, 0.7); }
-  91% { transform: translateY(-1px) scale(1.015); }
+
+  0%,
+  74%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  82% {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 0 1px rgba(255, 246, 220, 0.8), 0 7px 18px rgba(60, 10, 0, 0.5), 0 0 28px rgba(255, 230, 120, 1), 0 0 44px rgba(255, 159, 194, 0.55), inset 0 0 14px rgba(255, 245, 200, 0.7);
+  }
+
+  91% {
+    transform: translateY(-1px) scale(1.015);
+  }
 }
+
 @keyframes hvPopupBurst {
-  0%   { transform: scale(0.94); filter: brightness(1); }
-  35%  { transform: scale(1.12); filter: brightness(1.6); box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8), 0 0 34px rgba(255, 240, 150, 1), 0 0 56px rgba(255, 159, 194, 0.7); }
-  100% { transform: scale(1); filter: brightness(1); }
+  0% {
+    transform: scale(0.94);
+    filter: brightness(1);
+  }
+
+  35% {
+    transform: scale(1.12);
+    filter: brightness(1.6);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8), 0 0 34px rgba(255, 240, 150, 1), 0 0 56px rgba(255, 159, 194, 0.7);
+  }
+
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
 }
+
 .seamsi-popup-ribbon {
   background: linear-gradient(90deg, #f2b73a 0%, #fff3b8 50%, #f2b73a 100%);
   color: #5a0710;
@@ -4334,10 +4767,12 @@ body {
   letter-spacing: 0.3px;
   box-shadow: 0 2px 6px rgba(60, 10, 0, 0.6), 0 0 10px rgba(255, 230, 120, 0.95);
 }
+
 .seamsi-popup-ring {
   background: radial-gradient(circle, rgba(255, 245, 190, 0.55) 0%, rgba(110, 12, 24, 0.92) 78%);
   box-shadow: 0 0 10px rgba(255, 230, 120, 0.9), 0 0 0 1px rgba(63, 209, 163, 0.6), inset 0 0 6px rgba(255, 230, 120, 0.55);
 }
+
 .seamsi-popup-title {
   font-size: 12.5px;
   font-weight: 900;
@@ -4345,6 +4780,7 @@ body {
   -webkit-text-fill-color: #fffde6;
   text-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.95), 0 0 4px #000, 0 0 10px rgba(255, 216, 107, 0.95);
 }
+
 .seamsi-popup-sub .sub-pill {
   font-size: 9.2px;
   font-weight: 800;
@@ -4356,8 +4792,23 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .effect-banner.active, .seamsi-fortune-card.active, .seamsi-lucky-card.active { animation-duration: 0.01s; animation-iteration-count: 1; }
-  .effect-banner .effect-aura-backdrop, .seamsi-fortune-card::before, .seamsi-lucky-card::before,
-  .seamsi-title-halo, .seamsi-lucky-body::before, .seamsi-parchment-frame, .seamsi-lucky-body,
-  .seamsi-parchment-sheet::after, .lucky-digit-card::after { animation: none; }
+
+  .effect-banner.active,
+  .seamsi-fortune-card.active,
+  .seamsi-lucky-card.active {
+    animation-duration: 0.01s;
+    animation-iteration-count: 1;
+  }
+
+  .effect-banner .effect-aura-backdrop,
+  .seamsi-fortune-card::before,
+  .seamsi-lucky-card::before,
+  .seamsi-title-halo,
+  .seamsi-lucky-body::before,
+  .seamsi-parchment-frame,
+  .seamsi-lucky-body,
+  .seamsi-parchment-sheet::after,
+  .lucky-digit-card::after {
+    animation: none;
+  }
 }
