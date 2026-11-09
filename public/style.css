@@ -928,447 +928,143 @@ body {
   font-size: 10px;
 }
 
-.gift-guide-list {
-  padding: 3px 3.5px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  max-height: none;
-  overflow: visible;
+/* =====================================================================
+   Bottom Offering Deck (การ์ดถวายสักการะ 2 แถว ตามแบบภาพตัวอย่าง)
+   ===================================================================== */
+.bottom-gift-deck {
+  width: 100%;
+  max-width: 100%;
+  margin-top: auto;
+  margin-bottom: 6px;
+  z-index: 25;
+  pointer-events: auto;
+  user-select: none;
+  box-sizing: border-box;
 }
 
-.gift-guide-list::-webkit-scrollbar {
+.bottom-gift-grid {
+  display: grid;
+  grid-template-rows: repeat(2, 38px);
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 15px) / 4);
+  gap: 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 2px 4px 2px;
+  box-sizing: border-box;
+}
+
+.bottom-gift-grid::-webkit-scrollbar {
   display: none;
 }
 
-.guide-item {
+.bgc-card {
+  scroll-snap-align: start;
   display: flex;
   align-items: center;
-  gap: 3px;
-  background: rgba(20, 8, 5, 0.18);
+  gap: 5px;
+  background: rgba(14, 38, 28, 0.82);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-radius: 5px;
-  padding: 1px 3.5px;
-  border: 1px solid rgba(255, 215, 0, 0.22);
-  min-height: 18px;
-  height: auto;
+  border: 1px solid rgba(52, 114, 88, 0.65);
+  border-radius: 8px;
+  padding: 3px 6px;
   box-sizing: border-box;
-  justify-content: space-between;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   cursor: pointer;
-  user-select: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  min-width: 0;
 }
 
-.guide-item:hover {
-  transform: translateX(-2px) scale(1.02);
+.bgc-card:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: rgba(20, 52, 38, 0.92);
   border-color: #ffd700;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.65);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), 0 0 8px rgba(255, 215, 0, 0.4);
 }
 
-.guide-item:active {
+.bgc-card:active {
   transform: scale(0.97);
 }
 
-.guide-icon {
-  font-size: 11px;
-  line-height: 1;
-  flex-shrink: 0;
-  display: inline-flex;
+.bgc-card.vip-bgc-card {
+  border-color: rgba(255, 215, 0, 0.65);
+  background: linear-gradient(135deg, rgba(20, 52, 38, 0.88), rgba(60, 40, 15, 0.88));
+}
+
+.bgc-card.supreme-bgc-card {
+  border-color: #ffd700;
+  background: linear-gradient(135deg, rgba(20, 52, 38, 0.90), rgba(120, 20, 40, 0.90));
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.35);
+}
+
+.bgc-left {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 14px;
-  height: 14px;
-}
-
-.gift-tiktok-img {
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
-  vertical-align: middle;
-  display: inline-block;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.65));
-}
-
-.guide-action {
-  font-size: 8.5px;
-  color: #ffffff;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: clip;
-  flex: 1;
-  line-height: 1.15;
-  letter-spacing: -0.2px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
-}
-
-.guide-price {
-  display: none !important;
-}
-
-/* ── Featured Selling-Point Popup: เสี่ยงเซียมซีมหาโชค (Celestial Imperial Jade & Gold Decree) ── */
-.seamsi-highlight-popup {
-  position: relative;
-  width: 100%;
-  margin-top: 6px;
-  margin-bottom: 2px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(168, 28, 20, 0.72) 0%, rgba(100, 16, 12, 0.72) 55%, rgba(46, 8, 5, 0.76) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1.8px solid #ffd700;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.45),
-    0 0 18px rgba(255, 215, 0, 0.55),
-    inset 0 0 10px rgba(255, 215, 0, 0.35),
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.85);
-  box-sizing: border-box;
-  cursor: pointer;
-  user-select: none;
-  overflow: visible;
-  z-index: 24;
-  animation: seamsiPopupAttention 4.2s ease-in-out infinite;
-  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
-}
-
-.seamsi-highlight-popup::before {
-  content: '';
-  position: absolute;
-  inset: 2.5px;
-  border-radius: 9px;
-  border: 1px dashed rgba(255, 235, 140, 0.55);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.seamsi-highlight-popup:hover {
-  transform: translateY(-2.5px) scale(1.035);
-  box-shadow:
-    0 8px 22px rgba(0, 0, 0, 0.45),
-    0 0 26px rgba(255, 225, 80, 0.88),
-    inset 0 0 14px rgba(255, 255, 255, 0.95);
-}
-
-.seamsi-highlight-popup.seamsi-popup-burst {
-  animation: seamsiPopupTriggerBurst 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes seamsiPopupAttention {
-  0%, 74%, 100% {
-    transform: translateY(0) scale(1);
-    box-shadow:
-      0 4px 14px rgba(0, 0, 0, 0.35),
-      0 0 16px rgba(255, 215, 0, 0.50),
-      inset 0 0 10px rgba(255, 215, 0, 0.35);
-  }
-  82% {
-    transform: translateY(-3px) scale(1.045);
-    box-shadow:
-      0 8px 20px rgba(0, 0, 0, 0.45),
-      0 0 28px rgba(255, 230, 90, 0.92),
-      inset 0 0 14px rgba(255, 255, 255, 0.95);
-  }
-  90% {
-    transform: translateY(-1px) scale(1.015);
-  }
-}
-
-@keyframes seamsiPopupTriggerBurst {
-  0% { transform: scale(0.94); }
-  40% {
-    transform: scale(1.10);
-    box-shadow: 0 0 32px rgba(255, 235, 100, 1), 0 0 55px rgba(255, 170, 0, 0.85);
-  }
-  100% { transform: scale(1); }
-}
-
-/* Top Floating Ribbon Pill (ไฮไลท์มหาโชค) */
-.seamsi-popup-ribbon {
-  position: absolute;
-  top: -9px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 9px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #ffb700 0%, #fff8c4 48%, #ffb700 100%);
-  border: 1.2px solid #ffffff;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.65),
-    0 0 12px rgba(255, 215, 0, 0.95),
-    inset 0 1px 1px rgba(255, 255, 255, 0.9);
-  color: #4f080e;
-  font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-size: 9.5px;
-  font-weight: 900;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  z-index: 5;
-}
-
-.seamsi-popup-ribbon .ribbon-spark {
-  font-size: 9px;
-  line-height: 1;
-  animation: seamsiSparkTwinkle 1.5s ease-in-out infinite alternate;
-}
-
-/* Shimmer Light Sweep Inside Popup */
-.seamsi-popup-shimmer {
-  position: absolute;
-  inset: 0;
-  border-radius: 11px;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.seamsi-popup-shimmer::after {
-  content: '';
-  position: absolute;
-  top: -40%;
-  left: -120%;
-  width: 65%;
-  height: 180%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 248, 200, 0.45) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: rotate(24deg);
-  animation: seamsiPopupShimmerSweep 3.2s ease-in-out infinite;
-}
-
-@keyframes seamsiPopupShimmerSweep {
-  0% { left: -120%; }
-  45%, 100% { left: 165%; }
-}
-
-/* Corner Floating Sparkle Stars */
-.seamsi-popup-sparkles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 4;
-}
-
-.seamsi-popup-sparkles .sp-star {
-  position: absolute;
-  color: #fff6a8;
-  font-size: 9px;
-  line-height: 1;
-  text-shadow: 0 0 6px #ffd700;
-  animation: seamsiSparkTwinkle 1.8s ease-in-out infinite alternate;
-}
-
-.seamsi-popup-sparkles .sp-1 {
-  top: 4px;
-  right: 5px;
-  animation-delay: 0s;
-}
-
-.seamsi-popup-sparkles .sp-2 {
-  bottom: 4px;
-  left: 31px;
-  font-size: 8px;
-  animation-delay: 0.6s;
-}
-
-.seamsi-popup-sparkles .sp-3 {
-  top: 4px;
-  left: 4px;
-  font-size: 7.5px;
-  animation-delay: 1.1s;
-}
-
-@keyframes seamsiSparkTwinkle {
-  0% { opacity: 0.35; transform: scale(0.75) rotate(-10deg); }
-  100% { opacity: 1; transform: scale(1.20) rotate(12deg); }
-}
-
-/* Inner Content Layout */
-.seamsi-popup-inner {
-  position: relative;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 6px 6px 6px;
-}
-
-/* Left Pedestal Icon with Rotating Golden Sunburst & Shaker Wiggle */
-.seamsi-popup-icon-wrap {
-  position: relative;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 1px;
   flex-shrink: 0;
-}
-
-.seamsi-popup-halo {
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    rgba(255, 215, 0, 0.0) 0deg,
-    rgba(255, 235, 120, 0.65) 30deg,
-    rgba(255, 215, 0, 0.0) 60deg,
-    rgba(255, 235, 120, 0.65) 90deg,
-    rgba(255, 215, 0, 0.0) 120deg,
-    rgba(255, 235, 120, 0.65) 150deg,
-    rgba(255, 215, 0, 0.0) 180deg,
-    rgba(255, 235, 120, 0.65) 210deg,
-    rgba(255, 215, 0, 0.0) 240deg,
-    rgba(255, 235, 120, 0.65) 270deg,
-    rgba(255, 215, 0, 0.0) 300deg,
-    rgba(255, 235, 120, 0.65) 330deg,
-    rgba(255, 215, 0, 0.0) 360deg
-  );
-  filter: blur(1.5px);
-  animation: seamsiHaloSpin 7s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes seamsiHaloSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.seamsi-popup-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 240, 150, 0.50) 0%, rgba(120, 16, 24, 0.95) 78%);
-  border: 1.6px solid #ffd700;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.82), inset 0 0 6px rgba(255, 215, 0, 0.55);
-  pointer-events: none;
-}
-
-.seamsi-popup-img {
-  position: relative;
-  z-index: 2;
   width: 25px;
-  height: 25px;
+}
+
+.bgc-img {
+  width: 22px;
+  height: 22px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 6px rgba(255, 220, 80, 0.85));
-  animation: seamsiGiftShake 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.75));
 }
 
-.seamsi-popup-fallback {
-  position: relative;
-  z-index: 2;
-  font-size: 20px;
-  line-height: 1;
-}
-
-@keyframes seamsiGiftShake {
-  0%, 65%, 100% { transform: rotate(0deg) scale(1); }
-  72% { transform: rotate(-12deg) scale(1.12); }
-  79% { transform: rotate(12deg) scale(1.14); }
-  86% { transform: rotate(-8deg) scale(1.09); }
-  93% { transform: rotate(6deg) scale(1.05); }
-}
-
-.seamsi-popup-mini-badge {
-  position: absolute;
-  bottom: -2px;
-  right: -3px;
-  z-index: 3;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3d090d, #82111f);
-  border: 1px solid #ffd700;
-  display: flex;
+.bgc-coin-pill {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 8.5px;
+  gap: 1.5px;
   line-height: 1;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
-/* Right Selling-Point Copy */
-.seamsi-popup-content {
+.bgc-coin-icon {
+  font-size: 8px;
+  line-height: 1;
+}
+
+.bgc-coin-val {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #ffd700;
+  font-family: 'Kanit', 'Sarabun', sans-serif;
+  text-shadow: 0 1px 2px #000;
+  line-height: 1;
+}
+
+.bgc-right {
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 2.5px;
-}
-
-.seamsi-popup-title {
-  font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-size: 12.5px;
-  font-weight: 900;
-  color: #fffde6;
-  letter-spacing: 0.2px;
-  line-height: 1.2;
-  white-space: nowrap;
-  text-shadow: 0 1.5px 3px #000, 0 0 4px #000, 0 0 8px rgba(255, 215, 0, 0.95);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.95));
-}
-
-.seamsi-popup-sub {
-  display: flex;
   align-items: center;
+  overflow: hidden;
 }
 
-.seamsi-popup-sub .sub-pill {
-  display: inline-block;
+.bgc-action {
   font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-size: 9.2px;
-  font-weight: 800;
+  font-size: 9.5px;
+  font-weight: 700;
   color: #ffffff;
-  background: linear-gradient(90deg, rgba(225, 29, 72, 0.92), rgba(157, 23, 77, 0.92));
-  border: 1.2px solid #ffd700;
-  border-radius: 999px;
-  padding: 2px 7px;
-  letter-spacing: 0.1px;
-  white-space: nowrap;
-  text-shadow: 0 1px 2px #000;
-  box-shadow: 0 0 8px rgba(225, 29, 72, 0.7);
+  line-height: 1.15;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
+  letter-spacing: -0.2px;
+  word-break: break-word;
+  white-space: normal;
 }
 
-.vip-guide-item {
-  background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(180, 83, 9, 0.25));
-  border-color: rgba(255, 215, 0, 0.65);
-}
-
-.vip-guide-item .guide-action {
-  color: #ffeb3b;
-  font-weight: 800;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
-}
-
-.vip-guide-item .guide-price {
-  color: #ffd700;
-}
-
-.supreme-guide-item {
-  background: linear-gradient(90deg, rgba(225, 29, 72, 0.25), rgba(180, 83, 9, 0.25));
-  border: 1.2px solid rgba(255, 215, 0, 0.65);
-  box-shadow: 0 0 6px rgba(225, 29, 72, 0.35);
-}
-
-.supreme-guide-item .guide-action {
-  color: #ffffff;
-  font-weight: 800;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
-}
-
-.supreme-guide-item .guide-price {
-  color: #ffffff;
-  border-color: #ffd700;
-  background: linear-gradient(135deg, rgba(225, 29, 72, 0.8), rgba(190, 18, 60, 0.8));
-  box-shadow: 0 0 4px rgba(255, 215, 0, 0.60);
+/* Backwards compatibility aliases */
+.gift-guide-list,
+.panel-right-guide,
+.panel-left-guide,
+#panel-gift-guide {
+  display: none !important;
 }
 
 .queue-list {
