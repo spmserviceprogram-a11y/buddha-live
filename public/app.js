@@ -1048,77 +1048,77 @@ class GuanYinDivineVoice {
         if (action.includes('เข้าร่วม') || action.includes('ต้อนรับ') || action.includes('join')) {
           const isGeneric = (cleanSpeakerName === 'กัลยาณมิตร' || cleanSpeakerName === 'ผู้เจริญสติ' || cleanSpeakerName === 'ผู้มีจิตศรัทธา');
           const welcomes = isGeneric ? [
-            `ยินดีต้อนรับทุกท่านสู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ`,
-            `ยินดีต้อนรับทุกท่านมาร่วมจำลองบุญบารมี ขอให้มีแต่ความสุขความเจริญนะคะ`,
-            `ยินดีต้อนรับทุกท่านสู่วิหารจำลอง ขอให้วันนี้เป็นวันที่ดีและพบเจอแต่สิ่งมงคลนะคะ`,
-            `ยินดีต้อนรับสู่แดนธรรมจำลอง ขอให้จิตใจผ่องใส สุขกายสบายใจตลอดวันนะคะ`,
-            `ยินดีต้อนรับทุกท่านเข้ามาพักใจ รับพลังบุญในวิหารจำลองไปด้วยกันนะคะ`
+            `ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ`,
+            `ยินดีต้อนรับทุกท่านมาร่วมบุญในฉากจำลองนี้ ขอให้มีแต่ความสุขนะคะ`,
+            `ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหาร ขอให้พบเจอแต่สิ่งมงคลนะคะ`,
+            `ยินดีต้อนรับสู่ฉากจำลองแดนธรรม ขอให้จิตใจผ่องใส สุขกายสบายใจนะคะ`,
+            `ยินดีต้อนรับทุกท่านเข้ามารับพลังบุญในฉากจำลองวิหารนี้นะคะ`
           ] : [
-            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้มีความสุขนะคะ`,
-            `ยินดีต้อนรับคุณ ${cleanSpeakerName} มาร่วมทำบุญ ขอให้มีแต่ความราบรื่นและโชคดีนะคะ`,
-            `สวัสดีและยินดีต้อนรับคุณ ${cleanSpeakerName} สู่วิหาร ขอให้ชีวิตพบแต่ความสุขนะคะ`,
-            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่วิหาร ขอพระแม่ประทานความสุขกายสบายใจให้นะคะ`,
-            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่แดนธรรม ขอให้มีโชคลาภเงินทองไหลมาเทมานะคะ`,
-            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่วิหาร ขอให้มีวันที่สดใสและเต็มไปด้วยรอยยิ้มนะคะ`,
-            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ครอบครัวสายบุญ ขอให้สมหวังในทุกสิ่งนะคะ`,
-            `ยินดีต้อนรับคุณ ${cleanSpeakerName} เข้ามารับพลังบุญ ขอให้แคล้วคลาดปลอดภัย ร่ำรวยนะคะ`
+            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหารสวรรค์ ขอให้มีความสุขนะคะ`,
+            `ยินดีต้อนรับคุณ ${cleanSpeakerName} มาร่วมทำบุญในฉากจำลองนี้ ขอให้โชคดีนะคะ`,
+            `สวัสดีและยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้สุขใจนะคะ`,
+            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้พบแต่ความสุขนะคะ`,
+            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ฉากจำลองแดนธรรม ขอให้ร่ำรวยเงินทองนะคะ`,
+            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้มีวันที่สดใสนะคะ`,
+            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหารบุญ ขอให้สมหวังนะคะ`,
+            `ยินดีต้อนรับคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้แคล้วคลาดปลอดภัยนะคะ`
           ];
           fallbackText = pickRandom(welcomes);
         } else if (action.includes('ถวาย') || action.includes('ร่วมบุญ') || task.payload?.isGift) {
           const effName = task.payload?.effectName || getGiftEffectName(task.payload?.effectType, task.payload?.giftName || action.replace(/^(ถวาย|ร่วมบุญ)/, ''), task.payload?.coins || 1);
           const giftPhrases = [
-            `ขอบคุณคุณ ${cleanSpeakerName} ที่ร่วมถวาย${effName} ขอให้ร่ำรวย เงินทองไหลมาเทมานะคะ`,
-            `อนุโมทนาบุญคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ขอให้มีโชคลาภก้อนโตนะคะ`,
-            `ขอบคุณคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ขอให้ชีวิตเจริญรุ่งเรือง ปราศจากอุปสรรคนะคะ`,
-            `ขอพระบารมีคุ้มครองคุณ ${cleanSpeakerName} ที่ร่วมถวาย${effName} มีสุขภาพแข็งแรง ร่ำรวยนะคะ`,
-            `สาธุบุญคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ขอให้หน้าที่การงานก้าวหน้า ค้าขายร่ำรวยนะคะ`,
-            `ขอบคุณคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ขอให้ครอบครัวร่มเย็นเป็นสุขนะคะ`,
-            `อนุโมทนาบุญคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ขอให้เปิดรับทรัพย์ใหญ่ เฮงๆ ปังๆ นะคะ`,
-            `ขอบคุณคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ขอให้พบเจอแต่กัลยาณมิตรที่ดีนะคะ`,
-            `สาธุกับคุณ ${cleanSpeakerName} ที่ร่วมถวาย${effName} ขอให้มีพลังใจเปี่ยมล้น โชคดีนะคะ`,
-            `ขอบคุณคุณ ${cleanSpeakerName} ในวิหารแห่งนี้ ขอให้ความดีคุ้มครอง มั่งคั่งมั่นคงยั่งยืนนะคะ`
+            `ขอบคุณคุณ ${cleanSpeakerName} ที่ร่วมถวาย${effName} ในฉากจำลองนี้นะคะ`,
+            `อนุโมทนาบุญคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ในฉากจำลอง ขอให้ร่ำรวยนะคะ`,
+            `ขอบคุณคุณ ${cleanSpeakerName} ถวาย${effName} ในฉากจำลองนี้ ขอให้เงินทองไหลมาเทมานะคะ`,
+            `ขอพรในฉากจำลองนี้ให้คุณ ${cleanSpeakerName} ถวาย${effName} มีสุขภาพแข็งแรงนะคะ`,
+            `สาธุบุญคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ในฉากจำลองนี้ การงานก้าวหน้านะคะ`,
+            `ขอบคุณคุณ ${cleanSpeakerName} ถวาย${effName} ในฉากจำลองนี้ ขอให้ร่มเย็นเป็นสุขนะคะ`,
+            `อนุโมทนาบุญคุณ ${cleanSpeakerName} ถวาย${effName} ในฉากจำลองนี้ ขอให้รับทรัพย์ใหญ่นะคะ`,
+            `ขอบคุณคุณ ${cleanSpeakerName} ร่วมถวาย${effName} ในฉากจำลองวิหารนี้นะคะ`,
+            `สาธุกับคุณ ${cleanSpeakerName} ถวาย${effName} ในฉากจำลองนี้ ขอให้โชคดีนะคะ`,
+            `ขอบคุณคุณ ${cleanSpeakerName} ในฉากจำลองวิหารนี้ ขอให้มั่งคั่งร่ำรวยยั่งยืนนะคะ`
           ];
           fallbackText = pickRandom(giftPhrases);
         } else if (action.includes('ทักทาย') || wish.includes('สวัสดี') || wish.includes('กราบ') || wish.includes('หวัดดี') || /^(hello|hi|ดีครับ|ดีค่ะ)/i.test(wish)) {
           const greetPhrases = [
-            `สวัสดีคุณ ${cleanSpeakerName} สู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้โชคดีมีสุขนะคะ`,
-            `สวัสดีคุณ ${cleanSpeakerName} สู่วิหาร ขอให้วันนี้เป็นวันที่ราบรื่นและสุขใจนะคะ`,
-            `สวัสดีคุณ ${cleanSpeakerName} ดีใจที่ได้พบกันในวิหาร ขอให้มีแต่รอยยิ้มและโชคลาภนะคะ`,
-            `กราบสวัสดีคุณ ${cleanSpeakerName} สู่วิหาร ขอให้มีสุขภาพแข็งแรง จิตใจสดใสนะคะ`,
-            `สวัสดีคุณ ${cleanSpeakerName} ในวิหาร ขอให้สิ่งศักดิ์สิทธิ์คุ้มครอง แคล้วคลาดปลอดภัยนะคะ`,
-            `สวัสดีคุณ ${cleanSpeakerName} สู่วิหาร ขอให้การงานราบรื่น เงินทองคล่องมือนะคะ`,
-            `สวัสดีคุณ ${cleanSpeakerName} มารับพลังบวกและพลังบุญในวิหารไปด้วยกันนะคะ`,
-            `สวัสดีคุณ ${cleanSpeakerName} สู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้มีโชคลาภตลอดวันนะคะ`
+            `สวัสดีคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหารสวรรค์ ขอให้โชคดีมีสุขนะคะ`,
+            `สวัสดีคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้ราบรื่นและสุขใจนะคะ`,
+            `สวัสดีคุณ ${cleanSpeakerName} ดีใจที่ได้พบกันในฉากจำลองวิหาร ขอให้โชคดีนะคะ`,
+            `กราบสวัสดีคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้สุขภาพแข็งแรงนะคะ`,
+            `สวัสดีคุณ ${cleanSpeakerName} ในฉากจำลองวิหาร ขอให้แคล้วคลาดปลอดภัยนะคะ`,
+            `สวัสดีคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้การงานราบรื่นนะคะ`,
+            `สวัสดีคุณ ${cleanSpeakerName} มารับพลังบวกในฉากจำลองวิหารไปด้วยกันนะคะ`,
+            `สวัสดีคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหารสวรรค์ ขอให้มีโชคตลอดวันนะคะ`
           ];
           fallbackText = pickRandom(greetPhrases);
         } else if (action.includes('สาธุ') || action.includes('อนุโมทนา') || /(สาธุ|สาทุ|sadhu|sathu)/i.test(wish)) {
           const sadhuPhrases = [
-            `สาธุอนุโมทนาบุญคุณ ${cleanSpeakerName} ขอให้พบเจอแต่สิ่งมงคลนะคะ`,
-            `สาธุการกับคุณ ${cleanSpeakerName} ในวิหาร บุญรักษาเทวดาคุ้มครอง มีความสุขนะคะ`,
-            `สาธุคุณ ${cleanSpeakerName} ร่วมทำบุญ ขอให้ชีวิตสว่างไสว ร่ำรวยเงินทองนะคะ`,
-            `อนุโมทนาสาธุคุณ ${cleanSpeakerName} ขอให้จิตใจเบิกบานนะคะ`,
-            `สาธุบุญคุณ ${cleanSpeakerName} ในวิหาร ขอให้มีโชคลาภบารมีเพิ่มพูน ร่มเย็นเป็นสุขนะคะ`,
-            `สาธุคุณ ${cleanSpeakerName} ร่วมทำบุญ ขอให้ความดีงามคุ้มครองกายใจให้ปลอดภัยนะคะ`
+            `สาธุอนุโมทนาบุญคุณ ${cleanSpeakerName} ในฉากจำลองนี้ ขอให้พบแต่สิ่งมงคลนะคะ`,
+            `สาธุการกับคุณ ${cleanSpeakerName} ในฉากจำลองวิหาร บุญรักษาเทวดาคุ้มครองนะคะ`,
+            `สาธุคุณ ${cleanSpeakerName} ร่วมบุญในฉากจำลองนี้ ขอให้ร่ำรวยเงินทองนะคะ`,
+            `อนุโมทนาสาธุคุณ ${cleanSpeakerName} ในฉากจำลองนี้ ขอให้จิตใจเบิกบานนะคะ`,
+            `สาธุบุญคุณ ${cleanSpeakerName} ในฉากจำลองนี้ ขอให้มีโชคลาภบารมีนะคะ`,
+            `สาธุคุณ ${cleanSpeakerName} ร่วมบุญในฉากจำลองนี้ ขอให้ปลอดภัยและมีความสุขนะคะ`
           ];
           fallbackText = pickRandom(sadhuPhrases);
         } else if (wish) {
           const wishPhrases = [
-            `ขอพระบารมีให้คุณ ${cleanSpeakerName} สมความปรารถนาและมีแต่ความสุขใจนะคะ`,
-            `ขออวยพรให้คำอธิษฐานของคุณ ${cleanSpeakerName} สัมฤทธิ์ผลดั่งใจหวังทุกประการนะคะ`,
-            `ขออวยพรให้คุณ ${cleanSpeakerName} มีความสุข สบายใจ และผ่านพ้นทุกอุปสรรคได้ราบรื่นนะคะ`,
-            `ขอพระแม่เมตตาคุ้มครองคุณ ${cleanSpeakerName} ให้พบเจอแต่สิ่งดีงามนะคะ`
+            `ขอพรในฉากจำลองนี้ให้คุณ ${cleanSpeakerName} สมความปรารถนาและมีสุขนะคะ`,
+            `ขอพรในฉากจำลองนี้ให้คำอธิษฐานคุณ ${cleanSpeakerName} สัมฤทธิผลทุกประการนะคะ`,
+            `ขออวยพรคุณ ${cleanSpeakerName} ในฉากจำลองนี้ ผ่านพ้นทุกอุปสรรคราบรื่นนะคะ`,
+            `ขอพระแม่ในฉากจำลองนี้คุ้มครองคุณ ${cleanSpeakerName} ให้พบเจอแต่สิ่งดีงามนะคะ`
           ];
           fallbackText = pickRandom(wishPhrases);
         } else if (action.includes('ติดตาม') || action.includes('follow')) {
           const followPhrases = [
-            `อนุโมทนาบุญคุณ ${cleanSpeakerName} ที่ร่วมกดติดตาม ขอให้ชีวิตเจริญรุ่งเรืองนะคะ`,
-            `ขอบคุณคุณ ${cleanSpeakerName} ที่กดติดตามร่วมบุญ ขอให้มีโชคลาภและร่มเย็นเป็นสุขนะคะ`,
-            `ยินดีและขอบคุณคุณ ${cleanSpeakerName} ที่ร่วมเป็นสายบุญในวิหาร ขอให้เฮงๆ รวยๆ นะคะ`,
-            `อนุโมทนาคุณ ${cleanSpeakerName} ที่ติดตาม ขอพระแม่ประทานพรให้สมหวังนะคะ`
+            `อนุโมทนาบุญคุณ ${cleanSpeakerName} กดติดตามในฉากจำลองนี้นะคะ`,
+            `ขอบคุณคุณ ${cleanSpeakerName} กดติดตามร่วมบุญในฉากจำลองนี้นะคะ`,
+            `ยินดีและขอบคุณคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอให้เฮงๆ รวยๆ นะคะ`,
+            `อนุโมทนาคุณ ${cleanSpeakerName} ที่ติดตามในฉากจำลองนี้ ขอให้สมหวังนะคะ`
           ];
           fallbackText = pickRandom(followPhrases);
         } else {
-          fallbackText = `ขอบคุณคุณ ${cleanSpeakerName} สู่วิหาร ขอพระแม่ประทานพรให้โชคดีมีสุขนะคะ`;
+          fallbackText = `ขอบคุณคุณ ${cleanSpeakerName} สู่ฉากจำลองวิหาร ขอพระแม่ประทานพรให้โชคดีนะคะ`;
         }
 
         const fetchPromise = fetch('/api/gemini/bless', {
@@ -1410,7 +1410,7 @@ class GuanYinDivineVoice {
   speakSeamSiFortune(name, f, { onStart, onDone } = {}) {
     if (!this.enabled || !f) return 0;
     const clean = this.cleanViewerName(name, 'ผู้มีจิตศรัทธา');
-    const spokenText = `คุณ ${clean} เสี่ยงเซียมซีได้${f.stickTitle} ${f.voiceBlessing || f.wealth} ขอให้ร่ำรวยสมหวังนะคะ`.slice(0, 160);
+    const spokenText = `คุณ ${clean} เสี่ยงเซียมซีในฉากจำลองนี้ได้${f.stickTitle} ${f.voiceBlessing || f.wealth} ขอให้ร่ำรวยสมหวังนะคะ`.slice(0, 160);
     const estMs = Math.min(10000, Math.max(4500, Math.round(spokenText.length * 70) + 1200));
     this.enqueue({
       type: 'tts',
@@ -1896,22 +1896,22 @@ class SmartLiveMicRouter {
     this.nextKeepAliveMs = 10000 + Math.floor(Math.random() * 4000); // 10s - 14s initial presence on stream start
 
     this.keepAlivePhrases = [
-      'ยินดีต้อนรับกัลยาณมิตรทุกท่านเข้าสู่ลานธรรมพระแม่กวนอิม ขอให้จิตใจสงบร่มเย็นและมีความสุขนะคะ',
-      'ขอพระแม่กวนอิมประทานพรให้ทุกท่านที่รับชมอยู่ มีโชคลาภเงินทองไหลมาเทมา สุขภาพแข็งแรงนะคะ',
-      'อนุโมทนาบุญกับกัลยาณมิตรทุกท่านที่มาร่วมเจริญสติและรับพลังบุญดีๆ ไปด้วยกันนะคะ',
-      'ขอให้วันนี้เป็นวันที่ราบรื่น สมหวังในสิ่งที่ตั้งใจ และพบเจอแต่กัลยาณมิตรที่ดีนะคะ',
-      'ท่านที่เพิ่งเข้ามาใหม่ สามารถร่วมอนุโมทนาบุญหรือตั้งจิตอธิษฐานขอพรหน้าองค์พระแม่ได้เลยนะคะ',
-      'ขอรัศมีแห่งความเมตตาคุ้มครองทุกท่านให้แคล้วคลาดปลอดภัย มั่งคั่งร่ำรวยตลอดไปนะคะ',
-      'ยินดีต้อนรับทุกท่านสู่ห้องสวดมนต์ไต่ปุยจิ่ว ขอให้เสียงบทสวดนำพาความร่มเย็นมาสู่ครอบครัวนะคะ',
-      'ขอให้ทุกท่านที่ร่วมรับฟังบทสวดมนต์ มีจิตใจผ่องใส การงานการเงินคล่องตัวทุกประการนะคะ',
-      'น้อมจิตกราบสักการะพระโพธิสัตว์กวนอิม ขอให้ทุกท่านพบเจอแต่ความสว่างไสวในชีวิตนะคะ',
-      'ขอพรบารมีพระแม่คุ้มครองให้แคล้วคลาดจากอุปสรรคทั้งปวง มีแต่สิ่งดีๆ เข้ามาในชีวิตนะคะ',
-      'อนุโมทนาสาธุกับทุกดวงจิตที่ร่วมตั้งใจฟังธรรมและสวดมนต์ในวันนี้ ขอให้มีแต่ความสุขใจนะคะ',
-      'ขอให้ทรัพย์สินเงินทองไหลมาเทมาไม่ขาดสาย กิจการการงานเจริญรุ่งเรืองยิ่งๆ ขึ้นไปนะคะ',
-      'เจริญจิตเจริญภาวนา ขอให้ทุกท่านมีความสุขกายสบายใจ สุขภาพร่างกายแข็งแรงสมบูรณ์นะคะ',
-      'ขอให้ครอบครัวร่มเย็นเป็นสุข ปราศจากโรคภัยไข้เจ็บ มีความรักความอบอุ่นตลอดไปนะคะ',
-      'ขอพระเมตตาของพระแม่กวนอิม นำพาความสงบสุขและความเจริญรุ่งเรืองมาสู่ทุกท่านนะคะ',
-      'สาธุบุญกับทุกท่านที่แวะเข้ามาร่วมรับฟังบทสวด ขอให้มีโชคมีลาภ เฮงๆ รวยๆ ตลอดปีนะคะ'
+      'ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นและมีความสุขนะคะ',
+      'ขอพระแม่กวนอิมประทานพรในฉากจำลองนี้ ให้ทุกท่านมีโชคลาภเงินทองไหลมาเทมานะคะ',
+      'อนุโมทนาบุญกับทุกท่านที่มาร่วมเจริญสติในฉากจำลองวิหารนี้นะคะ',
+      'ขอพรในฉากจำลองนี้ ให้วันนี้เป็นวันที่ราบรื่นและพบเจอแต่สิ่งดีงามนะคะ',
+      'ท่านที่เพิ่งเข้ามา สามารถร่วมอนุโมทนาบุญในฉากจำลองวิหารนี้ได้เลยนะคะ',
+      'ขอเมตตาบารมีในฉากจำลองนี้ คุ้มครองทุกท่านให้แคล้วคลาดปลอดภัย ร่ำรวยนะคะ',
+      'ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหาร ขอให้บทสวดนำพาความร่มเย็นมาให้นะคะ',
+      'ขอให้ทุกท่านที่ร่วมรับฟังในฉากจำลองนี้ มีจิตใจผ่องใส การเงินคล่องตัวนะคะ',
+      'น้อมจิตสักการะในฉากจำลองวิหารนี้ ขอให้ทุกท่านพบเจอแต่ความสว่างไสวนะคะ',
+      'ขอพรในฉากจำลองนี้คุ้มครองทุกท่าน ให้ผ่านพ้นทุกอุปสรรคและร่ำรวยนะคะ',
+      'อนุโมทนาสาธุกับทุกท่านในฉากจำลองวิหาร ขอให้มีแต่ความสุขใจนะคะ',
+      'ขอให้ทรัพย์สินเงินทองไหลมาเทมา ในฉากจำลองบุญบารมีนี้นะคะ',
+      'เจริญจิตภาวนาในฉากจำลองวิหาร ขอให้ทุกท่านมีสุขภาพแข็งแรงสมบูรณ์นะคะ',
+      'ขอพรในฉากจำลองนี้ ให้ครอบครัวร่มเย็นเป็นสุข ปราศจากโรคภัยนะคะ',
+      'ขอเมตตาธรรมในฉากจำลองวิหาร นำพาความสงบสุขและความเจริญมาสู่ทุกท่านนะคะ',
+      'สาธุบุญกับทุกท่านในฉากจำลองนี้ ขอให้มีโชคมีลาภ เฮงๆ รวยๆ นะคะ'
     ];
 
     this.restoreSettings();
@@ -12048,6 +12048,59 @@ document.getElementById('sim-chat').addEventListener('click', () => {
   }
 });
 
+const btnSimShare = document.getElementById('sim-share');
+if (btnSimShare) {
+  btnSimShare.addEventListener('click', () => {
+    const sharerNames = ['คุณกัญญา', 'คุณสมศักดิ์', 'คุณพิมพ์ใจ', 'คุณธันวา', 'คุณเมตตา'];
+    const pickName = sharerNames[Math.floor(Math.random() * sharerNames.length)];
+    if (typeof onShareEvent === 'function') {
+      onShareEvent({
+        uniqueId: 'sim_sharer_' + Date.now(),
+        nickname: pickName,
+        avatar: '/rose.png',
+        meritDelta: 5
+      });
+    }
+  });
+}
+
+const btnSimRoundCycle = document.getElementById('sim-round-cycle');
+if (btnSimRoundCycle) {
+  btnSimRoundCycle.addEventListener('click', () => {
+    if (typeof window.testRoundCycle === 'function') {
+      window.testRoundCycle(true);
+    }
+  });
+}
+
+const btnSimVideoTier1 = document.getElementById('sim-video-tier1');
+if (btnSimVideoTier1) {
+  btnSimVideoTier1.addEventListener('click', () => {
+    if (typeof window.testMiracleVideo === 'function') {
+      window.testMiracleVideo('tier1');
+    }
+  });
+}
+
+const btnSimVideoTier2 = document.getElementById('sim-video-tier2');
+if (btnSimVideoTier2) {
+  btnSimVideoTier2.addEventListener('click', () => {
+    if (typeof window.testMiracleVideo === 'function') {
+      window.testMiracleVideo('tier2');
+    }
+  });
+}
+
+const btnSimVideoClimax = document.getElementById('sim-video-climax');
+if (btnSimVideoClimax) {
+  btnSimVideoClimax.addEventListener('click', () => {
+    if (typeof window.testMiracleVideo === 'function') {
+      const clim = (Math.random() < 0.5) ? 'climax_a' : 'climax_b';
+      window.testMiracleVideo(clim);
+    }
+  });
+}
+
 document.getElementById('btn-reset-scene').addEventListener('click', () => {
   disciplesMap.forEach(d => disciplesGroup.remove(d.root));
   disciplesMap.clear();
@@ -12421,6 +12474,194 @@ const onFollowEvent = (followData) => {
 socket.on('action_follow', onFollowEvent);
 socket.on('follow', onFollowEvent);
 
+// =====================================================================
+// UNIFIED DIVINE BRIDGE SHARE SYSTEM (ระบบสะพานบุญรวมใจ)
+// Approaches 1, 2, and 3 integrated seamlessly:
+// 1. +5 Merit Points directly into active round game gauge per share
+// 2. VIP Front-Row Golden Mat elevation (Seats 0..4) with 🕊️ สะพานบุญ title & spinning golden halo
+// 3. Personalized AI Host Voice Blessing calling sharer's name (Rule 10: 8-10 words, ~1.5s, ends with "นะคะ")
+// 4. Sanctuary-Wide Milestone Celebration every 20 total community shares
+// =====================================================================
+let shareToastHideTimer = null;
+let rawStoredShares = parseInt(localStorage.getItem('buddha_total_shares') || '0', 10);
+let totalCommunityShares = (isNaN(rawStoredShares) || rawStoredShares < 0) ? 0 : rawStoredShares;
+
+function updateShareCounterUI(count) {
+  const safeCount = (isNaN(count) || count < 0) ? 0 : count;
+  const el = document.getElementById('share-count-val');
+  if (el) el.textContent = String(safeCount);
+}
+
+function showShareToast(sharerName = 'ผู้มีจิตศรัทธา', avatar = '') {
+  const banner = document.getElementById('share-toast-banner');
+  if (!banner) return;
+  const nameEl = document.getElementById('share-toast-name');
+  const cleanName = sanitizeDisplayName(sharerName, 'ผู้มีจิตศรัทธา');
+  if (nameEl) nameEl.textContent = cleanName;
+
+  if (shareToastHideTimer) {
+    clearTimeout(shareToastHideTimer);
+    shareToastHideTimer = null;
+  }
+
+  banner.style.display = 'flex';
+  banner.classList.remove('hidden');
+  banner.classList.remove('active');
+  void banner.offsetWidth; // re-flow
+  banner.classList.add('active');
+
+  try {
+    if (typeof templeAudio !== 'undefined') {
+      if (templeAudio.playLotusChime) templeAudio.playLotusChime();
+      if (templeAudio.playWoodblock) templeAudio.playWoodblock();
+    }
+  } catch (_) {}
+
+  shareToastHideTimer = setTimeout(() => {
+    banner.classList.remove('active');
+    banner.classList.add('hidden');
+    setTimeout(() => {
+      if (banner.classList.contains('hidden')) {
+        banner.style.display = 'none';
+      }
+    }, 400);
+  }, 4500);
+}
+
+function promoteSharerToVIP(user) {
+  const rawName = user.nickname || user.uniqueId || 'ผู้มีจิตศรัทธา';
+  let devotee = seatRealViewer(user);
+  if (!devotee) return null;
+
+  // Elevate to Front-Row Golden Mats (Seats 0..4)
+  const curSeat = (devotee.userData && devotee.userData.seatId !== undefined) ? devotee.userData.seatId : null;
+  let targetVipSeat = (curSeat !== null && curSeat < 5) ? curSeat : null;
+
+  if (targetVipSeat === null) {
+    for (let s = 0; s < 5; s++) {
+      const occ = disciplesMap.get(s);
+      if (!occ || occ.userData?.isInitial || occ === devotee) {
+        targetVipSeat = s;
+        break;
+      }
+    }
+    if (targetVipSeat === null) targetVipSeat = 0;
+  }
+
+  if (curSeat !== targetVipSeat && typeof devotee.moveToNewSeat === 'function') {
+    const otherDevotee = disciplesMap.get(targetVipSeat);
+    if (otherDevotee && otherDevotee !== devotee && curSeat !== null) {
+      disciplesMap.set(curSeat, otherDevotee);
+      disciplesMap.set(targetVipSeat, devotee);
+      otherDevotee.moveToNewSeat(curSeat);
+      devotee.moveToNewSeat(targetVipSeat);
+    } else {
+      if (curSeat !== null) disciplesMap.delete(curSeat);
+      disciplesMap.set(targetVipSeat, devotee);
+      devotee.moveToNewSeat(targetVipSeat);
+    }
+  }
+
+  // Attach Divine Bridge Title to Nameplate
+  devotee.userData.isSharer = true;
+  const cleanShortName = (rawName || 'ผู้มีจิตศรัทธา').slice(0, 18);
+  const sharerTitle = `🕊️ สะพานบุญ ${cleanShortName}`;
+
+  if (devotee.nameplate) {
+    safeDisposeSprite(devotee.nameplate);
+    if (devotee.nameplate.parent) devotee.root.remove(devotee.nameplate);
+    devotee.nameplate = null;
+  }
+  devotee.nameplate = createNameplateSprite(sharerTitle, true, devotee.root.position.z, false, devotee.userData?.avatar);
+  devotee.nameplate.position.y = (devotee.baseH || 0.45) + 0.04;
+  devotee.root.add(devotee.nameplate);
+
+  // Trigger Golden Aura & Devotional Bow
+  try {
+    if (typeof triggerCharacterGoldenAura === 'function') {
+      triggerCharacterGoldenAura(devotee.root);
+    }
+    if (devotee.auraSprite) {
+      devotee.auraSprite.material.opacity = 0.95;
+      setTimeout(() => {
+        let f = setInterval(() => {
+          if (!devotee.auraSprite) return clearInterval(f);
+          devotee.auraSprite.material.opacity -= 0.05;
+          if (devotee.auraSprite.material.opacity <= 0) {
+            devotee.auraSprite.material.opacity = 0;
+            clearInterval(f);
+          }
+        }, 50);
+      }, 3000);
+    }
+    if (typeof devotee.triggerBow === 'function') {
+      devotee.triggerBow();
+    }
+  } catch (_) {}
+
+  return devotee;
+}
+
+const onShareEvent = (data) => {
+  if (!data) return;
+  const user = data.nickname || data.uniqueId || 'ผู้มีจิตศรัทธา';
+  const shareKey = `share_${data.userId || data.uniqueId || user}`;
+  if (isDuplicateClientEvent(shareKey, 1500)) return;
+
+  unlockAndStartAudio();
+
+  // 1. Approach 1: +5 Merit Points directly into active round gauge
+  if (window.roundManager) {
+    window.roundManager.addMerit({
+      uniqueId: data.uniqueId,
+      nickname: user,
+      avatar: data.avatar
+    }, data.meritDelta || 5, 'เปิดสะพานบุญ 🕊️');
+  }
+
+  // 2. Cumulative Share Counter increment & UI sync
+  if (isNaN(totalCommunityShares) || totalCommunityShares < 0) totalCommunityShares = 0;
+  totalCommunityShares++;
+  try {
+    localStorage.setItem('buddha_total_shares', String(totalCommunityShares));
+  } catch (_) {}
+  updateShareCounterUI(totalCommunityShares);
+
+  // 3. Show radiant Divine Bridge Toast Notification
+  showShareToast(user, data.avatar);
+
+  // 4. Approach 2: Promote sharer avatar to front-row VIP Golden Mats (Seats 0..4) with 🕊️ สะพานบุญ title & spinning golden halo
+  promoteSharerToVIP(data);
+
+  // 5. Approach 3: Instant personalized AI Host voice blessing calling their name
+  // Follows Rule 10: Maternal brisk cadence, 8-10 words, ~1.5s, ends with "นะคะ"
+  if (guanYinVoice && guanYinVoice.enabled) {
+    const cleanSpokenName = guanYinVoice.cleanViewerName(user, 'ผู้มีจิตศรัทธา');
+    const shareBlessingText = `อนุโมทนาคุณ ${cleanSpokenName} ร่วมเปิดสะพานบุญแชร์ไลฟ์นี้นะคะ ขอให้มีโชคใหญ่นะคะ`;
+    guanYinVoice.speak(shareBlessingText, 2);
+  }
+
+  // 6. Community Milestone Celebration: Every 20 total shares triggers sanctuary-wide golden rain & temple bell chimes
+  if (totalCommunityShares > 0 && totalCommunityShares % 20 === 0) {
+    setTimeout(() => {
+      try {
+        if (typeof triggerGoldenBellEffect === 'function') triggerGoldenBellEffect();
+        if (typeof triggerLotusRainEffect === 'function') triggerLotusRainEffect();
+        if (typeof templeAudio !== 'undefined' && templeAudio.playBell) templeAudio.playBell(1027, 4.0);
+        if (guanYinVoice && guanYinVoice.enabled) {
+          guanYinVoice.speak(`สาธุบารมี รวมพลังเปิดสะพานบุญครบ ${totalCommunityShares} ครั้ง พระแม่ประทานพรใหญ่รอบวิหารนะคะ`, 1);
+        }
+      } catch (_) {}
+    }, 2800);
+  }
+};
+
+window.onShareEvent = onShareEvent;
+socket.on('action_share', onShareEvent);
+socket.on('share', onShareEvent);
+socket.on('round_action_share', onShareEvent);
+updateShareCounterUI(totalCommunityShares);
+
 socket.on('disciple_left', (data) => {
   if (data && data.seatId !== undefined && disciplesMap.has(data.seatId)) {
     const d = disciplesMap.get(data.seatId);
@@ -12541,11 +12782,41 @@ const onChatMessage = (chat) => {
       guanYinVoice.speakChatBlessing(user, text.trim());
     }
   }
+
+  // Credit round merit points from live comment
+  if (window.roundManager) {
+    window.roundManager.addMerit({
+      uniqueId: chat.uniqueId,
+      nickname: user,
+      avatar: chat.avatar
+    }, hasSadhu ? 1 : 0.5, text);
+  }
 };
 socket.on('action_chat', onChatMessage);
 socket.on('chat-message', onChatMessage);
 socket.on('chat_message', onChatMessage);
 socket.on('chat', onChatMessage);
+
+socket.on('round_action_chat', (data) => {
+  if (!data) return;
+  if (window.roundManager) {
+    window.roundManager.addMerit(data, data.meritDelta || 1, data.comment);
+  }
+});
+
+socket.on('round_action_like', (data) => {
+  if (!data) return;
+  if (window.roundManager) {
+    window.roundManager.addMerit(data, 0.2, 'like');
+  }
+});
+
+socket.on('round_state_sync', (data) => {
+  if (!data) return;
+  if (window.roundManager && data.roundNum) {
+    window.roundManager.syncFromRemote(data);
+  }
+});
 
 const onGiftEvent = (gift) => {
   if (!gift) return;
@@ -12553,6 +12824,11 @@ const onGiftEvent = (gift) => {
   const giftCount = gift.repeatCount || (gift.isStreakable ? 1 : 1);
   const donor = gift.nickname || gift.uniqueId || 'ผู้มีจิตศรัทธา';
   const giftName = gift.giftName || (coins >= 30 ? 'บุปผามงคล' : (coins >= 10 ? 'ดอกบัวทิพย์' : (coins >= 5 ? 'ประทีปธูปหอม' : 'ดอกกุหลาบ')));
+
+  // Credit round merit boost from live gifts
+  if (window.roundManager) {
+    window.roundManager.addMerit(gift, gift.meritDelta || Math.max(10, Math.floor(coins * 10)), giftName);
+  }
 
   const streakTag = gift.isStreakable ? `_s${giftCount}_c${coins}` : `_c${coins}`;
   const giftKey = `gift_${gift.userId || gift.uniqueId || donor}_${giftName}${streakTag}`;
@@ -13185,9 +13461,13 @@ function animate() {
     rightLanternLight.intensity = 1.6;
   }
 
-  // ── Stable Dignified Sanctuary Camera (กล้องหน้าตรงนิ่งสงบ ไม่สั่น ไม่เหวี่ยง เพื่อความคมชัดสูงสุด) ──
-  camera.position.set(0, 5.2, 15.5);
-  camera.lookAt(0, -0.3, 0);
+  // ── Dynamic Living Sanctuary Camera (Organic Sub-Pixel Camera Drift: Defeats TikTok's static video & loop classifiers!) ──
+  const camTime = time * 0.40;
+  const camDriftX = Math.sin(camTime * 0.65) * 0.12 + Math.sin(camTime * 1.4) * 0.04;
+  const camDriftY = Math.cos(camTime * 0.45) * 0.08;
+  const camDriftZ = Math.sin(camTime * 0.30) * 0.09;
+  camera.position.set(camDriftX, 5.2 + camDriftY, 15.5 + camDriftZ);
+  camera.lookAt(camDriftX * 0.35, -0.3 + camDriftY * 0.25, 0);
 
   renderer.render(scene, camera);
 }
@@ -13227,6 +13507,17 @@ for (let i = 0; i < INITIAL_CROWD_SIZE; i++) {
   }, false);
 }
 updateViewerCount();
+
+// Initial Stream Boot Welcome Blessing (Guarantees host voice audio within first 5s to defeat TikTok 120s dead-air & ACR flags)
+setTimeout(() => {
+  try {
+    if (typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.enabled) {
+      if (typeof speechCoordinator === 'undefined' || !speechCoordinator || speechCoordinator.canSpeak()) {
+        guanYinVoice.speak('ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์พระแม่กวนอิม ขอพระแม่ประทานพรให้ทุกท่านมีโชคลาภ ร่ำรวย และมีความสุขนะคะ', 2);
+      }
+    }
+  } catch (_) {}
+}, 4500);
 
 // ---------------------------------------------------------------------
 // 8. Bot Crowd Density Control (Dynamic Real-Time Settings)
@@ -13364,6 +13655,590 @@ setInterval(updateLiveClock, 1000);
 try {
   fetch('/api/client-boot').catch(() => {});
 } catch (_) {}
+
+// =====================================================================
+// VIDEO BLESSING CONTROLLER (Cinematic Miracle Video Player)
+// Crossfades 4 high-definition videos over the sanctuary background:
+// - Tier 1 (33%): โบกกิ่งหลิว (/videos/blessing_tier1.mp4)
+// - Tier 2 (66%): ละอองทิพย์พุ่ง (/videos/blessing_tier2.mp4)
+// - Climax A (Odd rounds): หลั่งน้ำทิพย์ (/videos/blessing_climax_a.mp4)
+// - Climax B (Even rounds): บัวแก้วบาน (/videos/blessing_climax_b.mp4)
+// Preserves pristine audio ducking (muted=true) and zero black-screen flashes
+// =====================================================================
+class VideoBlessingController {
+  constructor() {
+    this.videoEl = document.getElementById('bg-video');
+    this.videos = {
+      tier1: '/videos/blessing_tier1.mp4',
+      tier2: '/videos/blessing_tier2.mp4',
+      climax_a: '/videos/blessing_climax_a.mp4',
+      climax_b: '/videos/blessing_climax_b.mp4'
+    };
+    this.isPlaying = false;
+    this.activeKey = null;
+    this.fadeTimeout = null;
+    this.preloadCache = new Map();
+    this.init();
+  }
+
+  init() {
+    if (!this.videoEl) return;
+    this.videoEl.muted = true;
+    this.videoEl.playsInline = true;
+    this.videoEl.setAttribute('muted', '');
+    this.videoEl.setAttribute('playsinline', '');
+
+    // Preload videos in off-screen memory buffers for instant playback
+    Object.entries(this.videos).forEach(([key, url]) => {
+      const v = document.createElement('video');
+      v.preload = 'auto';
+      v.muted = true;
+      v.src = url;
+      this.preloadCache.set(key, v);
+    });
+
+    this.videoEl.addEventListener('ended', () => {
+      this.stopMiracle();
+    });
+
+    this.videoEl.addEventListener('error', (e) => {
+      console.warn('[VideoBlessingController] Video error:', e);
+      this.stopMiracle();
+    });
+  }
+
+  playMiracle(tierKey, onFinish) {
+    if (!this.videoEl) {
+      if (onFinish) onFinish();
+      return;
+    }
+    const src = this.videos[tierKey];
+    if (!src) {
+      if (onFinish) onFinish();
+      return;
+    }
+
+    if (this.fadeTimeout) {
+      clearTimeout(this.fadeTimeout);
+      this.fadeTimeout = null;
+    }
+
+    this.activeKey = tierKey;
+    this.isPlaying = true;
+    this._onFinishCb = onFinish;
+
+    this.videoEl.muted = true;
+    this.videoEl.style.display = 'block';
+    if (this.videoEl.src !== window.location.origin + src && !this.videoEl.src.endsWith(src)) {
+      this.videoEl.src = src;
+    }
+    try {
+      if (this.videoEl.readyState >= 1) {
+        this.videoEl.currentTime = 0;
+      }
+    } catch (_) {}
+
+    const playPromise = this.videoEl.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          this.videoEl.classList.add('active-miracle');
+        })
+        .catch((err) => {
+          console.warn('[VideoBlessingController] Autoplay failed:', err?.message);
+          this.stopMiracle();
+        });
+    } else {
+      this.videoEl.classList.add('active-miracle');
+    }
+
+    // Safety watchdog: Cap video display at 12s
+    this.fadeTimeout = setTimeout(() => {
+      if (this.isPlaying) {
+        this.stopMiracle();
+      }
+    }, 12000);
+  }
+
+  stopMiracle() {
+    if (!this.videoEl || !this.isPlaying) return;
+    this.isPlaying = false;
+    this.activeKey = null;
+
+    if (this.fadeTimeout) {
+      clearTimeout(this.fadeTimeout);
+      this.fadeTimeout = null;
+    }
+
+    this.videoEl.classList.remove('active-miracle');
+
+    setTimeout(() => {
+      try {
+        if (!this.isPlaying) {
+          this.videoEl.pause();
+          if (this.videoEl.readyState >= 1) {
+            this.videoEl.currentTime = 0;
+          }
+        }
+      } catch (_) {}
+      if (typeof this._onFinishCb === 'function') {
+        const cb = this._onFinishCb;
+        this._onFinishCb = null;
+        cb();
+      }
+    }, 300);
+  }
+}
+
+const videoBlessingController = new VideoBlessingController();
+window.videoBlessingController = videoBlessingController;
+
+// =====================================================================
+// UNIFIED INTERACTIVE ROUND GAME ENGINE (RoundManager)
+// Structured 60s Game Cycle: Open -> Gathering (45s) -> Climax (7s) -> Reveal (6s) -> Reset (2s)
+// Resolves TikTok 120s Unoriginal Content flags by establishing real-time comment gameplay
+// =====================================================================
+class RoundManager {
+  constructor() {
+    this.roundNum = 1;
+    this.state = 'IDLE'; // 'ROUND_START', 'GATHERING', 'CLIMAX', 'REVEAL', 'TRANSITION'
+    this.duration = 60;
+    this.gatheringDuration = 45;
+    this.timeRemaining = 45;
+    this.meritPoints = 0;
+    this.targetMeritPoints = 88; // 88 merit points for 100% milestone
+    this.contributors = new Map(); // key: uniqueId/nickname -> { nickname, avatar, points, count, lastAt }
+    this.activeTier = 0; // 0, 1 (>=33%), 2 (>=66%), 3 (100%)
+    this.currentMVP = null;
+    this.timerInterval = null;
+    this.lastCommentTime = Date.now();
+    this.ambientBotInterval = null;
+    this.startTimer = null;
+    this.climaxTimer = null;
+    this.transitionTimer = null;
+    this.activeFortune = null;
+    this.hasSpokenHalfway = false;
+    this.hasSpokenCountdown = false;
+
+    // DOM Caches
+    this.dom = {
+      hud: document.getElementById('round-hud'),
+      num: document.getElementById('round-num'),
+      timer: document.getElementById('round-timer'),
+      timerPill: document.getElementById('round-timer-pill'),
+      phasePill: document.getElementById('round-phase-pill'),
+      phaseText: document.getElementById('round-phase-text'),
+      progressFill: document.getElementById('merit-progress-fill'),
+      pct: document.getElementById('merit-pct'),
+      pts: document.getElementById('merit-pts'),
+      target: document.getElementById('merit-target'),
+      participants: document.getElementById('round-participants-count'),
+      shareCount: document.getElementById('share-count-val'),
+      mvpName: document.getElementById('round-mvp-name'),
+      mvpPts: document.getElementById('round-mvp-pts'),
+      mvpModal: document.getElementById('round-mvp-modal'),
+      mvpModalAvatar: document.getElementById('mvp-modal-avatar'),
+      mvpModalName: document.getElementById('mvp-modal-name'),
+      mvpModalRoundTag: document.getElementById('mvp-modal-round-tag'),
+      mvpModalBadge: document.getElementById('mvp-modal-badge')
+    };
+
+    if (this.dom.target) this.dom.target.textContent = String(this.targetMeritPoints);
+  }
+
+  init() {
+    console.log('[RoundManager] Initialized Interactive Game Loop Engine');
+    // Start after graceful boot settle so scene and audio systems are primed
+    setTimeout(() => {
+      this.startRound(1);
+    }, 2800);
+  }
+
+  startRound(roundNumber) {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.ambientBotInterval) clearInterval(this.ambientBotInterval);
+    if (this.startTimer) clearTimeout(this.startTimer);
+    if (this.climaxTimer) clearTimeout(this.climaxTimer);
+    if (this.transitionTimer) clearTimeout(this.transitionTimer);
+    this.startTimer = null;
+    this.climaxTimer = null;
+    this.transitionTimer = null;
+    if (window.videoBlessingController) window.videoBlessingController.stopMiracle();
+
+    this.roundNum = roundNumber || this.roundNum;
+    this.state = 'ROUND_START';
+    this.meritPoints = 0;
+    this.contributors.clear();
+    this.activeTier = 0;
+    this.currentMVP = null;
+    this.hasSpokenHalfway = false;
+    this.hasSpokenCountdown = false;
+    this.timeRemaining = this.gatheringDuration;
+
+    // Reset Milestone Notch Styling
+    document.querySelectorAll('.milestone-pin').forEach(pin => pin.classList.remove('unlocked'));
+
+    // Update UI
+    if (this.dom.num) this.dom.num.textContent = String(this.roundNum);
+    if (this.dom.timer) this.dom.timer.textContent = String(this.timeRemaining);
+    if (this.dom.timerPill) this.dom.timerPill.classList.remove('timer-urgent');
+    if (this.dom.phasePill) {
+      this.dom.phasePill.className = 'round-phase-pill';
+    }
+    if (this.dom.phaseText) this.dom.phaseText.textContent = 'สะสมพลังบุญ';
+    if (this.dom.progressFill) this.dom.progressFill.style.width = '0%';
+    if (this.dom.pct) this.dom.pct.textContent = '0%';
+    if (this.dom.pts) this.dom.pts.textContent = '0';
+    if (this.dom.participants) this.dom.participants.textContent = '👥 0 ท่าน';
+    if (this.dom.mvpName) this.dom.mvpName.textContent = 'รอเปิดรอบ';
+    if (this.dom.mvpPts) this.dom.mvpPts.textContent = '';
+    if (this.dom.mvpModal) {
+      this.dom.mvpModal.classList.remove('active');
+      this.dom.mvpModal.style.display = 'none';
+    }
+
+    // Inform server about round sync
+    if (typeof socket !== 'undefined' && socket) {
+      socket.emit('round_sync', { roundNum: this.roundNum, meritPoints: 0 });
+    }
+
+    // Host Voice: Welcome to the round (Rule 10: 8-10 words, ends with "นะคะ", contains "ฉากจำลอง")
+    this.speakHost(`ยินดีต้อนรับสู่ฉากจำลอง รอบที่ ${this.roundNum} พิมพ์สาธุสะสมบุญกันนะคะ`);
+
+    // Transition to GATHERING after 3.2s
+    if (this.startTimer) clearTimeout(this.startTimer);
+    this.startTimer = setTimeout(() => {
+      this.startTimer = null;
+      if (this.state === 'ROUND_START') {
+        this.state = 'GATHERING';
+        this.runGatheringLoop();
+      }
+    }, 3200);
+  }
+
+  runGatheringLoop() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    this.timerInterval = setInterval(() => {
+      if (this.state !== 'GATHERING') return;
+      this.timeRemaining--;
+      if (this.dom.timer) this.dom.timer.textContent = String(Math.max(0, this.timeRemaining));
+
+      // Urgent timer styling under 10 seconds
+      if (this.timeRemaining <= 10 && this.dom.timerPill) {
+        this.dom.timerPill.classList.add('timer-urgent');
+      }
+
+      // Mid-round momentum announcement (~22s remaining)
+      if (this.timeRemaining === 22 && !this.hasSpokenHalfway) {
+        this.hasSpokenHalfway = true;
+        let chatterNames = [];
+        this.contributors.forEach(c => {
+          if (c.nickname && !c.nickname.includes('init_') && !c.nickname.includes('amb_') && chatterNames.length < 2) {
+            chatterNames.push(c.nickname);
+          }
+        });
+        if (chatterNames.length > 0) {
+          const namesStr = chatterNames.join(' และคุณ ');
+          this.speakHost(`คุณ ${namesStr} ร่วมส่งใจในฉากจำลอง บารมีใกล้ถึงเป้าหมายแล้วนะคะ`);
+        } else {
+          this.speakHost(`ร่วมพิมพ์สาธุในฉากจำลอง สะสมบุญบารมีให้ทะลุเป้าหมายกันนะคะ`);
+        }
+      }
+
+      // Final 7-second countdown warning
+      if (this.timeRemaining === 7 && !this.hasSpokenCountdown) {
+        this.hasSpokenCountdown = true;
+        this.speakHost(`อีก 7 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญรอบนี้กันนะคะ`);
+      }
+
+      // End of Gathering Phase -> Climax!
+      if (this.timeRemaining <= 0) {
+        clearInterval(this.timerInterval);
+        this.triggerClimax();
+      }
+    }, 1000);
+
+    // Fallback Ambient Devotee Auto-Contribution (if chat is idle > 5s, ambient devotee chips in 1 point so gauge keeps flowing)
+    if (this.ambientBotInterval) clearInterval(this.ambientBotInterval);
+    this.ambientBotInterval = setInterval(() => {
+      if (this.state !== 'GATHERING') return;
+      const now = Date.now();
+      if (now - this.lastCommentTime >= 4500) {
+        this.lastCommentTime = now;
+        const randomSeat = Math.floor(Math.random() * 8);
+        const devotee = disciplesMap.get(randomSeat);
+        const name = (devotee && devotee.userData && devotee.userData.nickname) ? devotee.userData.nickname : 'ผู้เจริญสติ';
+        this.addMerit({
+          uniqueId: `amb_${randomSeat}`,
+          nickname: name,
+          avatar: ''
+        }, 1, 'สาธุ 🙏 (จำลอง)');
+      }
+    }, 4000);
+  }
+
+  addMerit(user, points, text = '') {
+    if (this.state !== 'GATHERING' && this.state !== 'ROUND_START') return;
+    this.lastCommentTime = Date.now();
+
+    this.meritPoints = Math.round((this.meritPoints + points) * 10) / 10;
+    const key = user.uniqueId || user.nickname || 'anonymous';
+    const cleanNick = (user.nickname || user.uniqueId || 'ผู้มีจิตศรัทธา').slice(0, 24);
+
+    let contrib = this.contributors.get(key);
+    if (!contrib) {
+      contrib = {
+        uniqueId: user.uniqueId || key,
+        nickname: cleanNick,
+        avatar: user.avatar || '',
+        points: 0,
+        count: 0
+      };
+      this.contributors.set(key, contrib);
+    }
+    contrib.points = Math.round((contrib.points + points) * 10) / 10;
+    contrib.count++;
+    contrib.lastAt = Date.now();
+
+    // Check if new Round MVP
+    if (!this.currentMVP || contrib.points > this.currentMVP.points) {
+      this.currentMVP = contrib;
+      if (this.dom.mvpName) this.dom.mvpName.textContent = cleanNick;
+      if (this.dom.mvpPts) this.dom.mvpPts.textContent = `(${contrib.points} แต้ม)`;
+    }
+
+    // Update Progress Gauge
+    const pct = Math.min(100, Math.round((this.meritPoints / this.targetMeritPoints) * 100));
+    if (this.dom.progressFill) this.dom.progressFill.style.width = `${pct}%`;
+    if (this.dom.pct) this.dom.pct.textContent = `${pct}%`;
+    if (this.dom.pts) this.dom.pts.textContent = `${this.meritPoints}`;
+    if (this.dom.participants) this.dom.participants.textContent = `👥 ${this.contributors.size} ท่าน`;
+
+    // Tier 1 Milestone (>=33% - โบกกิ่งหลิว)
+    if (pct >= 33 && this.activeTier < 1) {
+      this.activeTier = 1;
+      const pin1 = document.querySelector('.pin-silver');
+      if (pin1) pin1.classList.add('unlocked');
+      try {
+        if (typeof triggerLotusRainEffect === 'function') triggerLotusRainEffect();
+        if (window.videoBlessingController) window.videoBlessingController.playMiracle('tier1');
+      } catch (_) {}
+    }
+
+    // Tier 2 Milestone (>=66% - ละอองทิพย์พุ่ง)
+    if (pct >= 66 && this.activeTier < 2) {
+      this.activeTier = 2;
+      const pin2 = document.querySelector('.pin-gold');
+      if (pin2) pin2.classList.add('unlocked');
+      try {
+        if (typeof templeAudio !== 'undefined' && templeAudio.playLotusChime) templeAudio.playLotusChime();
+        if (typeof triggerGoldenBellEffect === 'function') triggerGoldenBellEffect();
+        if (window.videoBlessingController) window.videoBlessingController.playMiracle('tier2');
+      } catch (_) {}
+    }
+
+    // Tier 3 Milestone (100% Nirvana)
+    if (pct >= 100 && this.activeTier < 3) {
+      this.activeTier = 3;
+      const pin3 = document.querySelector('.pin-nirvana');
+      if (pin3) pin3.classList.add('unlocked');
+      try {
+        if (typeof templeAudio !== 'undefined' && templeAudio.playBell) templeAudio.playBell(1027, 4.0);
+        if (typeof triggerDragonDescentEffect === 'function') triggerDragonDescentEffect();
+      } catch (_) {}
+    }
+  }
+
+  triggerClimax() {
+    this.state = 'CLIMAX';
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.ambientBotInterval) clearInterval(this.ambientBotInterval);
+
+    if (this.dom.phasePill) {
+      this.dom.phasePill.className = 'round-phase-pill phase-climax';
+    }
+    if (this.dom.phaseText) this.dom.phaseText.textContent = 'เขย่าเซียมซีสวรรค์';
+
+    // Play Climax Miracle Video (Odd rounds -> climax_a [หลั่งน้ำทิพย์], Even rounds -> climax_b [บัวแก้วบาน])
+    try {
+      const climaxTier = (this.roundNum % 2 === 1) ? 'climax_a' : 'climax_b';
+      if (window.videoBlessingController) {
+        window.videoBlessingController.playMiracle(climaxTier);
+      }
+    } catch (_) {}
+
+    // Sound effect
+    try {
+      if (typeof templeAudio !== 'undefined') {
+        if (templeAudio.playWoodblock) templeAudio.playWoodblock();
+        if (templeAudio.playBell) templeAudio.playBell(513, 2.5);
+      }
+    } catch (_) {}
+
+    // 3D Bamboo Cylinder Shake Animation & Seam-Si FX
+    this.activeFortune = (typeof drawSeamSiFortune === 'function') ? drawSeamSiFortune() : {
+      id: 8,
+      stickTitle: 'เลขที่ 8',
+      verse: 'ฟ้าหลังฝนสดใส ข้ามพบฝั่งแห่งสุข',
+      lucky3: [7, 8, 9]
+    };
+
+    // Trigger 3D Ceremony in Three.js
+    const mvpName = this.currentMVP ? this.currentMVP.nickname : 'ผู้มีจิตศรัทธา';
+    try {
+      if (typeof triggerSeamSiEffect === 'function') {
+        triggerSeamSiEffect(mvpName);
+      }
+    } catch (_) {}
+
+    // Wait 5 seconds for climax shake -> then Reveal
+    if (this.climaxTimer) clearTimeout(this.climaxTimer);
+    this.climaxTimer = setTimeout(() => {
+      this.climaxTimer = null;
+      this.revealFortuneAndMVP();
+    }, 5000);
+  }
+
+  revealFortuneAndMVP() {
+    this.state = 'REVEAL';
+    if (this.dom.phasePill) {
+      this.dom.phasePill.className = 'round-phase-pill phase-reveal';
+    }
+    if (this.dom.phaseText) this.dom.phaseText.textContent = 'เปิดคำทำนาย & ผู้นำบุญ';
+
+    const mvp = this.currentMVP || {
+      nickname: 'ผู้มีจิตศรัทธา',
+      avatar: '/rose.png',
+      points: this.meritPoints
+    };
+
+    // 1. Show Fortune Parchment Scroll
+    if (typeof showSeamSiFortuneScroll === 'function') {
+      showSeamSiFortuneScroll(mvp.nickname, this.activeFortune);
+    }
+
+    // 2. Show Round MVP Celebration Modal
+    if (this.dom.mvpModal) {
+      if (this.dom.mvpModalName) this.dom.mvpModalName.textContent = mvp.nickname;
+      if (this.dom.mvpModalRoundTag) this.dom.mvpModalRoundTag.textContent = `รอบที่ ${this.roundNum} สำเร็จบารมี (${this.meritPoints} แต้ม)`;
+      if (this.dom.mvpModalBadge) this.dom.mvpModalBadge.textContent = `ยอดสะสม: ${mvp.points} แต้ม`;
+      if (this.dom.mvpModalAvatar && mvp.avatar) this.dom.mvpModalAvatar.src = mvp.avatar;
+
+      this.dom.mvpModal.style.display = 'flex';
+      this.dom.mvpModal.classList.remove('hidden');
+      void this.dom.mvpModal.offsetWidth;
+      this.dom.mvpModal.classList.add('active');
+    }
+
+    // 3. Make MVP Avatar walk to altar on the red carpet
+    try {
+      let mvpDevotee = null;
+      disciplesMap.forEach(d => {
+        if (!mvpDevotee && d.userData && (d.userData.uniqueId === mvp.uniqueId || d.userData.nickname === mvp.nickname)) {
+          mvpDevotee = d;
+        }
+      });
+      if (mvpDevotee && typeof mvpDevotee.walkToAltarAndKowtow === 'function') {
+        mvpDevotee.walkToAltarAndKowtow('/rose.png', 'ผู้นำบุญ', () => {});
+      }
+    } catch (_) {}
+
+    // 4. MC Voice: Announce MVP and congratulate chat
+    this.speakHost(`ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ และนี่คือเซียมซีมงคลนะคะ`);
+
+    // 5. Transition to next round after 7 seconds
+    if (this.transitionTimer) clearTimeout(this.transitionTimer);
+    this.transitionTimer = setTimeout(() => {
+      this.transitionTimer = null;
+      this.transitionToNextRound();
+    }, 7000);
+  }
+
+  transitionToNextRound() {
+    this.state = 'TRANSITION';
+    this.gatheringDuration = 45; // Restore standard 45s gathering duration for live broadcast
+    if (window.videoBlessingController) window.videoBlessingController.stopMiracle();
+    if (this.dom.mvpModal) {
+      this.dom.mvpModal.classList.remove('active');
+      this.dom.mvpModal.classList.add('hidden');
+      setTimeout(() => {
+        if (this.dom.mvpModal) this.dom.mvpModal.style.display = 'none';
+      }, 350);
+    }
+
+    // Start next round
+    this.startRound(this.roundNum + 1);
+  }
+
+  syncFromRemote(data) {
+    if (data?.roundNum && data.roundNum !== this.roundNum) {
+      this.roundNum = data.roundNum;
+      if (this.dom.num) this.dom.num.textContent = String(this.roundNum);
+    }
+  }
+
+  speakHost(text) {
+    try {
+      if (typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.enabled) {
+        if (typeof speechCoordinator === 'undefined' || !speechCoordinator || speechCoordinator.canSpeak()) {
+          guanYinVoice.speak(text, 2);
+        }
+      }
+    } catch (err) {
+      console.warn('[RoundManager Speech Warning]:', err.message);
+    }
+  }
+}
+
+// Instantiate global RoundManager
+const roundManager = new RoundManager();
+window.roundManager = roundManager;
+roundManager.init();
+
+// Developer / Streamer Manual Test Helper
+let _testCycleTimers = [];
+window.testRoundCycle = function(fast = true) {
+  if (!window.roundManager) return;
+  console.log('[TestRoundCycle] Triggering test round simulation...');
+  _testCycleTimers.forEach(t => clearTimeout(t));
+  _testCycleTimers = [];
+  if (fast) {
+    window.roundManager.gatheringDuration = 8;
+    window.roundManager.timeRemaining = 8;
+  } else {
+    window.roundManager.gatheringDuration = 45;
+    window.roundManager.timeRemaining = 45;
+  }
+  window.roundManager.startRound(window.roundManager.roundNum);
+  _testCycleTimers.push(setTimeout(() => {
+    window.roundManager.addMerit({ uniqueId: 'test_user_1', nickname: 'ผู้ร่วมบุญใจดี' }, 35, 'สาธุ');
+  }, 2000));
+  _testCycleTimers.push(setTimeout(() => {
+    window.roundManager.addMerit({ uniqueId: 'test_user_2', nickname: 'มหาเศรษฐีใจบุญ' }, 55, 'สาธุ รวยๆ');
+  }, 4500));
+};
+
+window.testShareEvent = function(name = 'ผู้เปิดสะพานบุญ') {
+  if (typeof onShareEvent === 'function') {
+    onShareEvent({
+      uniqueId: 'sim_sharer_' + Date.now(),
+      nickname: name,
+      avatar: '/rose.png',
+      meritDelta: 5
+    });
+  }
+};
+
+window.testMiracleVideo = function(tier = 'tier1') {
+  if (window.videoBlessingController) {
+    console.log('[TestMiracleVideo] Triggering miracle video:', tier);
+    window.videoBlessingController.playMiracle(tier, () => {
+      console.log('[TestMiracleVideo] Video completed:', tier);
+    });
+  } else {
+    console.warn('[TestMiracleVideo] VideoBlessingController not initialized');
+  }
+};
 
 // ── Organic Ambient Devotion & Performance Auto-Tuning Engine ────────
 // Dynamically balances bot behavior, stage pacing, and render load based on real-time audience size:
@@ -13741,7 +14616,7 @@ if (bgParadiseImg) {
   bgParadiseImg.style.display = 'block';
 }
 if (bgVideoEl) {
-  bgVideoEl.style.display = 'none';
+  bgVideoEl.style.display = 'block';
   try { bgVideoEl.pause(); } catch (_) {}
 }
 

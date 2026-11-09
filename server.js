@@ -293,6 +293,148 @@ app.get(['/background_video.mp4', '/bg-video.mp4', '/video.mp4', '/background.mp
 });
 
 // ---------------------------------------------------------------------
+// Guan Yin Divine Blessing Videos (ให้พร 1-4.mp4)
+// Synchronized from Desktop to public/videos/ with HTTP 206 Byte-Range streaming
+// ---------------------------------------------------------------------
+const VIDEOS_DIR = path.join(__dirname, 'public', 'videos');
+if (!fs.existsSync(VIDEOS_DIR)) {
+  try { fs.mkdirSync(VIDEOS_DIR, { recursive: true }); } catch (_) { }
+}
+
+const BLESSING_VIDEOS_MAP = [
+  { num: 4, destName: 'blessing_tier1.mp4', fallbackPattern: /(?:ให้พร|blessing).*4.*\.mp4$/i },
+  { num: 3, destName: 'blessing_tier2.mp4', fallbackPattern: /(?:ให้พร|blessing).*3.*\.mp4$/i },
+  { num: 1, destName: 'blessing_climax_a.mp4', fallbackPattern: /(?:ให้พร|blessing).*1.*\.mp4$/i },
+  { num: 2, destName: 'blessing_climax_b.mp4', fallbackPattern: /(?:ให้พร|blessing).*2.*\.mp4$/i }
+];
+
+const SEARCH_CANDIDATE_DIRS = [
+  path.join(process.env.USERPROFILE || 'C:/Users/BINARY', 'Desktop'),
+  'C:/Users/BINARY/Desktop',
+  'c:/Users/BINARY/Desktop',
+  __dirname,
+  path.join(__dirname, 'videos'),
+  path.join(__dirname, 'public', 'videos')
+];
+
+function findBlessingSource(num, pattern) {
+  for (const dir of SEARCH_CANDIDATE_DIRS) {
+    try {
+      if (!fs.existsSync(dir)) continue;
+      // Direct candidate checks
+      const directCandidate = path.join(dir, `ให้พร ${num}.mp4`);
+      if (fs.existsSync(directCandidate)) return directCandidate;
+
+      // Scan directory entries for robust Unicode (NFC/NFD) matching
+      const entries = fs.readdirSync(dir);
+      for (const file of entries) {
+        const normNFC = file.normalize('NFC');
+        const normNFD = file.normalize('NFD');
+        if (pattern.test(normNFC) || pattern.test(normNFD) || pattern.test(file)) {
+          return path.join(dir, file);
+        }
+      }
+    } catch (_) {}
+  }
+  return null;
+}
+
+function syncBlessingVideos() {
+  BLESSING_VIDEOS_MAP.forEach(item => {
+    try {
+      const dest = path.join(VIDEOS_DIR, item.destName);
+      const src = findBlessingSource(item.num, item.fallbackPattern);
+      if (src && fs.existsSync(src)) {
+        const srcStat = fs.statSync(src);
+        if (!fs.existsSync(dest) || fs.statSync(dest).size !== srcStat.size) {
+          fs.copyFileSync(src, dest);
+          console.log(`[Blessing Video] Synced ${src} -> ${item.destName} (${srcStat.size} bytes)`);
+        }
+      }
+    } catch (err) {
+      console.warn('[Blessing Video Sync Notice]:', err.message);
+    }
+  });
+}
+syncBlessingVideos();
+
+app.get('/api/sync-blessing-videos', (req, res) => {
+  syncBlessingVideos();
+  const status = BLESSING_VIDEOS_MAP.map(item => {
+    const dest = path.join(VIDEOS_DIR, item.destName);
+    const exists = fs.existsSync(dest);
+    const size = exists ? fs.statSync(dest).size : 0;
+    return { name: item.destName, exists, size };
+  });
+  res.json({ success: true, videos: status });
+});
+
+app.get(['/videos/:name', '/:name(blessing_tier1\\.mp4|blessing_tier2\\.mp4|blessing_climax_a\\.mp4|blessing_climax_b\\.mp4)'], (req, res) => {
+  const rawName = req.params.name || path.basename(req.path);
+  const fileName = path.basename(rawName);
+
+  // Validate allowed file extensions and character whitelist (Defense-in-depth against Path Traversal)
+  if (!/^[a-zA-Z0-9_\-]+\.mp4$/i.test(fileName)) {
+    return res.status(400).send('Invalid video name');
+  }
+
+  const videoPath = path.join(VIDEOS_DIR, fileName);
+  if (!videoPath.startsWith(VIDEOS_DIR)) {
+    return res.status(403).send('Forbidden');
+  }
+
+  if (!fs.existsSync(videoPath)) {
+    syncBlessingVideos();
+  }
+
+  let finalPath = fs.existsSync(videoPath) ? videoPath : null;
+  if (!finalPath) {
+    const matchedItem = BLESSING_VIDEOS_MAP.find(m => m.destName === fileName);
+    if (matchedItem) {
+      finalPath = findBlessingSource(matchedItem.num, matchedItem.fallbackPattern);
+    }
+  }
+
+  if (!finalPath || !fs.existsSync(finalPath)) {
+    return res.status(404).send('Blessing video not found');
+  }
+
+  try {
+    const stat = fs.statSync(finalPath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    if (range) {
+      const parts = range.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunksize = (end - start) + 1;
+      const file = fs.createReadStream(finalPath, { start, end });
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': 'video/mp4'
+      };
+      res.writeHead(206, head);
+      file.pipe(res);
+    } else {
+      const head = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': 'public, max-age=86400'
+      };
+      res.writeHead(200, head);
+      fs.createReadStream(finalPath).pipe(res);
+    }
+  } catch (err) {
+    console.warn('[Blessing Video Stream Error]:', err.message);
+    res.status(500).send('Error streaming blessing video');
+  }
+});
+
+// ---------------------------------------------------------------------
 // Background Music Handler (Supports 举头望明月 .m4a / .mp3 / .wav)
 // ---------------------------------------------------------------------
 const bgmPublicDir = path.join(__dirname, 'public');
@@ -336,6 +478,34 @@ app.get('/api/avatar-proxy', async (req, res) => {
   if (!targetUrl || typeof targetUrl !== 'string' || !targetUrl.startsWith('http')) {
     return res.status(400).send('Invalid url');
   }
+
+  // SSRF Protection: Disallow loopback, private RFC1918, link-local, and internal domain names
+  try {
+    const parsed = new URL(targetUrl);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      return res.status(400).send('Invalid protocol');
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    const isPrivateHost =
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname === '::1' ||
+      /^10\./.test(hostname) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
+      /^192\.168\./.test(hostname) ||
+      /^169\.254\./.test(hostname) ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.internal') ||
+      hostname.endsWith('.localhost');
+
+    if (isPrivateHost) {
+      return res.status(403).send('Forbidden destination');
+    }
+  } catch (urlErr) {
+    return res.status(400).send('Malformed URL');
+  }
+
   try {
     const response = await axios.get(targetUrl, {
       responseType: 'arraybuffer',
@@ -474,17 +644,18 @@ async function synthesizeGoogleTTS(text, filename) {
 // Guarantee default blessing MP3s exist on server boot
 async function ensureDefaultAudioFiles() {
   const defaults = [
-    { name: 'default_blessing.mp3', text: 'ขอพระแม่กวนอิมประทานพรให้ทุกท่านพบเจอแต่ความสุข ความเจริญ สุขภาพแข็งแรง ร่ำรวยเงินทองนะคะ' },
-    { name: 'default_welcome.mp3', text: 'ยินดีต้อนรับทุกท่านสู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ' },
-    { name: 'default_follow.mp3', text: 'อนุโมทนาบุญกับกัลยาณมิตรทุกท่านที่ร่วมกดติดตาม ขอให้มีความสุขนะคะ' }
+    { name: 'default_blessing.mp3', text: 'ขอพระแม่กวนอิมประทานพรในฉากจำลองนี้ ให้ทุกท่านพบเจอแต่ความสุข สุขภาพแข็งแรง ร่ำรวยเงินทองนะคะ' },
+    { name: 'default_welcome.mp3', text: 'ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ' },
+    { name: 'default_follow.mp3', text: 'อนุโมทนาบุญกับกัลยาณมิตรทุกท่านที่ร่วมกดติดตามในฉากจำลองนี้นะคะ' }
   ];
   for (const item of defaults) {
     const p = path.join(CACHE_DIR, item.name);
-    if (!fs.existsSync(p) || fs.statSync(p).size < 1000) {
-      try {
-        await synthesizeGoogleTTS(item.text, item.name);
-      } catch (_) {}
-    }
+    try {
+      if (fs.existsSync(p)) {
+        try { fs.unlinkSync(p); } catch (_) {}
+      }
+      await synthesizeGoogleTTS(item.text, item.name);
+    } catch (_) {}
   }
 }
 setTimeout(ensureDefaultAudioFiles, 1000);
@@ -669,6 +840,12 @@ const state = {
     keepAliveEnabled: true,
     dualMonitorEnabled: true, // Guarantees broadcaster always hears AI voice on PC speakers/headphones
     updatedAt: Date.now()
+  },
+  currentRoundData: {
+    roundNum: 1,
+    roundStartedAt: Date.now(),
+    meritPoints: 0,
+    contributors: new Map()
   },
   historyEvents: []
 };
@@ -1390,14 +1567,29 @@ async function connectToTikTok(username, sessionId, apiKey) {
       uniqueId: user.uniqueId,
       totalLikes
     });
+    io.emit('round_action_like', {
+      uniqueId: user.uniqueId,
+      nickname: user.nickname,
+      meritDelta: 0.2
+    });
   });
 
-  // Event: Share stream
+  // Event: Share stream (Divine Bridge of Merit)
   tiktokConnection.on('share', data => {
     const user = extractTikTokUser(data);
     if (user.uniqueId && user.nickname && user.nickname !== 'ผู้เจริญสติ') {
       getOrCreateDisciple(user, false, true);
     }
+    const sharePayload = {
+      uniqueId: user.uniqueId,
+      nickname: user.nickname,
+      avatar: user.avatar,
+      meritDelta: 5,
+      timestamp: Date.now()
+    };
+    io.emit('action_share', sharePayload);
+    io.emit('round_action_share', sharePayload);
+    io.emit('share', sharePayload);
   });
 
   // Event: Chat Comment
@@ -1408,7 +1600,7 @@ async function connectToTikTok(username, sessionId, apiKey) {
 
     const disciple = getOrCreateDisciple(user, false, true);
 
-    const hasSadhu = /(สาธุ|สาทุ|สาดุ|sadhu|sathu|อนุโมทนา|โมทนา)/i.test(comment);
+    const hasSadhu = /(สาธุ|สาทุ|สาดุ|sadhu|sathu|อนุโมทนา|โมทนา|ขอพร|รวย|เฮง|โชคดี|บารมี)/i.test(comment);
     if (hasSadhu) {
       recordSadhuPoint({
         uniqueId: user.uniqueId || disciple.uniqueId,
@@ -1417,6 +1609,10 @@ async function connectToTikTok(username, sessionId, apiKey) {
         avatar: user.avatar || disciple.avatar
       }, 1, comment);
     }
+
+    const stickMatch = comment.match(/(?:เลข|เบอร์)?\s*([1-9]|[12][0-9]|3[0-6])\b/);
+    const stickNum = stickMatch ? parseInt(stickMatch[1], 10) : null;
+    const meritDelta = hasSadhu ? 1 : 0.5;
 
     const cat = classifyWish(comment);
     if (state.prayerCategories[cat] !== undefined) {
@@ -1440,6 +1636,19 @@ async function connectToTikTok(username, sessionId, apiKey) {
       avatar: disciple.avatar,
       comment
     });
+
+    // Dedicated structured event for RoundManager
+    io.emit('round_action_chat', {
+      seatId: disciple.seatId,
+      uniqueId: disciple.uniqueId,
+      nickname: disciple.nickname,
+      avatar: disciple.avatar,
+      comment,
+      meritDelta,
+      stickNum,
+      isKeyword: hasSadhu
+    });
+
     io.emit('prayer_update', {
       recentWishes: state.recentWishes,
       prayerCategories: state.prayerCategories,
@@ -1553,7 +1762,8 @@ async function connectToTikTok(username, sessionId, apiKey) {
       repeatCount,
       isStreakable,
       effectType,
-      effectName
+      effectName,
+      meritDelta: Math.max(10, Math.floor((diamondIncrement || 1) * 10))
     });
 
     io.emit('queue_update', {
@@ -1734,18 +1944,18 @@ app.post('/api/gemini/bless', async (req, res) => {
     let prompt = '';
     if (isGiftAction) {
       const gLabel = spokenEffectName || 'กราบเบญจางคประดิษฐ์';
-      prompt = `คุณคือพระแม่กวนอิมในสื่อการถ่ายทอดสดจำลองวิหารสวรรค์ จงกล่าวคำอวยพรมงคลให้พรแก่คุณโยม "${spokenName}" ที่ร่วมทำบุญถวาย "${gLabel}" (ให้พูดชื่อการร่วมบุญ "${gLabel}" ห้ามพูดชื่อไอเทมของขวัญ และห้ามพูดคำว่า "ยินดีต้อนรับ" โดยเด็ดขาด ให้กล่าวขอบคุณและอนุโมทนาบุญโดยตรง) อย่างเป็นธรรมชาติ อบอุ่น มีชีวิตชีวา ไพเราะ และสง่างาม (พูดภาษาไทยธรรมชาติ ไม่ต้องยัดเยียดคำว่า "จำลอง" ในคำอวยพร ให้เน้นคำอวยพรที่ลึกซึ้งและจริงใจ) 1 ประโยคสั้นๆ (ความยาว 8-12 คำ) ให้สลับสำนวนหลากหลาย เช่น ขอบคุณคุณ... ที่ร่วมถวาย / อนุโมทนาบุญใหญ่คุณ... / ชื่นใจในจิตศรัทธาของคุณ... / ขอให้เปิดคลังทรัพย์รับโชค / ขอให้เงินทองไหลมาเทมา / ขอให้สุขภาพแข็งแรงและครอบครัวร่มเย็น ลงท้ายด้วย "นะคะ" หรือ "นะจ๊ะ"`;
+      prompt = `คุณคือพระแม่กวนอิมในสื่อถ่ายทอดสดฉากจำลองวิหารสวรรค์ จงกล่าวคำอวยพรมงคลให้พรแก่คุณโยม "${spokenName}" ที่ร่วมทำบุญถวาย "${gLabel}" (ให้พูดชื่อการร่วมบุญ "${gLabel}" ห้ามพูดชื่อไอเทมของขวัญ และห้ามพูดคำว่า "ยินดีต้อนรับ" โดยเด็ดขาด ให้กล่าวขอบคุณและอนุโมทนาบุญโดยตรง) อย่างเป็นธรรมชาติ อบอุ่น ไพเราะ และสง่างาม โดยต้องสอดแทรกคำว่า "ฉากจำลอง" (เช่น "ในฉากจำลองนี้" หรือ "ร่วมบุญในฉากจำลองนี้") ลงในประโยคอย่างเป็นธรรมชาติ 1 ประโยคสั้นๆ (ความยาว 8-12 คำ) เพื่อระบุว่าเป็นฉากจำลอง เช่น "ขอบคุณคุณ... ที่ร่วมถวาย... ในฉากจำลองนี้นะคะ" หรือ "อนุโมทนาบุญคุณ... ร่วมบุญในฉากจำลองนี้นะคะ" หรือ "ขอพรในฉากจำลองนี้ให้คุณ... ร่ำรวยเงินทองนะคะ" ลงท้ายด้วย "นะคะ" หรือ "นะจ๊ะ"`;
     } else if (isGreetingChat) {
-      prompt = `คุณคือพระแม่กวนอิมในสื่อการถ่ายทอดสดจำลองวิหารสวรรค์ จงกล่าวทักทายและต้อนรับคุณโยม "${spokenName}" สู่การถ่ายทอดสดจำลองวิหารสวรรค์ อย่างเป็นกันเอง อบอุ่น มีมนุษยสัมพันธ์ดียิ่ง (พูดภาษาไทยธรรมชาติ ไม่ต้องพูดคำว่าจำลองซ้ำซาก) 1 ประโยคสั้นๆ (8-12 คำ) สลับคำพูดหลากหลาย เช่น "เจริญพรสวัสดีคุณ... สู่การถ่ายทอดสดจำลองวิหารสวรรค์นะคะ" หรือ "สวัสดีจ้ะคุณ... ดีใจที่ได้พบกันในวิหารวันนี้นะคะ" หรือ "ต้อนรับคุณ... สู่วิหาร ขอพระเมตตาคุ้มครองให้โชคดีนะคะ" ลงท้ายด้วย "นะคะ" หรือ "นะจ๊ะ"`;
+      prompt = `คุณคือพระแม่กวนอิมในสื่อถ่ายทอดสดฉากจำลองวิหารสวรรค์ จงกล่าวทักทายและต้อนรับคุณโยม "${spokenName}" อย่างเป็นกันเอง อบอุ่น โดยต้องสอดแทรกคำว่า "ฉากจำลอง" (เช่น "สู่ฉากจำลองวิหารสวรรค์" หรือ "ในฉากจำลองนี้") 1 ประโยคสั้นๆ (8-12 คำ) เช่น "เจริญพรสวัสดีคุณ... สู่ฉากจำลองวิหารสวรรค์นะคะ" หรือ "สวัสดีจ้ะคุณ... ดีใจที่ได้พบกันในฉากจำลองนี้นะคะ" หรือ "ต้อนรับคุณ... สู่ฉากจำลองวิหาร ขอให้โชคดีมีสุขนะคะ" ลงท้ายด้วย "นะคะ" หรือ "นะจ๊ะ"`;
     } else if (isSadhuChat) {
-      prompt = `คุณคือพระแม่กวนอิมในสื่อการถ่ายทอดสดจำลองวิหารสวรรค์ จงกล่าวอนุโมทนาและให้พรคุณโยม "${spokenName}" ที่ร่วมพิมพ์สาธุอนุโมทนาบุญบารมี อย่างอบอุ่นและชื่นใจ (พูดภาษาไทยธรรมชาติ ไม่ต้องยัดเยียดคำว่า "จำลอง" ในคำอวยพร) 1 ประโยคสั้นๆ (8-12 คำ) สลับสำนวน เช่น "สาธุอนุโมทนาคุณ... ขอให้ชีวิตพบเจอแต่สิ่งมงคลนะคะ" หรือ "ขอพระบารมีคุ้มครองคุณ... ขอให้จิตใจเบิกบานและมีโชคนะคะ" หรือ "อนุโมทนาในบุญบริสุทธิ์ของคุณ... ขอให้ชีวิตรุ่งเรืองนะคะ" ลงท้ายด้วย "นะคะ"`;
+      prompt = `คุณคือพระแม่กวนอิมในสื่อถ่ายทอดสดฉากจำลองวิหารสวรรค์ จงกล่าวอนุโมทนาและให้พรคุณโยม "${spokenName}" ที่ร่วมพิมพ์สาธุ อย่างอบอุ่น โดยต้องสอดแทรกคำว่า "ฉากจำลอง" (เช่น "ในฉากจำลองนี้" หรือ "ร่วมบุญในฉากจำลองนี้") 1 ประโยคสั้นๆ (8-12 คำ) เช่น "สาธุอนุโมทนาคุณ... ร่วมบุญในฉากจำลองนี้นะคะ" หรือ "ขอพระบารมีในฉากจำลองนี้คุ้มครองคุณ... ให้มีโชคนะคะ" หรือ "อนุโมทนาคุณ... ในฉากจำลองวิหาร ขอให้ชีวิตรุ่งเรืองนะคะ" ลงท้ายด้วย "นะคะ"`;
     } else if (cleanWish) {
-      prompt = `คุณคือพระแม่กวนอิมในสื่อการถ่ายทอดสดจำลองวิหารสวรรค์ จงกล่าวคำอวยพรมงคลตามคำขอพร "${cleanWish}" แก่คุณโยม "${spokenName}" อย่างอบอุ่น เข้าอกเข้าใจ และให้กำลังใจ (พูดภาษาไทยธรรมชาติ ไม่ต้องยัดเยียดคำว่า "จำลอง" ในคำอวยพร) 1 ประโยคสั้นๆ (8-12 คำ) สลับสำนวน เช่น "ขอพระบารมีให้คุณ... สมความปรารถนาและมีแต่รอยยิ้มนะคะ" หรือ "ขอพระแม่คุ้มครองคุณ... ให้ผ่านพ้นทุกอุปสรรคและร่ำรวยนะคะ" ลงท้ายด้วย "นะคะ"`;
+      prompt = `คุณคือพระแม่กวนอิมในสื่อถ่ายทอดสดฉากจำลองวิหารสวรรค์ จงกล่าวคำอวยพรมงคลตามคำขอพร "${cleanWish}" แก่คุณโยม "${spokenName}" อย่างอบอุ่น โดยต้องสอดแทรกคำว่า "ฉากจำลอง" (เช่น "ในฉากจำลองนี้" หรือ "ขอพรในฉากจำลองนี้") 1 ประโยคสั้นๆ (8-12 คำ) เช่น "ขอพรในฉากจำลองนี้ให้คุณ... สมความปรารถนานะคะ" หรือ "ขอพระแม่ในฉากจำลองคุ้มครองคุณ... ให้ร่ำรวยและมีสุขนะคะ" ลงท้ายด้วย "นะคะ"`;
     } else {
       if (spokenName === 'กัลยาณมิตร' || spokenName === 'ผู้เจริญสติ' || spokenName === 'ผู้มีจิตศรัทธา') {
-        prompt = `คุณคือพระแม่กวนอิมในสื่อการถ่ายทอดสดจำลองวิหารสวรรค์ จงกล่าวต้อนรับกัลยาณมิตรทุกท่านที่เข้ามาร่วมสวดมนต์เจริญสติในวิหารอย่างอบอุ่น เป็นกันเอง และชื่นใจ (พูดภาษาไทยธรรมชาติ) 1 ประโยคสั้นๆ (8-12 คำ) สลับสำนวนหลากหลาย ไม่ซ้ำซาก เช่น "ยินดีต้อนรับทุกท่านสู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ" หรือ "เจริญพรต้อนรับกัลยาณมิตรทุกท่าน แวะมาพักใจและรับพลังบุญในวิหารนี้นะคะ" ลงท้ายด้วย "นะคะ"`;
+        prompt = `คุณคือพระแม่กวนอิมในสื่อถ่ายทอดสดฉากจำลองวิหารสวรรค์ จงกล่าวต้อนรับกัลยาณมิตรทุกท่านที่เข้ามาร่วมเจริญสติ โดยต้องสอดแทรกคำว่า "ฉากจำลอง" (เช่น "สู่ฉากจำลองวิหารสวรรค์" หรือ "ในฉากจำลองนี้") 1 ประโยคสั้นๆ (8-12 คำ) เช่น "ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ" หรือ "เจริญพรต้อนรับสู่ฉากจำลองวิหาร แวะมารับพลังบุญนี้นะคะ" ลงท้ายด้วย "นะคะ"`;
       } else {
-        prompt = `คุณคือพระแม่กวนอิมในสื่อการถ่ายทอดสดจำลองวิหารสวรรค์ จงกล่าวต้อนรับและทักทายคุณโยม "${spokenName}" สู่การถ่ายทอดสดจำลองวิหารสวรรค์ อย่างเป็นมิตร อบอุ่น มีมนุษยสัมพันธ์ที่ดีเยี่ยม (พูดภาษาไทยธรรมชาติ) 1 ประโยคสั้นๆ (8-12 คำ) สลับสำนวน เช่น "ยินดีต้อนรับคุณ... สู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้สุขใจในวันนี้นะคะ" หรือ "ดีใจที่ได้พบคุณ... ในวิหาร ขอพระเมตตาคุ้มครองให้โชคดีนะคะ" หรือ "เจริญพรต้อนรับคุณ... แวะมาเติมพลังบุญและความสุขในวิหารนี้นะคะ" ลงท้ายด้วย "นะคะ" หรือ "นะจ๊ะ"`;
+        prompt = `คุณคือพระแม่กวนอิมในสื่อถ่ายทอดสดฉากจำลองวิหารสวรรค์ จงกล่าวต้อนรับและทักทายคุณโยม "${spokenName}" โดยต้องสอดแทรกคำว่า "ฉากจำลอง" (เช่น "สู่ฉากจำลองวิหารสวรรค์" หรือ "ในฉากจำลองนี้") 1 ประโยคสั้นๆ (8-12 คำ) เช่น "ยินดีต้อนรับคุณ... สู่ฉากจำลองวิหารสวรรค์ ขอให้มีความสุขนะคะ" หรือ "ดีใจที่ได้พบคุณ... ในฉากจำลองวิหาร ขอให้โชคดีนะคะ" หรือ "เจริญพรต้อนรับคุณ... สู่ฉากจำลองวิหาร ขอให้มีโชคลาภนะคะ" ลงท้ายด้วย "นะคะ" หรือ "นะจ๊ะ"`;
       }
     }
 
@@ -1822,115 +2032,115 @@ app.post('/api/gemini/bless', async (req, res) => {
       const specificEffect = spokenEffectName || 'กราบเบญจางคประดิษฐ์';
       if (specificEffect.includes('เซียมซี') || cleanEffectType === 'seamsi') {
         const seamsiBlessingTemplates = [
-          `อนุโมทนาคุณ ${spokenName} ร่วมเสี่ยงเซียมซีมหาโชค ขอให้ได้ใบมงคลและรับโชคใหญ่นะคะ`,
-          `ขอบคุณคุณ ${spokenName} ที่เสี่ยงเซียมซีมหาโชค ขอให้คำทำนายนำพาความร่ำรวยมาให้นะคะ`,
-          `สาธุอนุโมทนาคุณ ${spokenName} เสี่ยงเซียมซีมหาโชค ขอให้เปิดดวงรับทรัพย์ก้อนโตนะคะ`,
-          `ขอพระแม่บารมีคุ้มครองคุณ ${spokenName} ที่เสี่ยงเซียมซี ขอให้สมหวังดั่งใจปรารถนานะคะ`,
-          `ชื่นใจในศรัทธาของคุณ ${spokenName} ร่วมเสี่ยงเซียมซีมหาโชค ขอให้เฮงๆ ปังๆ นะคะ`,
-          `ขออวยพรให้คุณ ${spokenName} ที่เสี่ยงเซียมซีมหาโชค ได้รับข่าวมงคลและโชคลาภลอยนะคะ`
+          `อนุโมทนาคุณ ${spokenName} เสี่ยงเซียมซีในฉากจำลองนี้ ขอให้รับโชคใหญ่นะคะ`,
+          `ขอบคุณคุณ ${spokenName} เสี่ยงเซียมซีในฉากจำลองวิหาร ขอให้ร่ำรวยนะคะ`,
+          `สาธุคุณ ${spokenName} เสี่ยงเซียมซีมหาโชคในฉากจำลองนี้ ขอให้เปิดดวงรับทรัพย์นะคะ`,
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} ที่เสี่ยงเซียมซี สมหวังดั่งใจปรารถนานะคะ`,
+          `ชื่นใจที่คุณ ${spokenName} ร่วมเสี่ยงเซียมซีในฉากจำลองนี้ ขอให้เฮงๆ ปังๆ นะคะ`,
+          `ขออวยพรคุณ ${spokenName} ในฉากจำลองนี้ ได้รับข่าวมงคลและโชคลาภลอยนะคะ`
         ];
         blessing = seamsiBlessingTemplates[Math.floor(Math.random() * seamsiBlessingTemplates.length)];
       } else {
         const giftBlessingTemplates = [
-          `ขอบคุณคุณ ${spokenName} ที่ร่วมถวาย${specificEffect} ขอให้ร่ำรวยมีความสุขมากๆ นะคะ`,
-          `อนุโมทนาคุณ ${spokenName} ที่ร่วมถวาย${specificEffect} ขอให้เงินทองไหลมาเทมานะคะ`,
-          `ขอบคุณคุณ ${spokenName} ร่วมถวาย${specificEffect} ขอให้สุขภาพแข็งแรงและโชคดีนะคะ`,
-          `ขอขอบใจคุณ ${spokenName} ร่วมถวาย${specificEffect} ขอให้สมปรารถนาดั่งใจหวังนะคะ`,
-          `อนุโมทนาบุญคุณ ${spokenName} ร่วมถวาย${specificEffect} ขอให้ชีวิตรุ่งเรืองและราบรื่นนะคะ`,
-          `ชื่นใจในบุญของคุณ ${spokenName} ร่วมถวาย${specificEffect} ขอให้มีแต่โชคลาภเงินทองนะคะ`,
-          `อนุโมทนาสาธุคุณ ${spokenName} ขอให้บุญ${specificEffect} หนุนนำให้พบคู่บารมีและกัลยาณมิตรนะคะ`,
-          `บารมีคุ้มครองคุณ ${spokenName} ที่ร่วมถวาย${specificEffect} ขอให้เปิดคลังทรัพย์รับโชคใหญ่นะคะ`,
-          `ขอบคุณคุณ ${spokenName} ยิ่งนัก ร่วมทำบุญ ขอให้บุญรักษาและแคล้วคลาดปลอดภัยนะคะ`,
-          `ขออวยพรให้คุณ ${spokenName} ที่ร่วมถวาย${specificEffect} การงานก้าวหน้า ค้าขายร่ำรวยนะคะ`,
-          `อนุโมทนาบุญคุณ ${spokenName} ในวิหารแห่งนี้ ขอให้ชีวิตสดใส ไร้โรคภัยเบียดเบียนนะคะ`,
-          `ขอบคุณคุณ ${spokenName} ที่นำจิตศรัทธามาร่วมถวาย${specificEffect} ขอให้มีกินมีใช้ไม่ขาดมือนนะคะ`,
-          `สาธุอนุโมทนาคุณ ${spokenName} ร่วมถวาย${specificEffect} ขอให้คำอธิษฐานสัมฤทธิผลทันใจนะคะ`,
-          `ขออวยพรให้คุณ ${spokenName} รับพรมงคลร้อยแปดประการ ร่ำรวยมั่งคั่งและร่มเย็นเป็นสุขนะคะ`
+          `ขอบคุณคุณ ${spokenName} ที่ร่วมถวาย${specificEffect} ในฉากจำลองนี้นะคะ`,
+          `อนุโมทนาคุณ ${spokenName} ร่วมถวาย${specificEffect} ในฉากจำลอง ขอให้ร่ำรวยนะคะ`,
+          `ขอบคุณคุณ ${spokenName} ถวาย${specificEffect} ในฉากจำลองนี้ ขอให้เงินทองไหลมาเทมานะคะ`,
+          `อนุโมทนาบุญคุณ ${spokenName} ถวาย${specificEffect} ในฉากจำลอง ขอให้สุขภาพแข็งแรงนะคะ`,
+          `ขอขอบใจคุณ ${spokenName} ร่วมถวาย${specificEffect} ในฉากจำลองนี้ ขอให้สมปรารถนานะคะ`,
+          `อนุโมทนาบุญคุณ ${spokenName} ในฉากจำลองนี้ ขอให้ชีวิตรุ่งเรืองและราบรื่นนะคะ`,
+          `ชื่นใจในจิตศรัทธาคุณ ${spokenName} ถวาย${specificEffect} ในฉากจำลองนี้นะคะ`,
+          `บารมีคุ้มครองคุณ ${spokenName} ถวาย${specificEffect} ในฉากจำลองนี้ ขอให้รับโชคใหญ่นะคะ`,
+          `ขอบคุณคุณ ${spokenName} ร่วมบุญในฉากจำลองนี้ ขอให้แคล้วคลาดปลอดภัยนะคะ`,
+          `ขออวยพรคุณ ${spokenName} ร่วมถวาย${specificEffect} ในฉากจำลองนี้ การงานก้าวหน้านะคะ`,
+          `อนุโมทนาบุญคุณ ${spokenName} ในฉากจำลองวิหารนี้ ขอให้ชีวิตสดใส ไร้โรคภัยนะคะ`,
+          `ขอบคุณคุณ ${spokenName} ถวาย${specificEffect} ในฉากจำลองนี้ มีกินมีใช้ไม่ขาดมือนนะคะ`,
+          `สาธุอนุโมทนาคุณ ${spokenName} ถวาย${specificEffect} ในฉากจำลองนี้ ขอให้สัมฤทธิผลนะคะ`,
+          `ขออวยพรคุณ ${spokenName} ในฉากจำลองนี้ ร่ำรวยมั่งคั่งและร่มเย็นเป็นสุขนะคะ`
         ];
         blessing = giftBlessingTemplates[Math.floor(Math.random() * giftBlessingTemplates.length)];
       }
     } else if (isGreetingChat) {
       const greetingChatTemplates = [
-        `เจริญพรสวัสดีคุณ ${spokenName} สู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้มีความสุขกายสบายใจนะคะ`,
-        `สวัสดีจ้ะคุณ ${spokenName} สู่วิหาร ขอพระแม่ประทานพรให้โชคดีมีสุขนะคะ`,
-        `สาธุเจริญพรคุณ ${spokenName} ต้อนรับสู่วิหาร ขอให้พบเจอแต่สิ่งมงคลนะคะ`,
-        `สวัสดีคุณ ${spokenName} ชื่นใจจริงที่ได้แวะมาทักทายในวิหารวันนี้นะคะ`,
-        `เจริญสุขสวัสดีคุณ ${spokenName} สู่วิหาร ขอให้จิตใจผ่องใส สุขภาพแข็งแรงนะคะ`,
-        `สวัสดีจ้ะคุณ ${spokenName} วันนี้ขอให้เป็นวันที่ดีและราบรื่นในทุกเรื่องนะคะ`,
-        `กราบรับพรอันบริสุทธิ์นะจ๊ะคุณ ${spokenName} ขอให้ชีวิตมีแต่ความเจริญรุ่งเรืองนะคะ`,
-        `ยินดีที่ได้ทักทายคุณ ${spokenName} สู่การถ่ายทอดสดจำลองวิหารสวรรค์นะคะ`
+        `เจริญพรสวัสดีคุณ ${spokenName} สู่ฉากจำลองวิหารสวรรค์ ขอให้มีความสุขนะคะ`,
+        `สวัสดีจ้ะคุณ ${spokenName} สู่ฉากจำลองวิหาร ขอพระแม่ประทานพรให้โชคดีนะคะ`,
+        `สาธุเจริญพรคุณ ${spokenName} ต้อนรับสู่ฉากจำลองวิหาร ขอให้พบเจอแต่สิ่งมงคลนะคะ`,
+        `สวัสดีคุณ ${spokenName} ชื่นใจจริงที่ได้พบกันในฉากจำลองวันนี้นะคะ`,
+        `เจริญสุขสวัสดีคุณ ${spokenName} สู่ฉากจำลองวิหาร ขอให้สุขภาพแข็งแรงนะคะ`,
+        `สวัสดีจ้ะคุณ ${spokenName} ในฉากจำลองนี้ ขอให้เป็นวันที่ราบรื่นทุกเรื่องนะคะ`,
+        `กราบรับพรอันบริสุทธิ์นะจ๊ะคุณ ${spokenName} ในฉากจำลองวิหารนี้นะคะ`,
+        `ยินดีที่ได้ทักทายคุณ ${spokenName} สู่ฉากจำลองวิหารสวรรค์นะคะ`
       ];
       blessing = greetingChatTemplates[Math.floor(Math.random() * greetingChatTemplates.length)];
     } else if (isSadhuChat) {
       const sadhuTemplates = [
-        `สาธุอนุโมทนาบุญคุณ ${spokenName} ขอให้พบเจอแต่สิ่งมงคลและเป็นสุขนะคะ`,
-        `อนุโมทนาสาธุคุณ ${spokenName} ขอพระแม่ประทานพรให้เงินทองไหลมาเทมานะคะ`,
-        `สาธุบารมีคุ้มครองคุณ ${spokenName} ขอให้สุขภาพแข็งแรงและโชคดีนะคะ`,
-        `อนุโมทนาบุญคุณ ${spokenName} ในวิหารแห่งนี้ ขอให้สมความปรารถนาทุกประการนะคะ`,
-        `สาธุในจิตอันเป็นกุศลของคุณ ${spokenName} ขอให้ผลบุญหนุนนำชีวิตให้รุ่งเรืองนะคะ`,
-        `อนุโมทนาสาธุคุณ ${spokenName} ขอให้หมดหนี้หมดสิน มีกินมีใช้ตลอดไปนะคะ`,
-        `สาธุรับบุญเต็มเปี่ยมนะจ๊ะคุณ ${spokenName} ขอให้ร่มเย็นเป็นสุขทั้งครอบครัวนะคะ`,
-        `อนุโมทนาบุญบารมีคุณ ${spokenName} ขอให้มีโชคใหญ่นะคะ`
+        `สาธุอนุโมทนาบุญคุณ ${spokenName} ในฉากจำลองนี้ ขอให้พบแต่สิ่งมงคลนะคะ`,
+        `อนุโมทนาสาธุคุณ ${spokenName} ในฉากจำลอง ขอให้เงินทองไหลมาเทมานะคะ`,
+        `สาธุบารมีคุ้มครองคุณ ${spokenName} ในฉากจำลองนี้ ขอให้สุขภาพแข็งแรงนะคะ`,
+        `อนุโมทนาบุญคุณ ${spokenName} ในฉากจำลองวิหารนี้ ขอให้สมปรารถนานะคะ`,
+        `สาธุในกุศลจิตของคุณ ${spokenName} ในฉากจำลอง ขอให้ชีวิตรุ่งเรืองนะคะ`,
+        `อนุโมทนาสาธุคุณ ${spokenName} ร่วมบุญในฉากจำลองนี้ ขอให้มั่งมีตลอดไปนะคะ`,
+        `สาธุรับบุญเต็มเปี่ยมนะจ๊ะคุณ ${spokenName} ในฉากจำลองวิหารนี้นะคะ`,
+        `อนุโมทนาบุญบารมีคุณ ${spokenName} ในฉากจำลองนี้ ขอให้มีโชคใหญ่นะคะ`
       ];
       blessing = sadhuTemplates[Math.floor(Math.random() * sadhuTemplates.length)];
     } else if (cleanAction.includes('เข้าร่วม') || cleanAction.includes('ต้อนรับ') || cleanAction.includes('เจริญสติ') || cleanAction.includes('join')) {
       let welcomeTemplates = [];
       if (spokenName === 'กัลยาณมิตร' || spokenName === 'ผู้เจริญสติ' || spokenName === 'ผู้มีจิตศรัทธา') {
         welcomeTemplates = [
-          `ยินดีต้อนรับทุกท่านสู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นและมีความสุขนะคะ`,
-          `เจริญพรต้อนรับกัลยาณมิตรผู้มีจิตศรัทธา แวะมาพักใจและรับพลังบุญในวิหารจำลองนี้นะคะ`,
-          `ยินดีต้อนรับสู่ศาลาธรรมจำลอง ขอพระเมตตาคุ้มครองให้พบเจอแต่สิ่งดีงามนะคะ`,
-          `ขอต้อนรับทุกท่านสู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้ชีวิตรุ่งเรืองและราบรื่นนะคะ`,
-          `เจริญสุขแด่กัลยาณมิตรทุกท่าน เข้ามาร่วมเจริญสติในแดนธรรมจำลองนี้นะคะ`,
-          `ยินดีต้อนรับทุกท่านสู่วิหารจำลอง ขอให้คลายความเหนื่อยล้า และมีแต่รอยยิ้มในใจนะคะ`,
-          `ขอต้อนรับเข้าสู่วิหารธรรมจำลอง ขอให้บุญรักษาและโชคดีตลอดวันนะคะ`
+          `ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ`,
+          `เจริญพรต้อนรับกัลยาณมิตร แวะมารับพลังบุญในฉากจำลองวิหารนี้นะคะ`,
+          `ยินดีต้อนรับสู่ฉากจำลองแดนธรรม ขอพระเมตตาคุ้มครองให้พบเจอแต่สิ่งดีงามนะคะ`,
+          `ขอต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์ ขอให้ชีวิตรุ่งเรืองและราบรื่นนะคะ`,
+          `เจริญสุขแด่ทุกท่าน มาร่วมเจริญสติในฉากจำลองวิหารนี้นะคะ`,
+          `ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหาร ขอให้คลายความเหนื่อยล้าและมีรอยยิ้มนะคะ`,
+          `ขอต้อนรับเข้าสู่ฉากจำลองวิหารธรรม ขอให้บุญรักษาและโชคดีตลอดวันนะคะ`
         ];
       } else {
         welcomeTemplates = [
-          `ยินดีต้อนรับคุณ ${spokenName} สู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ`,
-          `เจริญพรต้อนรับคุณ ${spokenName} สู่วิหารจำลอง ขอให้พบเจอแต่ความสุขใจในวันนี้นะคะ`,
-          `ยินดีที่ได้พบคุณ ${spokenName} ในวิหารจำลอง ขอพระเมตตาคุ้มครองให้โชคดีมีสุขนะคะ`,
-          `ขอต้อนรับคุณ ${spokenName} สู่การถ่ายทอดสดจำลองวิหารสวรรค์ ขอให้มีโชคลาภเงินทองนะคะ`,
-          `สวัสดีต้อนรับคุณ ${spokenName} แวะเข้ามาพักผ่อนจิตใจในศาลาธรรมจำลองนี้นะคะ`,
-          `ชื่นใจที่ได้พบคุณ ${spokenName} สู่วิหารจำลอง ขอให้สิ่งศักดิ์สิทธิ์อำนวยพรให้ราบรื่นนะคะ`,
-          `ยินดีต้อนรับคุณ ${spokenName} สู่วิหารจำลอง ขอให้วันนี้เป็นวันที่สดใสและสมหวังนะคะ`,
-          `เจริญสุขคุณ ${spokenName} ขอต้อนรับเข้าสู่วิหารจำลอง ขอให้เป็นสุขกายสบายใจนะคะ`,
-          `ดีใจที่ได้พบคุณ ${spokenName} มาร่วมจำลองบุญบารมี ขอให้ชีวิตรุ่งโรจน์นะคะ`,
-          `ขอต้อนรับคุณ ${spokenName} สู่วิหารจำลอง ขอให้สุขภาพแข็งแรงและร่ำรวยนะคะ`
+          `ยินดีต้อนรับคุณ ${spokenName} สู่ฉากจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ`,
+          `เจริญพรต้อนรับคุณ ${spokenName} สู่ฉากจำลองวิหาร ขอให้พบเจอแต่ความสุขใจนะคะ`,
+          `ยินดีที่ได้พบคุณ ${spokenName} ในฉากจำลองวิหาร ขอให้โชคดีมีสุขนะคะ`,
+          `ขอต้อนรับคุณ ${spokenName} สู่ฉากจำลองวิหารสวรรค์ ขอให้มีโชคลาภเงินทองนะคะ`,
+          `สวัสดีต้อนรับคุณ ${spokenName} สู่ฉากจำลองศาลาธรรม ขอให้สุขใจนะคะ`,
+          `ชื่นใจที่ได้พบคุณ ${spokenName} ในฉากจำลองวิหาร ขอให้อำนวยพรราบรื่นนะคะ`,
+          `ยินดีต้อนรับคุณ ${spokenName} สู่ฉากจำลองวิหาร ขอให้สดใสและสมหวังนะคะ`,
+          `เจริญสุขคุณ ${spokenName} ขอต้อนรับเข้าสู่ฉากจำลองวิหาร ขอให้สบายใจนะคะ`,
+          `ดีใจที่ได้พบคุณ ${spokenName} มาร่วมบุญในฉากจำลอง ขอให้ชีวิตรุ่งโรจน์นะคะ`,
+          `ขอต้อนรับคุณ ${spokenName} สู่ฉากจำลองวิหาร ขอให้สุขภาพแข็งแรงและร่ำรวยนะคะ`
         ];
       }
       blessing = welcomeTemplates[Math.floor(Math.random() * welcomeTemplates.length)];
     } else if (cleanAction.includes('ติดตาม') || cleanAction.includes('follow')) {
       const followTemplates = [
-        `อนุโมทนาบุญคุณ ${spokenName} ที่กดติดตามร่วมจำลองบุญบารมี ขอให้เจริญรุ่งเรืองนะคะ`,
-        `ขอบคุณคุณ ${spokenName} ที่ร่วมเป็นกัลยาณมิตรในวิหารจำลอง ขอให้โชคดีมีสุขนะคะ`,
-        `ยินดีที่ได้ร่วมทางธรรมจำลองกับคุณ ${spokenName} ขอให้สมปรารถนานะคะ`,
-        `ขอบคุณคุณ ${spokenName} ที่มาร่วมเป็นสายบุญในวิหารจำลอง ขอให้มั่งมีศรีสุขนะคะ`,
-        `อนุโมทนาบุญคุณ ${spokenName} ขอให้จำลองบุญสัมพันธ์นี้ นำพาความสุขความสำเร็จมาให้นะคะ`
+        `อนุโมทนาบุญคุณ ${spokenName} กดติดตามร่วมบุญในฉากจำลองนี้นะคะ`,
+        `ขอบคุณคุณ ${spokenName} ร่วมเป็นกัลยาณมิตรในฉากจำลองวิหาร ขอให้โชคดีนะคะ`,
+        `ยินดีที่ได้ร่วมทางธรรมในฉากจำลองกับคุณ ${spokenName} ขอให้สมปรารถนานะคะ`,
+        `ขอบคุณคุณ ${spokenName} มาร่วมเป็นสายบุญในฉากจำลองวิหารนี้นะคะ`,
+        `อนุโมทนาบุญคุณ ${spokenName} ในฉากจำลองนี้ ขอให้นำพาความสุขสำเร็จมาให้นะคะ`
       ];
       blessing = followTemplates[Math.floor(Math.random() * followTemplates.length)];
     } else if (cleanAction.includes('กุหลาบ') || cleanAction.includes('kowtow')) {
       const kowtowTemplates = [
-        `อนุโมทนาคุณ ${spokenName} ร่วมจำลองถวายกุหลาบมงคล ขอให้ร่ำรวยโชคดีนะคะ`,
-        `อนุโมทนาบุญคุณ ${spokenName} ร่วมจำลองบุญ ขอให้เงินทองไหลมาเทมานะคะ`,
-        `บารมีคุ้มครองคุณ ${spokenName} ในวิหารจำลอง ขอให้สุขภาพแข็งแรงนะคะ`,
-        `ขอให้คุณ ${spokenName} พบเจอแต่กัลยาณมิตรที่ดีในวิหารจำลองนี้นะคะ`,
-        `ชื่นใจในจิตศรัทธาของคุณ ${spokenName} ร่วมจำลองบุญ ขอให้ชีวิตสดใสและราบรื่นนะคะ`
+        `อนุโมทนาคุณ ${spokenName} ร่วมถวายกุหลาบในฉากจำลองนี้ ขอให้ร่ำรวยนะคะ`,
+        `อนุโมทนาบุญคุณ ${spokenName} ร่วมบุญในฉากจำลองนี้ ขอให้เงินทองไหลมาเทมานะคะ`,
+        `บารมีคุ้มครองคุณ ${spokenName} ในฉากจำลองวิหาร ขอให้สุขภาพแข็งแรงนะคะ`,
+        `ขอให้คุณ ${spokenName} พบเจอกัลยาณมิตรที่ดีในฉากจำลองวิหารนี้นะคะ`,
+        `ชื่นใจในจิตศรัทธาคุณ ${spokenName} ในฉากจำลองนี้ ขอให้ชีวิตสดใสราบรื่นนะคะ`
       ];
       blessing = kowtowTemplates[Math.floor(Math.random() * kowtowTemplates.length)];
     } else if (cleanAction.includes('บัว') || cleanAction.includes('lotus')) {
       const lotusTemplates = [
-        `อนุโมทนาคุณ ${spokenName} ร่วมจำลองถวายบัวทิพย์ ขอให้จิตใจผ่องใสนะคะ`,
-        `อนุโมทนาบุญคุณ ${spokenName} ร่วมจำลองบุญ ขอให้ชีวิตสงบร่มเย็นนะคะ`,
-        `บารมีบัวทิพย์คุ้มครองคุณ ${spokenName} ในวิหารจำลอง ขอให้ชีวิตรุ่งเรืองนะคะ`,
-        `ขอให้ดวงใจของคุณ ${spokenName} ผุดผ่องดั่งดอกบัวในวิหารจำลองนี้นะคะ`
+        `อนุโมทนาคุณ ${spokenName} ร่วมถวายบัวทิพย์ในฉากจำลองนี้ ขอให้จิตใจผ่องใสนะคะ`,
+        `อนุโมทนาบุญคุณ ${spokenName} ร่วมบุญในฉากจำลองนี้ ขอให้ชีวิตสงบร่มเย็นนะคะ`,
+        `บารมีบัวทิพย์คุ้มครองคุณ ${spokenName} ในฉากจำลองวิหาร ขอให้ชีวิตรุ่งเรืองนะคะ`,
+        `ขอให้ดวงใจคุณ ${spokenName} ผุดผ่องดั่งดอกบัวในฉากจำลองวิหารนี้นะคะ`
       ];
       blessing = lotusTemplates[Math.floor(Math.random() * lotusTemplates.length)];
     } else if (cleanAction.includes('บุปผา') || cleanAction.includes('flowers')) {
       const flowerTemplates = [
-        `อนุโมทนาบุญใหญ่คุณ ${spokenName} ร่วมจำลองโปรยบุปผามงคล ขอให้มั่งมีศรีสุขนะคะ`,
-        `อนุโมทนาบุญคุณ ${spokenName} ร่วมจำลองบุญ ขอให้ปราศจากทุกข์โศกนะคะ`,
-        `ขอให้กลิ่นบุญหอมฟุ้งจรุงใจคุณ ${spokenName} ในวิหารจำลอง นำพาลาภยศและชื่อเสียงมาให้นะคะ`
+        `อนุโมทนาบุญใหญ่คุณ ${spokenName} โปรยบุปผาในฉากจำลองนี้ ขอให้มั่งมีศรีสุขนะคะ`,
+        `อนุโมทนาบุญคุณ ${spokenName} ร่วมบุญในฉากจำลองนี้ ขอให้ปราศจากทุกข์โศกนะคะ`,
+        `ขอให้กลิ่นบุญในฉากจำลองวิหาร นำพาโชคลาภมาสู่คุณ ${spokenName} นะคะ`
       ];
       blessing = flowerTemplates[Math.floor(Math.random() * flowerTemplates.length)];
     } else if (cleanAction.includes('ขอพร') || cleanAction.includes('แชท') || cleanWish) {
@@ -1942,54 +2152,54 @@ app.post('/api/gemini/bless', async (req, res) => {
 
       if (shortWish.length >= 2 && shortWish.length <= 40) {
         const wishReadTemplates = [
-          `ขอจำลองพรให้คุณ ${spokenName} ที่ขอให้${shortWish} จงสัมฤทธิผลและสมปรารถนานะคะ`,
-          `ขอจำลองพรบารมีคุ้มครองคุณ ${spokenName} ที่ขอให้${shortWish} ขอให้สำเร็จดั่งใจหวังนะคะ`,
-          `ขอจำลองพรคุณ ${spokenName} ที่ตั้งจิตขอให้${shortWish} พบเจอแต่สิ่งมงคลและเป็นสุขนะคะ`,
-          `ขอให้แรงอธิษฐานจิตจำลองของคุณ ${spokenName} ที่ขอให้${shortWish} สัมฤทธิผลรวดเร็วดั่งใจหวังนะคะ`,
-          `ขอจำลองพรพระเมตตาคุ้มครองคุณ ${spokenName} ที่ขอให้${shortWish} ขอให้เปิดทางสว่างและราบรื่นนะคะ`
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} ที่ขอให้${shortWish} จงสัมฤทธิผลนะคะ`,
+          `บารมีในฉากจำลองนี้คุ้มครองคุณ ${spokenName} ที่ขอให้${shortWish} ขอให้สำเร็จดั่งใจนะคะ`,
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} ที่ขอให้${shortWish} พบเจอแต่สิ่งมงคลนะคะ`,
+          `ขอให้แรงอธิษฐานในฉากจำลองนี้ของคุณ ${spokenName} ที่ขอให้${shortWish} สัมฤทธิผลนะคะ`,
+          `ขอพระเมตตาในฉากจำลองนี้คุ้มครองคุณ ${spokenName} ที่ขอให้${shortWish} ให้ราบรื่นนะคะ`
         ];
         blessing = wishReadTemplates[Math.floor(Math.random() * wishReadTemplates.length)];
       } else if (cleanWish.includes('งาน') || cleanWish.includes('สำเร็จ') || cleanWish.includes('ก้าวหน้า') || cleanWish.includes('ค้าขาย') || cleanWish.includes('ออเดอร์')) {
         const workTemplates = [
-          `ขอจำลองพรให้คุณ ${spokenName} การงานราบรื่น ค้าขายร่ำรวยและสำเร็จดั่งใจนะคะ`,
-          `ขอให้คุณ ${spokenName} ธุรกิจเจริญก้าวหน้า ออเดอร์ปังๆ เงินทองไหลมาเทมานะคะ`,
-          `บารมีเปิดทางให้คุณ ${spokenName} การงานก้าวกระโดด ผู้ใหญ่เมตตาเอ็นดูนะคะ`
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} การงานราบรื่น ค้าขายร่ำรวยนะคะ`,
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} ธุรกิจก้าวหน้า เงินทองไหลมาเทมานะคะ`,
+          `บารมีในฉากจำลองนี้เปิดทางให้คุณ ${spokenName} การงานก้าวหน้า ผู้ใหญ่เมตตานะคะ`
         ];
         blessing = workTemplates[Math.floor(Math.random() * workTemplates.length)];
       } else if (cleanWish.includes('รวย') || cleanWish.includes('เงิน') || cleanWish.includes('โชค') || cleanWish.includes('ลาภ') || cleanWish.includes('ทอง') || cleanWish.includes('ปลดหนี้')) {
         const wealthTemplates = [
-          `ขอจำลองพรให้คุณ ${spokenName} มั่งคั่งร่ำรวย เงินทองไหลมาเทมา ปลดหนี้สำเร็จนะคะ`,
-          `ขอให้คุณ ${spokenName} มีโชคลาภก้อนโต หยิบจับสิ่งใดก็เป็นเงินเป็นทองนะคะ`,
-          `ขอให้คลังทรัพย์เปิดรับคุณ ${spokenName} รับทรัพย์ใหญ่และมีกินมีใช้ไม่ขาดมือนนะคะ`
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} มั่งคั่งร่ำรวย เงินทองไหลมาเทมานะคะ`,
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} มีโชคลาภก้อนโต หยิบจับสิ่งใดก็เป็นเงินทองนะคะ`,
+          `ขอให้คลังทรัพย์ในฉากจำลองนี้ เปิดรับคุณ ${spokenName} รับทรัพย์ใหญ่ไม่ขาดมือนนะคะ`
         ];
         blessing = wealthTemplates[Math.floor(Math.random() * wealthTemplates.length)];
       } else if (cleanWish.includes('สุขภาพ') || cleanWish.includes('ป่วย') || cleanWish.includes('แข็งแรง') || cleanWish.includes('หาย')) {
         const healthTemplates = [
-          `ขอจำลองพรให้คุณ ${spokenName} สุขภาพแข็งแรง หายจากโรคภัยและมีอายุยืนยาวนะคะ`,
-          `บารมีน้ำทิพย์คุ้มครองคุณ ${spokenName} ให้ร่างกายฟื้นฟู สมบูรณ์แข็งแรงในเร็วนี้นะคะ`,
-          `ขอให้คุณ ${spokenName} คลาดแคล้วจากสรรพโรคภัย มีพลังกายพลังใจเต็มเปี่ยมนะคะ`
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} สุขภาพแข็งแรง หายจากโรคภัยนะคะ`,
+          `บารมีน้ำทิพย์ในฉากจำลองนี้ คุ้มครองคุณ ${spokenName} ให้ร่างกายสมบูรณ์แข็งแรงนะคะ`,
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} แคล้วคลาดโรคภัย มีพลังกายใจเต็มเปี่ยมนะคะ`
         ];
         blessing = healthTemplates[Math.floor(Math.random() * healthTemplates.length)];
       } else if (cleanWish.includes('รัก') || cleanWish.includes('ครอบครัว') || cleanWish.includes('แฟน') || cleanWish.includes('คู่')) {
         const loveTemplates = [
-          `ขอจำลองพรให้คุณ ${spokenName} และครอบครัว ร่มเย็นเป็นสุข สมหวังในความรักนะคะ`,
-          `ขอให้คุณ ${spokenName} พบเจอคู่บารมีที่เข้าใจ และมีความรักที่อบอุ่นมั่นคงนะคะ`,
-          `ขอให้บ้านของคุณ ${spokenName} อบอวลด้วยความรัก ความเข้าใจ และรอยยิ้มนะคะ`
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} และครอบครัว ร่มเย็นเป็นสุข สมหวังในรักนะคะ`,
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} พบเจอคู่บารมี และมีความรักที่อบอุ่นนะคะ`,
+          `ขอให้อวยพรในฉากจำลองนี้ ให้บ้านคุณ ${spokenName} อบอวลด้วยความรักและรอยยิ้มนะคะ`
         ];
         blessing = loveTemplates[Math.floor(Math.random() * loveTemplates.length)];
       } else if (cleanWish.includes('เรียน') || cleanWish.includes('สอบ') || cleanWish.includes('เกรด') || cleanWish.includes('จบ')) {
-        blessing = `ขอจำลองพรให้คุณ ${spokenName} ปัญญาเฉียบแหลม การเรียนและการสอบสำเร็จราบรื่นนะคะ`;
+        blessing = `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} ปัญญาเฉียบแหลม การเรียนสอบสำเร็จราบรื่นนะคะ`;
       } else {
         const wishTemplates = [
-          `ขอจำลองพรให้คุณ ${spokenName} สมปรารถนาในทุกสิ่งที่ตั้งใจไว้นะคะ`,
-          `บารมีพระแม่คุ้มครองคุณ ${spokenName} ให้พบเจอแต่สิ่งดีงามและเป็นสุขนะคะ`,
-          `อนุโมทนาคุณ ${spokenName} ขอให้คำอธิษฐานจิตจำลองนี้สัมฤทธิผลโดยเร็วนะคะ`,
-          `ขอจำลองพรให้คุณ ${spokenName} ประสบความสำเร็จทุกประการนะคะ`
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} สมปรารถนาในทุกสิ่งที่ตั้งใจไว้นะคะ`,
+          `บารมีในฉากจำลองนี้ คุ้มครองคุณ ${spokenName} ให้พบเจอแต่สิ่งดีงามและเป็นสุขนะคะ`,
+          `อนุโมทนาคุณ ${spokenName} ขอให้อธิษฐานในฉากจำลองนี้ สัมฤทธิผลโดยเร็วนะคะ`,
+          `ขอพรในฉากจำลองนี้ให้คุณ ${spokenName} ประสบความสำเร็จทุกประการนะคะ`
         ];
         blessing = wishTemplates[Math.floor(Math.random() * wishTemplates.length)];
       }
     } else {
-      blessing = `อนุโมทนาจำลองบุญคุณ ${spokenName} ขอให้สัมฤทธิผล สมปรารถนานะคะ`;
+      blessing = `อนุโมทนาบุญคุณ ${spokenName} ในฉากจำลองนี้ ขอให้สัมฤทธิผล สมปรารถนานะคะ`;
     }
   }
 
@@ -2003,7 +2213,7 @@ app.post('/api/gemini/bless', async (req, res) => {
   } catch (err) {
     console.error('[Gemini AI Bless Error Catch]:', err.message);
     const fallbackName = formatNaturalSpeakerName(req.body?.name);
-    const fallbackText = `อนุโมทนาบุญคุณ ${fallbackName} ขอให้สมปรารถนานะคะ`;
+    const fallbackText = `อนุโมทนาบุญคุณ ${fallbackName} ในฉากจำลองนี้ ขอให้สมปรารถนานะคะ`;
     res.json({
       success: true,
       blessingText: fallbackText,
@@ -2180,7 +2390,8 @@ app.post('/api/simulate', (req, res) => {
       diamondCount,
       totalDiamonds: diamondCount,
       effectType,
-      effectName
+      effectName,
+      meritDelta: Math.max(10, Math.floor((diamondIncrement || 1) * 10))
     });
 
     io.emit('queue_update', {
@@ -2243,6 +2454,30 @@ app.post('/api/simulate', (req, res) => {
     return res.json({ success: true, disciple });
   }
 
+  if (type === 'share') {
+    const disciple = getOrCreateDisciple({
+      userId: payload?.userId,
+      uniqueId: payload?.uniqueId || 'sharer_' + Date.now(),
+      nickname: payload?.nickname || 'ผู้เปิดสะพานบุญ',
+      avatar: payload?.avatar || '/rose.png'
+    }, false, true);
+
+    const sharePayload = {
+      seatId: disciple.seatId,
+      uniqueId: disciple.uniqueId,
+      nickname: disciple.nickname,
+      avatar: disciple.avatar,
+      meritDelta: 5,
+      timestamp: Date.now()
+    };
+
+    io.emit('action_share', sharePayload);
+    io.emit('round_action_share', sharePayload);
+    io.emit('share', sharePayload);
+
+    return res.json({ success: true, disciple, sharePayload });
+  }
+
   if (type === 'reset') {
     state.disciples = [];
     state.donorRegistry.clear();
@@ -2302,9 +2537,23 @@ io.on('connection', socket => {
     recentWishes: state.recentWishes,
     prayerCategories: state.prayerCategories,
     micRouterConfig: state.micRouterConfig,
+    roundData: {
+      roundNum: state.currentRoundData.roundNum,
+      meritPoints: state.currentRoundData.meritPoints
+    },
     speechMasterSocketId: activeSpeechMasterSocketId,
     speechMasterTabId: activeSpeechMasterTabId,
     isSpeechMaster: (socket.id === activeSpeechMasterSocketId)
+  });
+
+  socket.on('round_sync', data => {
+    if (data?.roundNum) {
+      state.currentRoundData.roundNum = data.roundNum;
+      state.currentRoundData.meritPoints = data.meritPoints || 0;
+      state.currentRoundData.roundStartedAt = Date.now();
+      // Broadcast to other tabs/mirrors
+      socket.broadcast.emit('round_state_sync', data);
+    }
   });
 
   socket.on('speech_master_heartbeat', data => {

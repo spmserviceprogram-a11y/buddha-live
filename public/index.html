@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ห้องสวดมนต์ บารมีพระแม่กวนอิม - TikTok Live</title>
-  <link rel="stylesheet" href="style.css?v=paradise_v38">
+  <link rel="stylesheet" href="style.css?v=blessing_share_v3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -31,7 +31,7 @@
     <!-- Celestial Paradise Sanctuary Background (ภาพพระแม่กวนอิมแดนสวรรค์พร้อมเอฟเฟกต์บรรยากาศมงคล) -->
     <div id="celestial-paradise-wrap" class="celestial-paradise-wrap">
       <img id="bg-paradise-img" class="bg-paradise-img" src="/background.jpg?v=paradise_v13" alt="พระแม่กวนอิม" />
-      <video id="bg-video" class="bg-video" style="display:none;" muted></video>
+      <video id="bg-video" class="bg-video" playsinline muted preload="auto"></video>
       <div class="celestial-ambient-aurora"></div>
       <div class="celestial-godrays"></div>
       <div class="celestial-water-shimmer"></div>
@@ -73,6 +73,10 @@
         </div>
 
         <div class="top-stats">
+          <div class="live-engine-pill" title="ระบบจำลอง 3D แบบเรียลไทม์ (Interactive Real-Time 3D Simulation)">
+            <span class="engine-dot-pulse"></span>
+            <span class="engine-tag">3D REAL-TIME</span>
+          </div>
           <div class="live-clock-pill">
             <span class="live-badge-red">
               <span class="pulse-dot-red"></span>
@@ -105,6 +109,60 @@
         </div>
       </header>
 
+      <!-- Round Controller Bar (เกมจำลองรอบการเล่นแบบเรียลไทม์ & เกจพลังบุญ) -->
+      <div id="round-hud" class="round-hud">
+        <div class="round-hud-top">
+          <div class="round-badge">
+            <span class="round-icon">🌿</span>
+            <span class="round-title">รอบที่ <strong id="round-num">1</strong></span>
+          </div>
+          <div class="round-phase-pill" id="round-phase-pill">
+            <span class="phase-dot"></span>
+            <span id="round-phase-text">สะสมพลังบุญ</span>
+          </div>
+          <div class="round-timer-pill" id="round-timer-pill">
+            <span class="timer-icon">⏳</span>
+            <span id="round-timer">45</span>s
+          </div>
+          <div class="share-counter-pill" id="share-counter-pill" title="ยอดสะพานบุญแชร์ไลฟ์">
+            <span class="share-icon">🕊️</span>
+            <span class="share-label">สะพานบุญ:</span>
+            <strong id="share-count-val">0</strong>
+          </div>
+        </div>
+
+        <div class="round-hud-body">
+          <div class="merit-bar-wrapper">
+            <div class="merit-bar-track" id="merit-progress-track">
+              <div class="merit-bar-fill" id="merit-progress-fill" style="width: 0%;"></div>
+              <div class="milestone-pin pin-silver" style="left: 33%;" title="ขั้นเงิน: ฝนกลีบบัว">
+                <span class="pin-tag">33%</span>
+              </div>
+              <div class="milestone-pin pin-gold" style="left: 66%;" title="ขั้นทอง: ออร่าทอง & ระฆังทิพย์">
+                <span class="pin-tag">66%</span>
+              </div>
+              <div class="milestone-pin pin-nirvana" style="left: 100%;" title="ขั้นจักรพรรดิ: มังกรสวรรค์">
+                <span class="pin-tag">100%</span>
+              </div>
+            </div>
+            <div class="merit-bar-labels">
+              <span class="merit-label-left">พิมพ์ "สาธุ" ร่วมส่งใจ</span>
+              <span class="merit-label-center" id="merit-stats-text">พลังบารมี: <strong id="merit-pct">0%</strong> (<span id="merit-pts">0</span>/<span id="merit-target">88</span>)</span>
+              <span class="merit-label-right" id="round-participants-count">👥 0 ท่าน</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="round-hud-footer">
+          <div class="round-mvp-pill" id="round-mvp-pill">
+            <span class="mvp-crown">👑</span>
+            <span class="mvp-title">ผู้นำบุญรอบนี้:</span>
+            <span class="mvp-name" id="round-mvp-name">รอเปิดรอบ</span>
+            <span class="mvp-pts" id="round-mvp-pts"></span>
+          </div>
+        </div>
+      </div>
+
 
       <!-- Top Follower Blessing Banner (ป้ายประกาศกัลยาณมิตรสวรรค์) -->
       <div id="follower-banner" class="follower-banner hidden" style="display:none;">
@@ -117,6 +175,18 @@
         <span id="follower-banner-name" class="follower-highlight"></span>
         <span class="follower-suffix">ร่วมเป็นกัลยาณมิตร</span>
         <span class="follower-star">✨</span>
+      </div>
+
+      <!-- Divine Bridge Share Toast Notification -->
+      <div id="share-toast-banner" class="share-toast-banner hidden" style="display:none;">
+        <div class="share-toast-aura"></div>
+        <div class="share-toast-content">
+          <span class="share-toast-crest">🕊️</span>
+          <span class="share-toast-prefix">ขออนุโมทนา</span>
+          <span class="share-toast-name" id="share-toast-name">ผู้มีจิตศรัทธา</span>
+          <span class="share-toast-suffix">ร่วมเปิดสะพานบุญแชร์ไลฟ์ (+5 แต้มบารมี)</span>
+          <span class="share-toast-sparkle">✨🙏✨</span>
+        </div>
       </div>
 
       <!-- Floating Audio Unlock Pill for TikTok LIVE Studio & Browsers with Autoplay Block -->
@@ -358,10 +428,28 @@
         </div>
       </div>
 
+      <!-- Round MVP Celebration Modal (แสดงเมื่อประกาศผลรอบ) -->
+      <div id="round-mvp-modal" class="round-mvp-modal hidden" style="display:none;">
+        <div class="mvp-modal-aura"></div>
+        <div class="mvp-modal-sparkles" id="mvp-modal-sparkles"></div>
+        <div class="mvp-modal-content">
+          <div class="mvp-modal-crown">👑</div>
+          <div class="mvp-modal-title">ผู้นำบุญบารมีประจำรอบ</div>
+          <div class="mvp-modal-round-tag" id="mvp-modal-round-tag">รอบที่ 1 สำเร็จบารมี</div>
+          <div class="mvp-avatar-wrap">
+            <img id="mvp-modal-avatar" src="/rose.png" alt="ผู้นำบุญ" />
+            <div class="mvp-avatar-ring"></div>
+          </div>
+          <div class="mvp-modal-name" id="mvp-modal-name">ผู้มีจิตศรัทธา</div>
+          <div class="mvp-modal-verse" id="mvp-modal-verse">ส่งพลังสาธุสูงสุดในรอบนี้ ขอบุญรักษาเทวดาคุ้มครอง ✨</div>
+          <div class="mvp-modal-badge" id="mvp-modal-badge">บารมี 0 คะแนน</div>
+        </div>
+      </div>
+
       <!-- Spacer: เปิดพื้นที่ตรงกลางจอ 100% ให้เห็นพระและคนเดินเข้ามาทำบุญ -->
       <div class="center-stage-spacer"></div>
 
-      <!-- Bottom Offering Deck: การ์ดถวายสักการะมงคล ๑๑ ระดับ ธีมวิหารสวรรค์พระแม่กวนอิม -->
+      <!-- Bottom Offering Deck: การ์ดถวายสักการะมงคล ๑๑ ระดับ ธีมวิหารสวรรค์พระแม่กวนอิม (ไร้ป้ายเหรียญพาณิชย์ ปลอดภัยจาก OCR TikTok 100%) -->
       <aside id="bottom-gift-deck" class="bottom-gift-deck">
         <div class="bgc-deck-header">
           <span class="deck-sparkle">🪷</span>
@@ -369,167 +457,123 @@
           <span class="deck-sparkle">✨</span>
         </div>
         <div class="bottom-gift-grid">
-          <!-- 1. กุหลาบ (1 เหรียญ) -> กราบเบญจางค์ -->
+          <!-- 1. กุหลาบ -> กราบเบญจางค์ -->
           <div class="bgc-card" data-index="0" data-type="kowtow" data-coins="1" data-name="กุหลาบ" data-icon="🌹"
-            title="กุหลาบ (1 เหรียญ)">
+            title="กุหลาบ - กราบเบญจางค์">
             <div class="bgc-left">
               <img src="rose.png?v=4" class="bgc-img" alt="กุหลาบ" onerror="this.outerHTML='🌹'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">1</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">กราบเบญจางค์</span>
             </div>
           </div>
 
-          <!-- 2. รักนะมากๆ (1 เหรียญ) -> เสี่ยงเซียมซี -->
+          <!-- 2. รักนะมากๆ -> เสี่ยงเซียมซี -->
           <div class="bgc-card" data-index="1" data-type="seamsi" data-coins="1" data-name="รักนะมากๆ" data-icon="🎋"
-            title="รักนะมากๆ (1 เหรียญ)">
+            title="รักนะมากๆ - เสี่ยงเซียมซี">
             <div class="bgc-left">
               <img src="seamsi.png?v=6" class="bgc-img" alt="เซียมซี" onerror="this.outerHTML='🎋'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">1</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">เสี่ยงเซียมซี</span>
             </div>
           </div>
 
-          <!-- 3. เครื่องราง (5 เหรียญ) -> บูชาธูปทอง -->
+          <!-- 3. เครื่องราง -> บูชาธูปทอง -->
           <div class="bgc-card" data-index="2" data-type="incense" data-coins="5" data-name="เครื่องราง" data-icon="🪔"
-            title="เครื่องราง (5 เหรียญ)">
+            title="เครื่องราง - บูชาธูปทอง">
             <div class="bgc-left">
               <img src="omamori.png?v=4" class="bgc-img" alt="เครื่องราง" onerror="this.outerHTML='🫰'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">5</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">บูชาธูปทอง</span>
             </div>
           </div>
 
-          <!-- 4. Lucky 9 (9 เหรียญ) -> สระบัวทิพย์ -->
+          <!-- 4. Lucky 9 -> สระบัวทิพย์ -->
           <div class="bgc-card" data-index="3" data-type="lotus" data-coins="9" data-name="Lucky 9" data-icon="9️⃣"
-            title="Lucky 9 (9 เหรียญ)">
+            title="Lucky 9 - สระบัวทิพย์">
             <div class="bgc-left">
               <img src="lucky_9.png?v=4" class="bgc-img" alt="Lucky 9" onerror="this.outerHTML='9️⃣'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">9</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">สระบัวทิพย์</span>
             </div>
           </div>
 
-          <!-- 5. กุหลาบ ๙๙ (10 เหรียญ) -> โปรยบุปผา -->
+          <!-- 5. กุหลาบ ๙๙ -> โปรยบุปผา -->
           <div class="bgc-card" data-index="4" data-type="flowers" data-coins="10" data-name="กุหลาบ ๙๙" data-icon="🌹"
-            title="กุหลาบ ๙๙ (10 เหรียญ)">
+            title="กุหลาบ ๙๙ - โปรยบุปผา">
             <div class="bgc-left">
               <img src="rose_99.png?v=4" class="bgc-img" alt="กุหลาบ ๙๙" onerror="this.outerHTML='🌹'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">10</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">โปรยบุปผา</span>
             </div>
           </div>
 
-          <!-- 6. พวงมาลัย (15 เหรียญ) -> สั่นระฆังทอง -->
+          <!-- 6. พวงมาลัย -> สั่นระฆังทอง -->
           <div class="bgc-card" data-index="5" data-type="golden_bell" data-coins="15" data-name="พวงมาลัย"
-            data-icon="🔔" title="พวงมาลัย (15 เหรียญ)">
+            data-icon="🔔" title="พวงมาลัย - สั่นระฆังทอง">
             <div class="bgc-left">
               <img src="garland.png?v=4" class="bgc-img" alt="พวงมาลัย" onerror="this.outerHTML='📿'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">15</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">สั่นระฆังทอง</span>
             </div>
           </div>
 
-          <!-- 7. โคโลญจน์ (20 เหรียญ) -> ธารน้ำพุมณี -->
+          <!-- 7. โคโลญจน์ -> ธารน้ำพุมณี -->
           <div class="bgc-card" data-index="6" data-type="crystal_fountain" data-coins="20" data-name="โคโลญจน์"
-            data-icon="💎" title="โคโลญจน์ (20 เหรียญ)">
+            data-icon="💎" title="โคโลญจน์ - ธารน้ำพุมณี">
             <div class="bgc-left">
               <img src="cologne.png?v=4" class="bgc-img" alt="โคโลญจน์" onerror="this.outerHTML='🎁'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">20</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">ธารน้ำพุมณี</span>
             </div>
           </div>
 
-          <!-- 8. โดนัท (30 เหรียญ) -> ขบวนราชรถ -->
+          <!-- 8. โดนัท -> ขบวนราชรถ -->
           <div class="bgc-card" data-index="7" data-type="royal_carriage" data-coins="30" data-name="โดนัท"
-            data-icon="☸️" title="โดนัท (30 เหรียญ)">
+            data-icon="☸️" title="โดนัท - ขบวนราชรถ">
             <div class="bgc-left">
               <img src="donut.png?v=4" class="bgc-img" alt="โดนัท" onerror="this.outerHTML='🍩'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">30</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">ขบวนราชรถ</span>
             </div>
           </div>
 
-          <!-- 9. หัวใจ 4 ดวง (99 เหรียญ) -> พลุเพลิงบุญ -->
+          <!-- 9. หัวใจ 4 ดวง -> พลุเพลิงบุญ -->
           <div class="bgc-card vip-bgc-card" data-index="8" data-type="fireworks" data-coins="99"
-            data-name="หัวใจ 4 ดวง" data-icon="🕊️" title="หัวใจ 4 ดวง (99 เหรียญ)">
+            data-name="หัวใจ 4 ดวง" data-icon="🕊️" title="หัวใจ 4 ดวง - พลุเพลิงบุญ">
             <div class="bgc-left">
               <img src="four_hearts.png?v=4" class="bgc-img" alt="หัวใจ 4 ดวง" onerror="this.outerHTML='🕊️'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">99</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">พลุเพลิงบุญ</span>
             </div>
           </div>
 
-          <!-- 10. ประตูมิติ (100 เหรียญ) -> เปิดวิมานทิพย์ -->
+          <!-- 10. ประตูมิติ -> เปิดวิมานทิพย์ -->
           <div class="bgc-card vip-bgc-card" data-index="9" data-type="castle" data-coins="100" data-name="ประตูมิติ"
-            data-icon="👑" title="ประตูมิติ (100 เหรียญ)">
+            data-icon="👑" title="ประตูมิติ - เปิดวิมานทิพย์">
             <div class="bgc-left">
               <img src="portal.png?v=4" class="bgc-img" alt="ประตูมิติ" onerror="this.outerHTML='🧨'" />
-              <div class="bgc-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val">100</span>
-              </div>
             </div>
             <div class="bgc-right">
               <span class="bgc-action">เปิดวิมานทิพย์</span>
             </div>
           </div>
 
-          <!-- 11. มังกรแฟนตาซี (299 เหรียญ) -> มังกรทองเหิน (Imperial Supreme Masterpiece) -->
+          <!-- 11. มังกรแฟนตาซี -> มังกรทองเหิน (Imperial Supreme Masterpiece) -->
           <div class="bgc-card supreme-bgc-card" data-index="10" data-type="dragon" data-coins="299"
-            data-name="มังกรแฟนตาซี" data-icon="🐉" title="มังกรแฟนตาซี (299 เหรียญ)">
+            data-name="มังกรแฟนตาซี" data-icon="🐉" title="มังกรแฟนตาซี - มังกรทองเหิน">
             <div class="dragon-shimmer-sweep"></div>
             <div class="bgc-left supreme-left">
               <div class="dragon-icon-halo"></div>
               <img src="dragon.png?v=4" class="bgc-img supreme-img" alt="มังกรแฟนตาซี" onerror="this.outerHTML='🐉'" />
-              <div class="bgc-coin-pill supreme-coin-pill">
-                <span class="bgc-coin-icon">🪙</span>
-                <span class="bgc-coin-val supreme-coin-val">299</span>
-              </div>
             </div>
             <div class="bgc-right supreme-right">
               <div class="supreme-text-col">
@@ -663,6 +707,23 @@
           <button id="sim-chat" class="btn btn-test">
             <span class="emoji">💬</span> พิมพ์ "สาธุ" (Chat)
           </button>
+          <button id="sim-share" class="btn btn-test" style="border-color:#6ee7b7; color:#a7f3d0; background:rgba(16,185,129,0.15);">
+            <span class="emoji">🕊️</span> จำลองแชร์ไลฟ์ (สะพานบุญ +5 แต้ม)
+          </button>
+          <button id="sim-round-cycle" class="btn btn-test" style="border-color:#fbbf24; color:#fde68a; background:rgba(245,158,11,0.15);">
+            <span class="emoji">⏱️</span> ทดสอบรอบเกมแบบเร็ว (Fast 8s)
+          </button>
+          <div style="display:flex; gap:4px; margin-top:4px;">
+            <button id="sim-video-tier1" class="btn btn-test" style="flex:1; padding:4px; font-size:11px;" title="โบกกิ่งหลิว (33%)">
+              🎬 วิดีโอ 33%
+            </button>
+            <button id="sim-video-tier2" class="btn btn-test" style="flex:1; padding:4px; font-size:11px;" title="ละอองทิพย์พุ่ง (66%)">
+              🎬 วิดีโอ 66%
+            </button>
+            <button id="sim-video-climax" class="btn btn-test" style="flex:1; padding:4px; font-size:11px;" title="หลั่งน้ำทิพย์ / บัวแก้ว (Climax)">
+              🎬 ไคลแมกซ์
+            </button>
+          </div>
         </div>
       </section>
 
@@ -814,7 +875,7 @@
   </script>
 
   <!-- Main Application Logic (ES Module) -->
-  <script type="module" src="app.js?v=paradise_v38"></script>
+  <script type="module" src="app.js?v=blessing_share_v3"></script>
 </body>
 
 </html>
