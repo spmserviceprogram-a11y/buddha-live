@@ -4847,7 +4847,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           this.charSprite.position.y = 0.05;
           this.charSprite.material.rotation = 0;
           this.setPose(targetPose);
-          if (onComplete) onComplete();
+          if (typeof onComplete === 'function') onComplete();
         }
       }, 16);
     },
@@ -4860,6 +4860,20 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
 
     // ── 2D Dignified Human Walking Stride down the Red Carpet towards Golden Altar ──
     walkToAltarAndKowtow(ritualType = 'kowtow', onFinish, wishText = null, giftInfo = null, speedMultiplier = 1.0, explicitDonorName = null) {
+      // Signature flexibility & defense against argument misordering
+      if (typeof ritualType === 'function') {
+        explicitDonorName = speedMultiplier;
+        speedMultiplier = giftInfo || 1.0;
+        giftInfo = wishText;
+        wishText = onFinish;
+        onFinish = ritualType;
+        ritualType = 'kowtow';
+      } else if (typeof onFinish !== 'function' && typeof wishText === 'function') {
+        const tempCb = wishText;
+        wishText = typeof onFinish === 'string' ? onFinish : null;
+        onFinish = tempCb;
+      }
+
       if (this.isPerformingAltarRitual) {
         // In-flight combo booster: update gift badge count & trigger sparkles
         if (giftInfo && this.giftBadgeSprite) {
@@ -4869,7 +4883,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           spawnBlessingSparks(this.root.position.x, 0.25, this.root.position.z, 8, 0xffea70);
           createCarpetRipple(this.root.position.x, 0.05, this.root.position.z, 0xffd700);
         }
-        if (onFinish) onFinish();
+        if (typeof onFinish === 'function') onFinish();
         return;
       }
 
@@ -5072,7 +5086,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
                             if (this.root.parent) disciplesGroup.remove(this.root);
                             disciplesMap.delete(this.userData?.seatId);
                           }
-                          if (onFinish) onFinish();
+                          if (typeof onFinish === 'function') onFinish();
                         });
                       }
                     } catch (retErr) {
@@ -5081,7 +5095,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
                       this._returnTimer = null;
                       this.isWalking = false;
                       this.isPerformingAltarRitual = false;
-                      if (onFinish) onFinish();
+                      if (typeof onFinish === 'function') onFinish();
                     }
                   }, 16);
                 });
@@ -5094,7 +5108,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           this._walkTimer = null;
           this.isWalking = false;
           this.isPerformingAltarRitual = false;
-          if (onFinish) onFinish();
+          if (typeof onFinish === 'function') onFinish();
         }
       }, 16);
     },
@@ -13709,12 +13723,12 @@ class VideoBlessingController {
 
   playMiracle(tierKey, onFinish) {
     if (!this.videoEl) {
-      if (onFinish) onFinish();
+      if (typeof onFinish === 'function') onFinish();
       return;
     }
     const src = this.videos[tierKey];
     if (!src) {
-      if (onFinish) onFinish();
+      if (typeof onFinish === 'function') onFinish();
       return;
     }
 
@@ -14139,7 +14153,13 @@ class RoundManager {
         }
       });
       if (mvpDevotee && typeof mvpDevotee.walkToAltarAndKowtow === 'function') {
-        mvpDevotee.walkToAltarAndKowtow('/rose.png', 'ผู้นำบุญ', () => {});
+        const mvpGiftInfo = {
+          name: 'ผู้นำบุญ',
+          icon: '👑',
+          image: mvp.avatar || '/rose.png',
+          coins: mvp.points || 1
+        };
+        mvpDevotee.walkToAltarAndKowtow('kowtow', () => {}, 'ผู้นำบุญ', mvpGiftInfo, 1.0, mvp.nickname);
       }
     } catch (_) {}
 
