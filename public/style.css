@@ -2589,17 +2589,17 @@ body {
 /* Sacred Rotating Mandala Gift Icon Medallion */
 .effect-banner .effect-icon-badge {
   position: relative;
-  width: 46px;
-  height: 46px;
-  min-width: 46px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 240, 140, 0.65) 0%, rgba(130, 24, 16, 0.95) 68%, rgba(40, 8, 5, 0.98) 100%);
+  background: radial-gradient(circle, rgba(255, 240, 140, 0.75) 0%, rgba(194, 24, 68, 0.95) 68%, rgba(64, 8, 24, 0.98) 100%);
   border: 2px solid #fff299;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 0 22px rgba(255, 215, 0, 0.92),
+    0 0 24px rgba(255, 215, 0, 0.95),
     inset 0 0 12px rgba(255, 215, 0, 0.65);
   overflow: hidden;
   padding: 3px;
@@ -2659,7 +2659,7 @@ body {
 
 .effect-banner .effect-name {
   font-family: 'Kanit', 'Sarabun', sans-serif;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
   color: #fff8c4;
   letter-spacing: 0.25px;
@@ -2681,11 +2681,11 @@ body {
 
 .effect-banner .blessing-donor-highlight {
   color: #ffffff;
-  background: linear-gradient(180deg, #ffffff 0%, #fff299 50%, #ffd700 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fff6b3 45%, #ffd700 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 800;
-  font-size: 14px;
+  font-size: 14.5px;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.95)) drop-shadow(0 0 10px rgba(255, 215, 0, 0.85));
 }
 
@@ -2708,14 +2708,14 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.35), rgba(190, 65, 14, 0.75));
-  border: 1px solid rgba(255, 235, 130, 0.95);
-  color: #fff299;
-  font-size: 10px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.40), rgba(225, 29, 72, 0.82));
+  border: 1px solid rgba(255, 240, 160, 0.95);
+  color: #ffffff;
+  font-size: 10.5px;
   font-weight: 800;
-  padding: 1.5px 7px;
+  padding: 1.5px 8px;
   border-radius: 12px;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.55);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.60);
   text-shadow: 0 1px 2px #000;
   flex-shrink: 0;
 }
