@@ -10822,6 +10822,11 @@ function triggerGiftAnnouncementBanner(donor, giftInfo = null) {
 function showBigEffectBanner(icon, title, subtitle, giftInfo = null) {
   const banner = document.getElementById('effect-banner');
   if (!banner) return;
+
+  hideBottomFollowerBanner(true);
+  hideBottomShareToast(true);
+  _activeBottomBanner = 'gift';
+
   const iconImgEl = document.getElementById('effect-icon-img');
   const iconEl = document.getElementById('effect-icon');
   const titleEl = document.getElementById('effect-title');
