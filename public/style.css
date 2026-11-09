@@ -3151,6 +3151,7 @@ body {
 }
 
 .seamsi-lucky-card.hidden {
+  display: none !important;
   opacity: 0 !important;
   transform: translate(-50%, -46%) scale(0.92);
   pointer-events: none;
