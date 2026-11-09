@@ -3454,18 +3454,18 @@ body {
   }
 }
 
-/* Bottom Dock: แผงเมนูด้านล่างสุดชิดขอบ (50% Translucent Glassmorphism) */
+/* Bottom Dock: แผงเมนูด้านล่างสุดชิดขอบ (High-Transparency Translucent Glassmorphism) */
 .bottom-dock {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  background: rgba(18, 10, 6, 0.50);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 215, 0, 0.35);
+  background: rgba(16, 8, 5, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 215, 0, 0.30);
   border-radius: 16px;
   padding: 7px 8px 6px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 /* Leaderboard Drawer */
