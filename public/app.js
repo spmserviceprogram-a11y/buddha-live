@@ -8140,6 +8140,7 @@ function triggerCrystalFountainEffect() {
     color: 0x96fff2,
     transparent: true,
     opacity: 0.90,
+    depthWrite: false,
     blending: THREE.AdditiveBlending
   });
   for (let dir = 0; dir < 8; dir++) {
