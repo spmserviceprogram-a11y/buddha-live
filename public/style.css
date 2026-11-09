@@ -1343,8 +1343,8 @@ body {
 }
 
 .vip-guide-item {
-  background: linear-gradient(90deg, rgba(245, 158, 11, 0.50), rgba(180, 83, 9, 0.50));
-  border-color: #ffd700;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(180, 83, 9, 0.25));
+  border-color: rgba(255, 215, 0, 0.65);
 }
 
 .vip-guide-item .guide-action {
@@ -1358,9 +1358,9 @@ body {
 }
 
 .supreme-guide-item {
-  background: linear-gradient(90deg, rgba(225, 29, 72, 0.50), rgba(180, 83, 9, 0.50));
-  border: 1.2px solid #ffd700;
-  box-shadow: 0 0 6px rgba(225, 29, 72, 0.45);
+  background: linear-gradient(90deg, rgba(225, 29, 72, 0.25), rgba(180, 83, 9, 0.25));
+  border: 1.2px solid rgba(255, 215, 0, 0.65);
+  box-shadow: 0 0 6px rgba(225, 29, 72, 0.35);
 }
 
 .supreme-guide-item .guide-action {
@@ -1403,21 +1403,21 @@ body {
   color: #ffffff;
   font-weight: 700;
   padding: 1.5px 3.5px;
-  background: rgba(24, 10, 6, 0.50);
+  background: rgba(20, 8, 5, 0.18);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 215, 0, 0.35);
+  border: 1px solid rgba(255, 215, 0, 0.22);
   border-radius: 4px;
   box-sizing: border-box;
   min-height: 19px;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .queue-row.active {
-  background: linear-gradient(90deg, rgba(180, 83, 9, 0.50), rgba(245, 158, 11, 0.50));
+  background: linear-gradient(90deg, rgba(180, 83, 9, 0.30), rgba(245, 158, 11, 0.30));
   border-color: #ffd700;
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.4);
 }
 
 .queue-row .q-avatar {
