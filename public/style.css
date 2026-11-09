@@ -1648,16 +1648,16 @@ body {
   display: none !important;
 }
 
-/* Right Panel Dock: Stacked Clean HUD Containers (Mobile Viewer Readable & Uncovers Guan Yin Altar) */
+/* Right Panel Dock: Stacked Clean HUD Containers (Mobile Viewer Readable & Symmetrically Aligned with Left Dock) */
 .right-panel-dock {
   position: absolute;
-  top: 52px;
+  top: 160px;
   right: 8px;
   width: clamp(134px, 29vw, 148px);
   display: flex;
   flex-direction: column;
   gap: 5px;
-  z-index: 20;
+  z-index: 25;
   pointer-events: auto;
 }
 
