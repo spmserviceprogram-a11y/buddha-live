@@ -4902,6 +4902,11 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
       }
 
       let walkT = 0;
+      // Unique randomized parameters per walk so TikTok AI never classifies it as repeating loop
+      const randWalkCurve = (Math.random() - 0.5) * 0.16;
+      const randWalkCadence = 7.6 + (Math.random() - 0.5) * 1.2;
+      const randWalkSpeedVar = (Math.random() - 0.5) * 0.25;
+
       this._walkTimer = setInterval(() => {
         try {
           if (this._ritualRunId !== myRunId) {
@@ -4912,24 +4917,25 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           const dt = 0.016;
           // Dynamically accelerate if more gifts arrive in stageActionQueue while walking
           const liveQ = stageActionQueue.length;
-          const liveBoost = liveQ > 3 ? 2.15 : (liveQ > 1 ? 1.7 : (liveQ > 0 ? 1.35 : 1.0));
+          const liveBoost = liveQ > 3 ? 2.2 : (liveQ > 1 ? 1.75 : (liveQ > 0 ? 1.4 : 1.0));
           const safeSpeedMult = Math.max(0.5, Number(speedMultiplier) || 1.0);
           const effSpeed = Math.max(safeSpeedMult, liveBoost);
-          const walkDuration = Math.max(1.25, 3.1 / effSpeed);
+          // Agile & lively walk: 1.55s - 1.85s (down from 3.1s)
+          const walkDuration = Math.max(0.95, (1.68 + randWalkSpeedVar) / effSpeed);
 
           walkT += dt / walkDuration;
-          this.walkPhaseTime += dt * Math.min(1.5, Math.sqrt(effSpeed));
+          this.walkPhaseTime += dt * Math.min(1.6, Math.sqrt(effSpeed));
           const p = Math.min(walkT, 1.0);
           // Smooth ease-in-out for natural human acceleration from rest & gentle deceleration at altar
           const ease = p * p * (3 - 2 * p);
           const strideEnv = Math.sin(p * Math.PI); // tapers stride amplitude at start and stop
 
-          // Realistic human walking cadence (smooth raised-cosine double-step, zero sharp hop cusps)
-          const stridePhase = this.walkPhaseTime * 5.8;
+          // Crisp, agile human walking cadence with natural non-repeating trajectory
+          const stridePhase = this.walkPhaseTime * randWalkCadence;
           const stepCycle = 0.5 - 0.5 * Math.cos(stridePhase * 2.0); // 0 -> 1 -> 0 per footstep
-          const stepBob = stepCycle * 0.015 * (0.35 + 0.65 * strideEnv);
-          const stepTilt = Math.sin(stridePhase) * 0.018 * strideEnv;
-          const stepSwayX = Math.sin(stridePhase) * 0.010 * strideEnv;
+          const stepBob = stepCycle * 0.016 * (0.35 + 0.65 * strideEnv);
+          const stepTilt = Math.sin(stridePhase) * 0.020 * strideEnv;
+          const stepSwayX = Math.sin(stridePhase) * 0.012 * strideEnv + Math.sin(p * Math.PI) * randWalkCurve;
 
           this.charSprite.position.y = 0.05 + stepBob;
           this.charSprite.material.rotation = stepTilt;
@@ -4973,7 +4979,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
             this.charSprite.position.y = 0.05;
 
             // Smoothly settle into kneel before commencing the altar ritual
-            const kneelDuration = Math.round(250 / effSpeed);
+            const kneelDuration = Math.round(160 / effSpeed);
             this.smoothPoseTransition('kneel', kneelDuration, () => {
               if (this._ritualRunId !== myRunId) return;
               executeStageRitual(this, ritualType, donorName, giftInfo, () => {
@@ -4987,14 +4993,18 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
                 cleanAllBubblesFromDisciple(this);
 
                 // Smoothly stand up before walking back to seat
-                const returnBoost = stageActionQueue.length > 2 ? 2.1 : (stageActionQueue.length > 0 ? 1.55 : safeSpeedMult);
-                const standDuration = Math.round(220 / Math.max(1.0, returnBoost));
+                const returnBoost = stageActionQueue.length > 2 ? 2.2 : (stageActionQueue.length > 0 ? 1.6 : safeSpeedMult);
+                const standDuration = Math.round(150 / Math.max(1.0, returnBoost));
                 this.smoothPoseTransition('walk', standDuration, () => {
                   if (this._ritualRunId !== myRunId) return;
                   let seatT = 0;
                   this.walkPhaseTime = 0;
                   const rWalk = (spriteRatios[this.typeKey] || spriteRatios.female_buns).walk || 0.45;
                   const baseWalkH = POSE_H.walk * CHIBI_SCALE;
+                  const randRetArc = (Math.random() - 0.5) * 0.15;
+                  const randRetCadence = 7.8 + (Math.random() - 0.5) * 1.2;
+                  const randRetSpeedVar = (Math.random() - 0.5) * 0.2;
+
                   this._returnTimer = setInterval(() => {
                     try {
                       if (this._ritualRunId !== myRunId) {
@@ -5004,20 +5014,21 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
                       }
                       const dt2 = 0.016;
                       const curQ = stageActionQueue.length;
-                      const curRetSpeed = Math.max(safeSpeedMult, curQ > 2 ? 2.2 : (curQ > 0 ? 1.65 : 1.0));
-                      const returnDuration = Math.max(0.85, 2.0 / curRetSpeed);
+                      const curRetSpeed = Math.max(safeSpeedMult, curQ > 2 ? 2.3 : (curQ > 0 ? 1.75 : 1.0));
+                      // Fast return: 1.1s - 1.3s (down from 2.0s)
+                      const returnDuration = Math.max(0.65, (1.18 + randRetSpeedVar) / curRetSpeed);
 
                       seatT += dt2 / returnDuration;
-                      this.walkPhaseTime += dt2 * Math.min(1.5, Math.sqrt(curRetSpeed));
+                      this.walkPhaseTime += dt2 * Math.min(1.6, Math.sqrt(curRetSpeed));
                       const sp = Math.min(seatT, 1.0);
                       const sEase = sp * sp * (3 - 2 * sp);
                       const sEnv = Math.sin(sp * Math.PI);
 
-                      const sPhase = this.walkPhaseTime * 5.6;
+                      const sPhase = this.walkPhaseTime * randRetCadence;
                       const sCycle = 0.5 - 0.5 * Math.cos(sPhase * 2.0);
-                      const sBob = sCycle * 0.014 * (0.3 + 0.7 * sEnv);
+                      const sBob = sCycle * 0.015 * (0.3 + 0.7 * sEnv);
                       this.charSprite.position.y = 0.05 + sBob;
-                      this.charSprite.material.rotation = Math.sin(sPhase) * 0.016 * sEnv;
+                      this.charSprite.material.rotation = Math.sin(sPhase) * 0.018 * sEnv;
 
                       const stretch = 1.0 + (sCycle - 0.5) * 0.020 * sEnv;
                       const wScale = baseWalkH * rWalk * (2.0 - stretch);
@@ -5026,7 +5037,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
                       const targetFinalX = (this.finalPos && typeof this.finalPos.x === 'number') ? this.finalPos.x : 0;
                       const targetFinalZ = (this.finalPos && typeof this.finalPos.z === 'number') ? this.finalPos.z : 6.0;
 
-                      this.root.position.x = THREE.MathUtils.lerp(0, targetFinalX, sEase);
+                      this.root.position.x = THREE.MathUtils.lerp(0, targetFinalX, sEase) + Math.sin(sp * Math.PI) * randRetArc;
                       this.root.position.z = THREE.MathUtils.lerp(altarZ, targetFinalZ, sEase);
 
                       if (sp >= 1.0) {
@@ -5036,7 +5047,7 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
                         this.charSprite.position.y = 0.05;
                         this.root.position.set(targetFinalX, (this.finalPos?.y || 0.05), targetFinalZ);
                         const finalTargetPose = (this.finalPos && this.finalPos.standing) ? 'walk' : 'kneel';
-                        this.smoothPoseTransition(finalTargetPose, 220, () => {
+                        this.smoothPoseTransition(finalTargetPose, 140, () => {
                           if (this._ritualRunId !== myRunId) return;
                           this.isWalking = false;
                           this.isPerformingAltarRitual = false;
