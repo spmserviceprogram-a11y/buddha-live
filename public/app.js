@@ -10861,6 +10861,7 @@ function updateMeritBoard(list) {
     try {
       localStorage.setItem('buddha_top_merit', JSON.stringify(clientMeritList));
     } catch (_) {}
+    triggerMeritBoardPopup(8000); // Pop up TOP 5 Merit Board on new donation/leaderboard update
   } else if (clientMeritList.length === 0) {
     el.innerHTML = '<div class="merit-empty">เจริญพรผู้ร่วมอนุโมทนาบุญ ✨</div>';
     el._lastSignature = '';
