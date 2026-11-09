@@ -10817,6 +10817,7 @@ function pushRecentWishClient(nickname, wishText) {
     clientRecentWishesList = clientRecentWishesList.slice(0, 8);
   }
   updateRecentWishes(clientRecentWishesList);
+  triggerRecentWishesPopup(7000); // Pop up Recent Wishes card when viewer submits prayer wish
 }
 
 function updateRecentWishes(wishes) {
