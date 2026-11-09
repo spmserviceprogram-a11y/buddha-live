@@ -1842,10 +1842,19 @@ class BuddhaSpeechCoordinator {
   }
 
   canSpeak() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('voice') === '0' || params.get('no_voice') === '1' || params.get('display') === '1') {
+        return false;
+      }
+    } catch (_) {}
+
     if (this.socket && this.socket.connected && this.serverMasterSocketId) {
-      return Boolean(this.isMaster && this.socket.id === this.serverMasterSocketId);
+      if (this.socket.id === this.serverMasterSocketId) return true;
+      if (this.isMaster) return true;
+      return false;
     }
-    return Boolean(this.isMaster);
+    return true; // Default: allow speech!
   }
 }
 
