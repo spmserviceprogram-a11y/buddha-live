@@ -10583,7 +10583,7 @@ function triggerGiftAnnouncementBanner(donor, giftInfo = null) {
 
   const tierInfo = getBannerTierInfo(giftInfo, giftName);
 
-  banner.classList.remove('tier-standard', 'tier-royal', 'tier-legend', 'tier-dragon');
+  banner.classList.remove('tier-standard', 'tier-royal', 'tier-legend', 'tier-dragon', 'tier-seamsi');
   banner.classList.add(tierInfo.tierClass);
   if (crownEl) crownEl.textContent = tierInfo.crownIcon;
 
@@ -10646,7 +10646,7 @@ function showBigEffectBanner(icon, title, subtitle, giftInfo = null) {
   const giftImage = giftInfo?.image || (typeof icon === 'string' && icon.startsWith('/') ? icon : getGiftImageUrl(title, giftInfo?.coins || 1));
   const tierInfo = getBannerTierInfo(giftInfo, title);
 
-  banner.classList.remove('tier-standard', 'tier-royal', 'tier-legend', 'tier-dragon');
+  banner.classList.remove('tier-standard', 'tier-royal', 'tier-legend', 'tier-dragon', 'tier-seamsi');
   banner.classList.add(tierInfo.tierClass);
   if (crownEl) crownEl.textContent = tierInfo.crownIcon;
 
