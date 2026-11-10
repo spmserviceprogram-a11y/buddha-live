@@ -94,10 +94,15 @@ body {
 #stream-container.miracle-video-active .celestial-water-shimmer,
 #stream-container.miracle-video-active .celestial-mist,
 #stream-container.miracle-video-active .celestial-petals-container,
-#stream-container.miracle-video-active .celestial-cranes-wrap {
+#stream-container.miracle-video-active .celestial-cranes-wrap,
+#stream-container.miracle-video-active #bg-paradise-img {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.35s ease;
+}
+
+#stream-container.miracle-video-active {
+  background: #000 !important;
 }
 
 #stream-container.miracle-video-active .celestial-paradise-wrap {
@@ -107,6 +112,7 @@ body {
 #stream-container.miracle-video-active .bg-video {
   z-index: 60 !important;
   opacity: 1 !important;
+  pointer-events: auto !important;
 }
 
 @keyframes celestialLivingBackground {
