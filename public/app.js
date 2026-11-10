@@ -14544,8 +14544,12 @@ class RoundManager {
       }
     } catch (_) { }
 
-    // 3. MC Voice: Announce MVP and congratulate chat
-    this.speakHost(`ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ ขออนุโมทนาบุญด้วยนะคะ`);
+    // 3. MC Voice: Announce MVP and congratulate chat (Distinguish between 100% full victory vs standard round MVP)
+    if (this.meritPoints >= this.targetMeritPoints) {
+      this.speakHost(`สาธุ บารมีรอบที่ ${this.roundNum} สำเร็จเต็มร้อย ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญนะคะ`);
+    } else {
+      this.speakHost(`ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ ขออนุโมทนาบุญด้วยนะคะ`);
+    }
 
     // 4. Act 2: After 3.8s, smoothly fade out MVP Modal and Unveil Fortune Scroll!
     if (this.revealStepTimer) clearTimeout(this.revealStepTimer);
