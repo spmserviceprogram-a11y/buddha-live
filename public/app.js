@@ -11669,7 +11669,8 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
     onComplete = giftInfo;
     giftInfo = null;
   }
-  const isAmbient = giftInfo?.isAmbient === true;
+  try {
+    const isAmbient = giftInfo?.isAmbient === true;
   const giftIcon = giftInfo?.icon || (type === 'flowers' ? '🌸' : type === 'lotus' ? '🪷' : type === 'incense' ? '🪔' : '🌹');
   const giftName = giftInfo?.name || (type === 'flowers' ? 'บุปผามงคล' : type === 'lotus' ? 'ดอกบัวทิพย์' : type === 'incense' ? 'ประทีปธูปหอม' : 'ดอกกุหลาบ');
   const giftImg = giftInfo?.image || giftInfo?.giftImage || getGiftImageUrl(giftName, giftInfo?.coins, type);
@@ -11896,6 +11897,16 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
       actor.addRitualTimeout(onComplete, 800);
     }
   }
+} catch (err) {
+  console.error('[executeStageRitual] Unexpected error during stage ritual:', err);
+  if (typeof onComplete === 'function') {
+    try {
+      onComplete();
+    } catch (cbErr) {
+      console.error('[executeStageRitual] onComplete fallback failed:', cbErr);
+    }
+  }
+}
 }
 
 // Quick Merit Buttons at Bottom Dock
