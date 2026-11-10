@@ -14371,7 +14371,55 @@ class RoundManager {
     }
   }
 
+  handleEmptyRound() {
+    this.state = 'EMPTY_RESET';
+    if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.ambientBotInterval) clearInterval(this.ambientBotInterval);
+    if (this.startTimer) clearTimeout(this.startTimer);
+    if (this.climaxTimer) clearTimeout(this.climaxTimer);
+    if (this.transitionTimer) clearTimeout(this.transitionTimer);
+    if (this.revealStepTimer) clearTimeout(this.revealStepTimer);
+    this.startTimer = null;
+    this.climaxTimer = null;
+    this.transitionTimer = null;
+    this.revealStepTimer = null;
+
+    if (typeof hideCeremonyModals === 'function') {
+      hideCeremonyModals();
+    }
+    if (window.videoBlessingController) {
+      window.videoBlessingController.stopMiracle();
+    }
+
+    if (this.dom.phasePill) {
+      this.dom.phasePill.className = 'round-phase-pill';
+    }
+    if (this.dom.phaseText) {
+      this.dom.phaseText.textContent = 'รอเปิดรอบใหม่';
+    }
+    if (this.dom.progressFill) this.dom.progressFill.style.width = '0%';
+    if (this.dom.pct) this.dom.pct.textContent = '0%';
+    if (this.dom.pts) this.dom.pts.textContent = '0';
+    if (this.dom.mvpName) this.dom.mvpName.textContent = 'รอเปิดรอบ';
+    if (this.dom.mvpPts) this.dom.mvpPts.textContent = '';
+    if (this.dom.timerPill) this.dom.timerPill.classList.remove('timer-urgent');
+
+    // Polite, peaceful prompt to participate in next round (Rule 10: 8-10 words, ends with "นะคะ", contains "ฉากจำลอง")
+    this.speakHost(`รอบนี้ยังไม่มีผู้ร่วมบุญ มาร่วมพิมพ์สาธุในฉากจำลองรอบถัดไปกันนะคะ`);
+
+    // Smooth transition directly to next round in 3.2s without videos or modals
+    this.transitionTimer = setTimeout(() => {
+      this.transitionTimer = null;
+      this.startRound(this.roundNum + 1);
+    }, 3200);
+  }
+
   triggerClimax() {
+    if (this.meritPoints <= 0 || !this.currentMVP || this.contributors.size === 0) {
+      this.handleEmptyRound();
+      return;
+    }
+
     this.state = 'CLIMAX';
     if (this.timerInterval) clearInterval(this.timerInterval);
     if (this.ambientBotInterval) clearInterval(this.ambientBotInterval);
@@ -14395,13 +14443,16 @@ class RoundManager {
       this.revealFortuneAndMVP();
     };
 
-    // Play Climax Miracle Video (Odd rounds -> climax_a [หลั่งน้ำทิพย์], Even rounds -> climax_b [บัวแก้วบาน])
+    // Play Climax Miracle Video ONLY when participants actively joined this round!
+    // (Odd rounds -> climax_a [หลั่งน้ำทิพย์], Even rounds -> climax_b [บัวแก้วบาน])
     try {
       const climaxTier = (this.roundNum % 2 === 1) ? 'climax_a' : 'climax_b';
-      if (window.videoBlessingController) {
+      if (window.videoBlessingController && this.meritPoints > 0) {
         window.videoBlessingController.playMiracle(climaxTier, () => {
           doReveal();
         });
+      } else {
+        doReveal();
       }
     } catch (_) { }
 
