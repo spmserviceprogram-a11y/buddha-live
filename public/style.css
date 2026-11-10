@@ -64,22 +64,49 @@ body {
 
 .bg-video {
   position: absolute;
-  top: 1.2%;
-  left: -2.5%;
-  width: 105%;
-  height: 103.8%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center center;
   pointer-events: none;
   z-index: 1;
   opacity: 0;
   display: block;
-  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity;
 }
 
 .bg-video.active-miracle {
   opacity: 1;
+}
+
+/* =====================================================================
+   MIRACLE VIDEO FULLSCREEN THEATRE MODE (ซ่อนทุกอย่างเมื่อเล่นวีดีโอ แสดงเฉพาะวีดีโอ 100%)
+   ===================================================================== */
+#stream-container.miracle-video-active #canvas-container,
+#stream-container.miracle-video-active #effects-overlay,
+#stream-container.miracle-video-active #live-overlay,
+#stream-container.miracle-video-active .hfx-screen,
+#stream-container.miracle-video-active .celestial-ambient-aurora,
+#stream-container.miracle-video-active .celestial-godrays,
+#stream-container.miracle-video-active .celestial-water-shimmer,
+#stream-container.miracle-video-active .celestial-mist,
+#stream-container.miracle-video-active .celestial-petals-container,
+#stream-container.miracle-video-active .celestial-cranes-wrap {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.35s ease;
+}
+
+#stream-container.miracle-video-active .celestial-paradise-wrap {
+  z-index: 50 !important;
+}
+
+#stream-container.miracle-video-active .bg-video {
+  z-index: 60 !important;
+  opacity: 1 !important;
 }
 
 @keyframes celestialLivingBackground {
@@ -444,6 +471,7 @@ body {
   height: 100%;
   z-index: 1;
   pointer-events: none;
+  transition: opacity 0.35s ease;
 }
 
 /* Shimmering Golden Dust Overlay */
@@ -456,6 +484,7 @@ body {
   z-index: 2;
   pointer-events: none;
   background: radial-gradient(circle at 50% 25%, rgba(255, 215, 0, 0.08) 0%, rgba(0, 0, 0, 0) 65%);
+  transition: opacity 0.35s ease;
 }
 
 /* Live Overlay Layer */
@@ -471,6 +500,7 @@ body {
   flex-direction: column;
   justify-content: space-between;
   padding: 12px 12px 10px;
+  transition: opacity 0.35s ease;
 }
 
 #live-overlay * {
@@ -840,16 +870,16 @@ body {
   left: 50%;
   transform: translateX(-50%);
   max-width: calc(100% - 24px);
-  background: linear-gradient(135deg, rgba(168, 28, 20, 0.78) 0%, rgba(98, 14, 10, 0.78) 55%, rgba(46, 8, 5, 0.82) 100%);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1.8px solid #ffd700;
+  background: linear-gradient(135deg, rgba(140, 20, 28, 0.35) 0%, rgba(85, 12, 18, 0.30) 55%, rgba(40, 6, 10, 0.38) 100%);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  border: 1.5px solid rgba(255, 215, 0, 0.75);
   box-shadow:
-    0 0 24px rgba(255, 215, 0, 0.65),
-    0 0 45px rgba(255, 140, 0, 0.35),
-    0 8px 24px rgba(0, 0, 0, 0.65),
-    inset 0 0 12px rgba(255, 215, 0, 0.40),
-    inset 0 1.5px 2px rgba(255, 255, 255, 0.85);
+    0 0 16px rgba(255, 215, 0, 0.35),
+    0 0 30px rgba(255, 140, 0, 0.18),
+    0 6px 18px rgba(0, 0, 0, 0.35),
+    inset 0 0 10px rgba(255, 215, 0, 0.20),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.55);
   border-radius: 26px;
   padding: 5px 18px 5px 14px;
   font-size: 12px;
@@ -908,29 +938,29 @@ body {
   100% {
     transform: translateX(-50%) translateY(0) scale(1);
     box-shadow:
-      0 0 22px rgba(255, 215, 0, 0.60),
-      0 0 40px rgba(255, 140, 0, 0.30),
-      0 8px 24px rgba(0, 0, 0, 0.65),
-      inset 0 0 10px rgba(255, 215, 0, 0.35);
+      0 0 16px rgba(255, 215, 0, 0.35),
+      0 0 28px rgba(255, 140, 0, 0.18),
+      0 6px 18px rgba(0, 0, 0, 0.35),
+      inset 0 0 8px rgba(255, 215, 0, 0.20);
   }
 
   50% {
     transform: translateX(-50%) translateY(-2px) scale(1.02);
     box-shadow:
-      0 0 32px rgba(255, 230, 90, 0.85),
-      0 0 55px rgba(255, 160, 20, 0.50),
-      0 12px 28px rgba(0, 0, 0, 0.75),
-      inset 0 0 16px rgba(255, 230, 90, 0.55);
+      0 0 24px rgba(255, 230, 90, 0.55),
+      0 0 38px rgba(255, 160, 20, 0.28),
+      0 8px 22px rgba(0, 0, 0, 0.45),
+      inset 0 0 12px rgba(255, 230, 90, 0.35);
   }
 }
 
 /* Pulsing Golden Aura behind Follower Banner */
 .follower-aura-backdrop {
   position: absolute;
-  inset: -10px -22px;
+  inset: -8px -18px;
   border-radius: 36px;
-  background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.45) 0%, rgba(255, 130, 0, 0.20) 50%, transparent 75%);
-  filter: blur(8px);
+  background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.22) 0%, rgba(255, 130, 0, 0.10) 50%, transparent 75%);
+  filter: blur(10px);
   z-index: -1;
   pointer-events: none;
   animation: auraBackdropPulse 2.4s ease-in-out infinite;
@@ -5352,11 +5382,17 @@ body {
   transform: translateX(-50%) translateY(14px) scale(0.95);
   width: calc(100% - 24px);
   max-width: 410px;
-  background: linear-gradient(135deg, rgba(25, 14, 40, 0.94) 0%, rgba(65, 30, 15, 0.94) 100%);
-  border: 1.5px solid #ffd700;
+  background: linear-gradient(135deg, rgba(22, 14, 38, 0.38) 0%, rgba(52, 22, 32, 0.32) 55%, rgba(30, 10, 20, 0.40) 100%);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  border: 1.5px solid rgba(255, 215, 0, 0.75);
   border-radius: 24px;
   padding: 6px 14px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.75), 0 0 20px rgba(255, 215, 0, 0.45);
+  box-shadow:
+    0 0 16px rgba(255, 215, 0, 0.30),
+    0 6px 20px rgba(0, 0, 0, 0.35),
+    inset 0 0 10px rgba(255, 215, 0, 0.18),
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.50);
   z-index: 120;
   display: flex;
   align-items: center;
@@ -5365,12 +5401,23 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: visible;
 }
 
 .share-toast-banner.active {
   opacity: 1;
   pointer-events: auto;
   transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.share-toast-aura {
+  position: absolute;
+  inset: -8px -16px;
+  border-radius: 32px;
+  background: radial-gradient(ellipse at center, rgba(96, 165, 250, 0.22) 0%, rgba(255, 215, 0, 0.12) 50%, transparent 75%);
+  filter: blur(10px);
+  z-index: -1;
+  pointer-events: none;
 }
 
 .share-toast-content {

@@ -2455,7 +2455,7 @@ app.post('/api/simulate', (req, res) => {
       totalDiamonds: diamondCount,
       effectType,
       effectName,
-      meritDelta: Math.max(10, Math.floor((diamondIncrement || 1) * 10))
+      meritDelta: Math.max(10, Math.floor((diamondCount || 1) * 10))
     });
 
     io.emit('queue_update', {
