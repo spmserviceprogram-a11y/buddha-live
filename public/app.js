@@ -14488,6 +14488,10 @@ class RoundManager {
   }
 
   revealFortuneAndMVP() {
+    if (this.meritPoints <= 0 || !this.currentMVP || this.contributors.size === 0) {
+      this.handleEmptyRound();
+      return;
+    }
     this.state = 'REVEAL';
     if (typeof hideCeremonyModals === 'function') {
       hideCeremonyModals({ except: 'mvp' });
