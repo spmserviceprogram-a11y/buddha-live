@@ -964,18 +964,30 @@ class GuanYinDivineVoice {
     }
   }
 
+  _safeTeardownCurrentAudio() {
+    if (this.currentAudio) {
+      const a = this.currentAudio;
+      a._aborted = true;
+      a.onerror = null;
+      a.onended = null;
+      a.onplay = null;
+      a.onplaying = null;
+      try {
+        a.pause();
+        a.currentTime = 0;
+        a.removeAttribute('src');
+        a.load();
+      } catch (_) { }
+      this.currentAudio = null;
+    }
+  }
+
   abortCurrentTask() {
     if (this.currentAbortController) {
       try { this.currentAbortController.abort(); } catch (_) { }
       this.currentAbortController = null;
     }
-    if (this.currentAudio) {
-      try {
-        this.currentAudio.pause();
-        this.currentAudio.src = '';
-      } catch (_) { }
-      this.currentAudio = null;
-    }
+    this._safeTeardownCurrentAudio();
     if (this.synth) {
       try { this.synth.cancel(); } catch (_) { }
     }
@@ -1198,15 +1210,15 @@ class GuanYinDivineVoice {
       // 1. Primary: Studio-grade neural female voice (Dynamic MP3 speaking viewer name)
       const maxMs = task.maxMs || 0;
       if (audioUrl && !audioUrl.includes('default_')) {
-        await this.playAudioUrl(audioUrl, maxMs || 12000);
+        await this.playAudioUrl(audioUrl, maxMs || 12000, textToDisplay);
       } else if (this.thaiVoice && textToDisplay && this.synth) {
         // 2. Fallback: Speak text containing viewer name via client SpeechSynthesis
         await this.playBrowserTTS(textToDisplay, maxMs || 8000);
       } else if (audioUrl) {
         // 3. Fallback: Pre-rendered cloud MP3 audio
-        await this.playAudioUrl(audioUrl, maxMs || 12000);
+        await this.playAudioUrl(audioUrl, maxMs || 12000, textToDisplay);
       } else {
-        await this.playAudioUrl('/audio_cache/default_blessing.mp3');
+        await this.playAudioUrl('/audio_cache/default_blessing.mp3', maxMs || 12000, textToDisplay);
       }
     } catch (e) {
       if (e?.name !== 'AbortError') {
@@ -1224,21 +1236,15 @@ class GuanYinDivineVoice {
     return sanitizeDisplayName(rawName, fallback);
   }
 
-  playAudioUrl(url, maxMs = 12000) {
+  playAudioUrl(url, maxMs = 12000, fallbackText = '') {
     return new Promise(resolve => {
       // 1. Immediately cancel any running Web Speech API synthesis to guarantee zero voice overlap
       if (this.synth) {
         try { this.synth.cancel(); } catch (_) { }
       }
 
-      // 2. Cleanly stop any existing playing audio to guarantee zero overlap
-      if (this.currentAudio) {
-        try {
-          this.currentAudio.pause();
-          this.currentAudio.src = '';
-        } catch (_) { }
-        this.currentAudio = null;
-      }
+      // 2. Cleanly and safely teardown any existing playing audio
+      this._safeTeardownCurrentAudio();
 
       // Smoothly duck BGM when Bodhisattva Guan Yin speaks
       if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
@@ -1263,7 +1269,9 @@ class GuanYinDivineVoice {
         hasEnded = true;
         this._currentPlaybackResolver = null;
         clearTimeout(timeout);
-        this.currentAudio = null;
+        if (this.currentAudio === audio) {
+          this.currentAudio = null;
+        }
         this.isSpeaking = false;
         this.lastSpokenAt = Date.now();
         if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
@@ -1279,11 +1287,16 @@ class GuanYinDivineVoice {
       this._currentPlaybackResolver = endPlayback;
       const timeout = setTimeout(endPlayback, maxMs);
 
-      audio.onended = endPlayback;
+      audio.onended = () => {
+        if (audio._aborted || hasEnded) return;
+        endPlayback();
+      };
+
       audio.onerror = (err) => {
-        console.warn('[GuanYin Voice] Audio error:', err, url);
-        if (this.lastSpokenText && this.synth) {
-          this.playBrowserTTS(this.lastSpokenText).then(endPlayback).catch(endPlayback);
+        if (audio._aborted || hasEnded || this.currentAudio !== audio) return;
+        console.warn('[GuanYin Voice] Audio file load error:', err, url);
+        if (fallbackText && this.synth && !audio._aborted && !hasEnded) {
+          this.playBrowserTTS(fallbackText, maxMs).then(endPlayback).catch(endPlayback);
           return;
         }
         endPlayback();
@@ -1293,11 +1306,12 @@ class GuanYinDivineVoice {
         if (typeof smartMicRouter !== 'undefined' && smartMicRouter) {
           await smartMicRouter.prepareVoiceAudio(audio, url);
         }
-        if (hasEnded) return;
+        if (audio._aborted || hasEnded || this.currentAudio !== audio) return;
         audio.play().catch(err => {
-          console.warn('[GuanYin Voice] Audio autoplay waiting or blocked:', err);
-          if (this.lastSpokenText && this.synth) {
-            this.playBrowserTTS(this.lastSpokenText).then(endPlayback).catch(endPlayback);
+          if (audio._aborted || hasEnded || this.currentAudio !== audio) return;
+          console.warn('[GuanYin Voice] Audio autoplay waiting or blocked:', err?.message);
+          if (fallbackText && this.synth && !audio._aborted && !hasEnded) {
+            this.playBrowserTTS(fallbackText, maxMs).then(endPlayback).catch(endPlayback);
             return;
           }
           endPlayback();
@@ -1310,14 +1324,8 @@ class GuanYinDivineVoice {
     return new Promise(resolve => {
       if (!this.synth || !this.thaiVoice) return resolve();
 
-      // 1. Cleanly stop any existing playing audio to guarantee zero overlap
-      if (this.currentAudio) {
-        try {
-          this.currentAudio.pause();
-          this.currentAudio.src = '';
-        } catch (_) { }
-        this.currentAudio = null;
-      }
+      // 1. Cleanly and safely teardown any existing playing audio to guarantee zero overlap
+      this._safeTeardownCurrentAudio();
 
       try {
         this.synth.cancel(); // Stop any pending utterances
@@ -1591,6 +1599,14 @@ class GuanYinDivineVoice {
 
   stopAll() {
     this.queue = [];
+    if (this.currentAbortController) {
+      try { this.currentAbortController.abort(); } catch (_) { }
+      this.currentAbortController = null;
+    }
+    this._safeTeardownCurrentAudio();
+    if (this.synth) {
+      try { this.synth.cancel(); } catch (_) { }
+    }
     if (this._currentPlaybackResolver) {
       const r = this._currentPlaybackResolver;
       this._currentPlaybackResolver = null;
@@ -1598,16 +1614,6 @@ class GuanYinDivineVoice {
     }
     if (typeof templeAudio !== 'undefined' && templeAudio.duckBgm) {
       templeAudio.duckBgm(false, 200);
-    }
-    if (this.currentAudio) {
-      try {
-        this.currentAudio.pause();
-        this.currentAudio.src = '';
-      } catch (_) { }
-      this.currentAudio = null;
-    }
-    if (this.synth) {
-      try { this.synth.cancel(); } catch (_) { }
     }
     this.isSpeaking = false;
     this.isGenerating = false;
@@ -1690,15 +1696,6 @@ class BuddhaSpeechCoordinator {
     this.watchdogTimer = setInterval(() => {
       this.evaluateLeadership();
     }, 1500);
-
-    // Auto-claim speech master when user interacts with this window
-    const autoClaim = () => {
-      if (!this.isMaster) {
-        this.claimMaster();
-      }
-    };
-    window.addEventListener('pointerdown', autoClaim, { passive: true });
-    window.addEventListener('keydown', autoClaim, { passive: true });
 
     // Release master on unload
     window.addEventListener('beforeunload', () => {
@@ -1883,11 +1880,9 @@ class BuddhaSpeechCoordinator {
     } catch (_) { }
 
     if (this.socket && this.socket.connected && this.serverMasterSocketId) {
-      if (this.socket.id === this.serverMasterSocketId) return true;
-      if (this.isMaster) return true;
-      return false;
+      return (this.socket.id === this.serverMasterSocketId);
     }
-    return true; // Default: allow speech!
+    return Boolean(this.isMaster);
   }
 }
 
