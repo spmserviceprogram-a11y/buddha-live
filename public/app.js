@@ -14240,8 +14240,9 @@ class RoundManager {
         this.dom.timerPill.classList.add('timer-urgent');
       }
 
-      // Mid-round momentum announcement (~22s remaining)
-      if (this.timeRemaining === 22 && !this.hasSpokenHalfway) {
+      // Mid-round momentum announcement (halfway through the gathering phase, e.g. 60s remaining)
+      const halfway = Math.floor(this.gatheringDuration / 2);
+      if (this.timeRemaining === halfway && !this.hasSpokenHalfway) {
         this.hasSpokenHalfway = true;
         let chatterNames = [];
         this.contributors.forEach(c => {
