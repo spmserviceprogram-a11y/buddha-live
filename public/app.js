@@ -4716,7 +4716,13 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
         const idx = this._ritualTimers.indexOf(tid);
         if (idx !== -1) this._ritualTimers.splice(idx, 1);
         if (this._ritualRunId !== expectedRunId) return;
-        fn();
+        if (typeof fn === 'function') {
+          try {
+            fn();
+          } catch (err) {
+            console.error('[addRitualTimeout] Execution error:', err);
+          }
+        }
       }, delayMs);
       this._ritualTimers.push(tid);
       return tid;
@@ -4729,7 +4735,14 @@ function addOrUpdateDiscipleInScene(userData, autoWalk = false) {
           clearInterval(iid);
           return;
         }
-        fn(iid);
+        if (typeof fn === 'function') {
+          try {
+            fn(iid);
+          } catch (err) {
+            console.error('[addRitualInterval] Execution error:', err);
+            clearInterval(iid);
+          }
+        }
       }, intervalMs);
       this._ritualIntervals.push(iid);
       return iid;
