@@ -14037,18 +14037,27 @@ class VideoBlessingController {
       }
     } catch (_) { }
 
+    const streamContainer = document.getElementById('stream-container');
+
+    const onPlaySuccess = () => {
+      this.videoEl.classList.add('active-miracle');
+      if (streamContainer) {
+        streamContainer.classList.add('miracle-video-active');
+      }
+    };
+
     const playPromise = this.videoEl.play();
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          this.videoEl.classList.add('active-miracle');
+          onPlaySuccess();
         })
         .catch((err) => {
           console.warn('[VideoBlessingController] Autoplay failed:', err?.message);
           this.stopMiracle();
         });
     } else {
-      this.videoEl.classList.add('active-miracle');
+      onPlaySuccess();
     }
 
     // Safety watchdog: Cap video display at 12s
@@ -14070,6 +14079,10 @@ class VideoBlessingController {
     }
 
     this.videoEl.classList.remove('active-miracle');
+    const streamContainer = document.getElementById('stream-container');
+    if (streamContainer) {
+      streamContainer.classList.remove('miracle-video-active');
+    }
 
     setTimeout(() => {
       try {
@@ -14085,7 +14098,7 @@ class VideoBlessingController {
         this._onFinishCb = null;
         cb();
       }
-    }, 300);
+    }, 350);
   }
 }
 
