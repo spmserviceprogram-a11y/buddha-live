@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ห้องสวดมนต์ บารมีพระแม่กวนอิม - TikTok Live</title>
-  <link rel="stylesheet" href="style.css?v=deck_v40">
+  <link rel="stylesheet" href="style.css?v=deck_v41">
   <!-- High-DPI & OBS Auto-Scale Pre-paint Engine (Zero Layout Shift) -->
   <script>
     (function () {
@@ -85,7 +85,8 @@
     <div id="live-overlay">
 
       <!-- Top Header Bar (ชิดขอบบน ปลอดภัยจากบอท TikTok) -->
-      <header class="top-bar">
+      <!-- Top Header Bar (ซ่อนเป็น fallback สำหรับสคริปต์) -->
+      <header class="top-bar" style="display:none !important;">
         <div class="streamer-info hidden" id="streamer-info" style="display:none;">
           <div class="avatar-ring">
             <div class="streamer-avatar">☸️</div>
@@ -96,45 +97,18 @@
           </div>
         </div>
 
-        <div class="top-stats">
-          <div class="live-clock-pill">
-            <span class="live-badge-red">
-              <span class="pulse-dot-red"></span>
-              <span class="live-tag">LIVE</span>
-            </span>
-            <span class="live-date" id="live-clock-date">--/--</span>
-            <span id="live-clock-time">--:--:--</span>
-          </div>
-          <script>
-            (function () {
-              var m = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-              function tick() {
-                var d = new Date();
-                var t = document.getElementById('live-clock-time');
-                var dt = document.getElementById('live-clock-date');
-                if (t) {
-                  var h = String(d.getHours()).padStart(2, '0');
-                  var min = String(d.getMinutes()).padStart(2, '0');
-                  var s = String(d.getSeconds()).padStart(2, '0');
-                  t.textContent = h + ':' + min + ':' + s;
-                }
-                if (dt) dt.textContent = d.getDate() + ' ' + (m[d.getMonth()] || '');
-              }
-              tick();
-              setInterval(tick, 1000);
-            })();
-          </script>
+        <div class="top-stats" style="display:none;">
           <button class="btn-icon" id="btn-audio-toggle" title="เปิด/ปิดเสียงสมาธิ">🎵</button>
           <button class="btn-icon" id="btn-toggle-panel" title="แผงควบคุม / ตั้งค่า">⚙️</button>
         </div>
       </header>
 
-      <!-- Round Controller Bar (เกมจำลองรอบการเล่นแบบเรียลไทม์ & เกจพลังบุญ) -->
+      <!-- Round Controller Bar (นาฟบาร์ด้านบนสุด รวมเวลา LIVE & เกจพลังบุญ กระชับบางเฉียบ ไม่บังพระเศียรพระแม่กวนอิม) -->
       <div id="round-hud" class="round-hud">
         <div class="round-hud-top">
           <div class="round-badge">
             <span class="round-icon">🌿</span>
-            <span class="round-title">รอบที่ <strong id="round-num">1</strong></span>
+            <span class="round-title">รอบ <strong id="round-num">1</strong></span>
           </div>
           <div class="round-phase-pill" id="round-phase-pill">
             <span class="phase-dot"></span>
@@ -146,10 +120,36 @@
           </div>
           <div class="share-counter-pill" id="share-counter-pill" title="ยอดสะพานบุญแชร์ไลฟ์">
             <span class="share-icon">🕊️</span>
-            <span class="share-label">สะพานบุญ:</span>
             <strong id="share-count-val">0</strong>
           </div>
+          <div class="live-clock-pill">
+            <span class="live-badge-red">
+              <span class="pulse-dot-red"></span>
+              <span class="live-tag">LIVE</span>
+            </span>
+            <span class="live-date" id="live-clock-date">--/--</span>
+            <span id="live-clock-time">--:--:--</span>
+          </div>
         </div>
+        <script>
+          (function () {
+            var m = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            function tick() {
+              var d = new Date();
+              var t = document.getElementById('live-clock-time');
+              var dt = document.getElementById('live-clock-date');
+              if (t) {
+                var h = String(d.getHours()).padStart(2, '0');
+                var min = String(d.getMinutes()).padStart(2, '0');
+                var s = String(d.getSeconds()).padStart(2, '0');
+                t.textContent = h + ':' + min + ':' + s;
+              }
+              if (dt) dt.textContent = d.getDate() + ' ' + (m[d.getMonth()] || '');
+            }
+            tick();
+            setInterval(tick, 1000);
+          })();
+        </script>
 
         <div class="round-hud-body">
           <div class="merit-bar-wrapper">
@@ -160,20 +160,16 @@
               <div class="milestone-pin pin-nirvana" style="left: 100%;" title="ขั้นจักรพรรดิ: มังกรสวรรค์"></div>
             </div>
             <div class="merit-bar-labels">
-              <span class="merit-label-left">พิมพ์ "สาธุ" ร่วมส่งใจ</span>
+              <span class="merit-label-left">พิมพ์ "สาธุ" (+1)</span>
               <span class="merit-label-center" id="merit-stats-text">บารมี: <strong id="merit-pct">0%</strong> (<span id="merit-pts">0</span>/<span id="merit-target">88</span>)</span>
-              <span class="merit-label-right" id="round-participants-count">👥 0 ท่าน</span>
+              <div class="round-mvp-pill" id="round-mvp-pill">
+                <span class="mvp-crown">👑</span>
+                <img id="round-mvp-avatar" class="round-mvp-avatar" src="/rose.png" alt="ผู้นำบุญ" style="display:none;" onerror="this.onerror=null;this.src='/rose.png';" />
+                <span class="mvp-name" id="round-mvp-name">รอเปิดรอบ</span>
+                <span class="mvp-pts" id="round-mvp-pts"></span>
+              </div>
+              <span class="merit-label-right" id="round-participants-count" style="display:none;">👥 0 ท่าน</span>
             </div>
-          </div>
-        </div>
-
-        <div class="round-hud-footer">
-          <div class="round-mvp-pill" id="round-mvp-pill">
-            <span class="mvp-crown">👑</span>
-            <img id="round-mvp-avatar" class="round-mvp-avatar" src="/rose.png" alt="ผู้นำบุญ" style="display:none;" onerror="this.onerror=null;this.src='/rose.png';" />
-            <span class="mvp-title">ผู้นำบุญรอบนี้:</span>
-            <span class="mvp-name" id="round-mvp-name">รอเปิดรอบ</span>
-            <span class="mvp-pts" id="round-mvp-pts"></span>
           </div>
         </div>
       </div>
@@ -1024,7 +1020,7 @@
   </script>
 
   <!-- Main Application Logic (ES Module) -->
-  <script type="module" src="app.js?v=deck_v40"></script>
+  <script type="module" src="app.js?v=deck_v41"></script>
 </body>
 
 </html>

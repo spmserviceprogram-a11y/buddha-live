@@ -536,16 +536,13 @@ body {
   pointer-events: none !important;
 }
 
-/* Top Header Bar */
+/* Top Header Bar (ซ่อนเป็น fallback เนื่องจากย้ายนาฬิกา LIVE เข้าสู่ Navbar ด้านบนสุด) */
 .top-bar {
+  display: none !important;
   position: absolute;
-  top: 6px;
+  top: 4px;
   right: 8px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
   width: auto;
-  margin-top: 0;
   z-index: 125;
   pointer-events: none;
 }
@@ -622,26 +619,26 @@ body {
   line-height: 1;
 }
 
-/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - Translucent Crystal & Sacred Gold) */
+/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - รวมในแถบ Navbar สวรรค์ด้านบนสุด) */
 .live-clock-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 26px;
-  background: linear-gradient(180deg, rgba(20, 8, 28, 0.16) 0%, rgba(35, 12, 22, 0.14) 100%);
-  backdrop-filter: blur(12px) saturate(1.3);
-  -webkit-backdrop-filter: blur(12px) saturate(1.3);
-  border: 1.2px solid rgba(255, 215, 0, 0.65);
-  border-radius: 8px;
-  padding: 0 8px;
-  font-size: 9.5px;
+  gap: 3.5px;
+  height: 18px;
+  background: linear-gradient(180deg, rgba(20, 8, 28, 0.20) 0%, rgba(35, 12, 22, 0.14) 100%);
+  backdrop-filter: blur(8px) saturate(1.2);
+  -webkit-backdrop-filter: blur(8px) saturate(1.2);
+  border: 1px solid rgba(255, 215, 0, 0.55);
+  border-radius: 10px;
+  padding: 0 5.5px;
+  font-size: 8.5px;
   font-weight: 700;
   color: #ffffff;
   font-family: 'Kanit', sans-serif;
   letter-spacing: 0.1px;
   box-sizing: border-box;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.20), 0 0 12px rgba(255, 215, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.20), 0 0 8px rgba(255, 215, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.30);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
@@ -650,7 +647,7 @@ body {
 
 .live-clock-pill:hover {
   border-color: #ffd700;
-  box-shadow: 0 4px 22px rgba(255, 215, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 14px rgba(255, 215, 0, 0.50), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 .live-clock-pill:active {
@@ -661,32 +658,32 @@ body {
 .live-badge-red {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 2.5px;
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.85) 0%, rgba(185, 28, 28, 0.85) 100%);
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 3px;
-  padding: 1px 4.5px;
-  height: 14px;
+  padding: 0.5px 3.5px;
+  height: 12px;
   box-sizing: border-box;
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 5px rgba(239, 68, 68, 0.7);
   flex-shrink: 0;
 }
 
 .live-clock-pill .live-tag {
   color: #ffffff;
   font-weight: 900;
-  font-size: 7.5px;
-  letter-spacing: 0.6px;
+  font-size: 6.5px;
+  letter-spacing: 0.5px;
   line-height: 1;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
 }
 
 .pulse-dot-red {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   background: #ffffff;
   border-radius: 50%;
-  box-shadow: 0 0 4px #ffffff;
+  box-shadow: 0 0 3px #ffffff;
   animation: pulseLiveDot 1.2s infinite ease-in-out;
   flex-shrink: 0;
 }
@@ -708,9 +705,9 @@ body {
 .live-clock-pill .live-date {
   color: #ffd700;
   font-weight: 800;
-  font-size: 9px;
-  border-right: 1px solid rgba(255, 215, 0, 0.45);
-  padding-right: 4.5px;
+  font-size: 8px;
+  border-right: 1px solid rgba(255, 215, 0, 0.40);
+  padding-right: 3.5px;
   margin-right: 1px;
   line-height: 1;
   white-space: nowrap;
@@ -718,13 +715,13 @@ body {
 }
 
 #live-clock-time {
-  font-size: 9.5px;
+  font-size: 8.5px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   color: #ffffff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
   white-space: nowrap;
 }
 
@@ -5523,35 +5520,35 @@ body {
 }
 
 /* =====================================================================
-   ROUND CONTROLLER & COLLECTIVE MERIT HUD (ระบบจำลองรอบเกมอินเทอร์แอคทีฟ - ทรานสลูเซนต์หรูหรา ธีมสวรรค์)
+   ROUND CONTROLLER & COLLECTIVE MERIT HUD (ระบบจำลองรอบเกมอินเทอร์แอคทีฟ - ทรานสลูเซนต์หรูหรา ธีมสวรรค์ ชิดขอบบนสุด ไม่บังพระเศียรพระแม่กวนอิม)
    ===================================================================== */
 .round-hud {
   position: absolute;
-  top: 32px;
+  top: 4px;
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 16px);
   max-width: 430px;
   background: linear-gradient(135deg,
-    rgba(25, 10, 32, 0.22) 0%,
-    rgba(45, 12, 28, 0.16) 48%,
-    rgba(18, 6, 22, 0.22) 100%
+    rgba(18, 6, 24, 0.18) 0%,
+    rgba(35, 10, 22, 0.12) 50%,
+    rgba(15, 5, 20, 0.18) 100%
   );
-  backdrop-filter: blur(14px) saturate(1.4);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  border: 1.5px solid rgba(255, 215, 0, 0.65);
-  border-radius: 14px;
-  padding: 4.5px 9px 3.5px 9px;
+  backdrop-filter: blur(10px) saturate(1.25);
+  -webkit-backdrop-filter: blur(10px) saturate(1.25);
+  border: 1.2px solid rgba(255, 215, 0, 0.50);
+  border-radius: 12px;
+  padding: 2.5px 6px 2px 6px;
   box-shadow:
-    0 4px 22px rgba(0, 0, 0, 0.25),
-    0 0 18px rgba(255, 215, 0, 0.25),
-    0 0 35px rgba(236, 72, 153, 0.12),
-    inset 0 0 12px rgba(255, 215, 0, 0.14),
-    inset 0 1px 1px rgba(255, 255, 255, 0.50);
-  z-index: 110;
+    0 3px 12px rgba(0, 0, 0, 0.18),
+    0 0 10px rgba(255, 215, 0, 0.18),
+    0 0 20px rgba(236, 72, 153, 0.08),
+    inset 0 0 8px rgba(255, 215, 0, 0.10),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  z-index: 125;
   display: flex;
   flex-direction: column;
-  gap: 2.5px;
+  gap: 1.5px;
   pointer-events: auto;
   user-select: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -5562,15 +5559,15 @@ body {
 .round-hud::before {
   content: '';
   position: absolute;
-  inset: -1.5px;
-  border-radius: 15px;
-  padding: 1.2px;
+  inset: -1.2px;
+  border-radius: 13px;
+  padding: 1px;
   background: linear-gradient(90deg,
-    rgba(255, 215, 0, 0.75) 0%,
-    rgba(244, 63, 94, 0.60) 25%,
-    rgba(52, 211, 153, 0.70) 50%,
-    rgba(96, 165, 250, 0.65) 75%,
-    rgba(255, 215, 0, 0.75) 100%
+    rgba(255, 215, 0, 0.65) 0%,
+    rgba(244, 63, 94, 0.50) 25%,
+    rgba(52, 211, 153, 0.60) 50%,
+    rgba(96, 165, 250, 0.55) 75%,
+    rgba(255, 215, 0, 0.65) 100%
   );
   background-size: 250% 100%;
   animation: hudAuraSheen 7s linear infinite;
@@ -5581,18 +5578,18 @@ body {
   z-index: 1;
 }
 
-/* รัศมีออร่าละมุนด้านหลังป้าย ช่วยขับให้ข้อความและเกจเด่นชัดแม้อยู่บนวีดีโอสว่าง */
+/* รัศมีออร่าละมุนด้านหลังป้าย ปรับให้กระชับ ไม่แผ่ลงมาบังพระเศียร */
 .round-hud::after {
   content: '';
   position: absolute;
-  inset: -8px -14px;
-  border-radius: 22px;
+  inset: -2px -6px;
+  border-radius: 16px;
   background: radial-gradient(ellipse at center,
-    rgba(255, 215, 0, 0.18) 0%,
-    rgba(236, 72, 153, 0.08) 45%,
-    transparent 72%
+    rgba(255, 215, 0, 0.12) 0%,
+    rgba(236, 72, 153, 0.05) 50%,
+    transparent 75%
   );
-  filter: blur(8px);
+  filter: blur(5px);
   z-index: -1;
   pointer-events: none;
   animation: hudBackdropGlow 4s ease-in-out infinite alternate;
@@ -5612,98 +5609,109 @@ body {
 .round-hud:hover {
   border-color: rgba(255, 215, 0, 0.85);
   box-shadow:
-    0 6px 26px rgba(0, 0, 0, 0.35),
-    0 0 24px rgba(255, 215, 0, 0.40),
-    0 0 45px rgba(236, 72, 153, 0.20),
-    inset 0 0 16px rgba(255, 215, 0, 0.22);
+    0 4px 18px rgba(0, 0, 0, 0.25),
+    0 0 16px rgba(255, 215, 0, 0.30),
+    0 0 30px rgba(236, 72, 153, 0.15),
+    inset 0 0 12px rgba(255, 215, 0, 0.18);
 }
 
 .round-hud-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 3px;
   position: relative;
   z-index: 2;
+  width: 100%;
 }
 
 .round-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.24) 0%, rgba(180, 83, 9, 0.16) 100%);
+  gap: 3px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(180, 83, 9, 0.14) 100%);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 215, 0, 0.70);
-  border-radius: 14px;
-  padding: 1.5px 7.5px;
-  font-size: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.65);
+  border-radius: 10px;
+  padding: 1px 5.5px;
+  height: 18px;
+  box-sizing: border-box;
+  font-size: 9px;
   font-weight: 800;
   color: #fff9db;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.40);
   transition: all 0.3s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .round-badge .round-icon {
-  filter: drop-shadow(0 0 4px #ffd700);
+  font-size: 9.5px;
+  filter: drop-shadow(0 0 3px #ffd700);
 }
 
 .round-badge .round-title strong {
   color: #ffd700;
-  font-size: 11px;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.95);
+  font-size: 10px;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.95);
 }
 
 .round-phase-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.14) 100%);
+  gap: 3.5px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.20) 0%, rgba(5, 150, 105, 0.12) 100%);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(52, 211, 153, 0.75);
-  border-radius: 14px;
-  padding: 1.5px 7px;
-  font-size: 9.5px;
+  border: 1px solid rgba(52, 211, 153, 0.70);
+  border-radius: 10px;
+  padding: 1px 5.5px;
+  height: 18px;
+  box-sizing: border-box;
+  font-size: 8.5px;
   font-weight: 700;
   color: #a7f3d0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.40);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   transition: all 0.3s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .round-phase-pill .phase-dot {
-  width: 5px;
-  height: 5px;
+  width: 4.5px;
+  height: 4.5px;
   border-radius: 50%;
   background: #34d399;
-  box-shadow: 0 0 8px #34d399;
+  box-shadow: 0 0 6px #34d399;
   animation: phaseDotPulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
 .round-phase-pill.phase-climax {
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.28) 0%, rgba(190, 24, 93, 0.18) 100%);
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.26) 0%, rgba(190, 24, 93, 0.16) 100%);
   border-color: rgba(244, 114, 182, 0.85);
   color: #fbcfe8;
-  box-shadow: 0 0 14px rgba(236, 72, 153, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.40);
 }
 
 .round-phase-pill.phase-climax .phase-dot {
   background: #ec4899;
-  box-shadow: 0 0 10px #ec4899;
+  box-shadow: 0 0 8px #ec4899;
 }
 
 .round-phase-pill.phase-reveal {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.30) 0%, rgba(217, 119, 6, 0.20) 100%);
-  border-color: rgba(253, 224, 71, 0.92);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.28) 0%, rgba(217, 119, 6, 0.18) 100%);
+  border-color: rgba(253, 224, 71, 0.90);
   color: #fef08a;
-  box-shadow: 0 0 14px rgba(251, 191, 36, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.50);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .round-phase-pill.phase-reveal .phase-dot {
   background: #fbbf24;
-  box-shadow: 0 0 12px #fbbf24;
+  box-shadow: 0 0 8px #fbbf24;
 }
 
 @keyframes phaseDotPulse {
@@ -5714,19 +5722,27 @@ body {
 .round-timer-pill {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  background: linear-gradient(135deg, rgba(24, 12, 32, 0.25) 0%, rgba(0, 0, 0, 0.20) 100%);
+  gap: 2.5px;
+  background: linear-gradient(135deg, rgba(24, 12, 32, 0.22) 0%, rgba(0, 0, 0, 0.18) 100%);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 215, 0, 0.55);
-  border-radius: 14px;
-  padding: 1.5px 7px;
-  font-size: 10.5px;
+  border: 1px solid rgba(255, 215, 0, 0.50);
+  border-radius: 10px;
+  padding: 1px 5.5px;
+  height: 18px;
+  box-sizing: border-box;
+  font-size: 9.5px;
   font-weight: 900;
   color: #ffffff;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.30);
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.round-timer-pill .timer-icon {
+  font-size: 9px;
 }
 
 .round-timer-pill.timer-urgent {
@@ -5741,43 +5757,51 @@ body {
 }
 
 @keyframes timerCountdownBeat {
-  0% { transform: scale(1.24); filter: brightness(1.5); }
+  0% { transform: scale(1.20); filter: brightness(1.4); }
   100% { transform: scale(1); filter: brightness(1); }
 }
 
 @keyframes timerUrgentFlash {
   0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(244, 63, 94, 0); }
-  50% { transform: scale(1.06); box-shadow: 0 0 12px rgba(244, 63, 94, 0.8); }
+  50% { transform: scale(1.06); box-shadow: 0 0 10px rgba(244, 63, 94, 0.7); }
 }
 
 .share-counter-pill {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.22) 0%, rgba(37, 99, 235, 0.14) 100%);
+  gap: 2.5px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.20) 0%, rgba(37, 99, 235, 0.12) 100%);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(147, 197, 253, 0.70);
-  border-radius: 14px;
-  padding: 1.5px 7px;
-  font-size: 9.5px;
+  border: 1px solid rgba(147, 197, 253, 0.65);
+  border-radius: 10px;
+  padding: 1px 5.5px;
+  height: 18px;
+  box-sizing: border-box;
+  font-size: 8.5px;
   font-weight: 800;
   color: #dbeafe;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.30);
   transition: all 0.3s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.share-counter-pill .share-icon {
+  font-size: 9px;
 }
 
 .share-counter-pill strong {
   color: #93c5fd;
-  font-size: 10.5px;
-  text-shadow: 0 0 8px rgba(96, 165, 250, 0.95);
+  font-size: 9.5px;
+  text-shadow: 0 0 6px rgba(96, 165, 250, 0.95);
 }
 
 .share-counter-pill.pulse-boost {
   transform: scale(1.08);
   border-color: #ffd700;
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
 }
 
 /* Floating Golden Share Toast Notification */
@@ -5870,33 +5894,33 @@ body {
 .merit-bar-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1.5px;
 }
 
 .merit-bar-track {
   position: relative;
   width: 100%;
-  height: 9px;
-  background: rgba(12, 6, 18, 0.35);
+  height: 4px;
+  background: rgba(12, 6, 18, 0.30);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 215, 0, 0.48);
-  border-radius: 5px;
+  border: 0.8px solid rgba(255, 215, 0, 0.40);
+  border-radius: 2.5px;
   overflow: hidden;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.70), 0 0 10px rgba(255, 215, 0, 0.15);
-  margin-top: 5px;
-  margin-bottom: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.60), 0 0 6px rgba(255, 215, 0, 0.12);
+  margin-top: 1.5px;
+  margin-bottom: 1px;
 }
 
 .merit-bar-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 2px;
   background: linear-gradient(90deg, #10b981 0%, #06b6d4 25%, #f59e0b 55%, #ec4899 82%, #8b5cf6 100%);
   background-size: 200% 100%;
   box-shadow:
-    0 0 12px rgba(245, 158, 11, 0.75),
-    0 0 20px rgba(236, 72, 153, 0.45),
-    inset 0 1px 1px rgba(255, 255, 255, 0.75);
+    0 0 8px rgba(245, 158, 11, 0.70),
+    0 0 14px rgba(236, 72, 153, 0.40),
+    inset 0 0.5px 0.5px rgba(255, 255, 255, 0.75);
   transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   animation: meritGradientFlow 3.5s linear infinite;
 }
@@ -5907,12 +5931,12 @@ body {
   100% { background-position: 0% 50%; }
 }
 
-/* Milestone Notch Pins (เส้นขั้นเป้าหมายระดับ 33%, 66%, 100% แบบสะอาดตา ไม่ทับซ้อนข้อความด้านล่าง 100%) */
+/* Milestone Notch Pins (เส้นบอกระดับ 33%, 66%, 100% มินิมอล สะอาดตา) */
 .milestone-pin {
   position: absolute;
   top: 0;
   transform: translateX(-50%);
-  width: 2px;
+  width: 1.5px;
   height: 100%;
   background: rgba(255, 255, 255, 0.45);
   box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
@@ -5946,101 +5970,96 @@ body {
 
 .milestone-pin.unlocked {
   background: #ffd700;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.95);
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.95);
 }
 
 .merit-bar-labels {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 8.5px;
+  gap: 3px;
+  font-size: 8px;
   font-weight: 700;
   color: #e2e8f0;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
-  padding: 2px 4px 0;
-  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95), 0 0 2px #000;
+  padding: 0 2px;
+  line-height: 1.1;
   position: relative;
   z-index: 2;
+  white-space: nowrap;
 }
 
 .merit-label-left {
   flex: 0 0 auto;
   text-align: left;
   color: #6ee7b7;
-  text-shadow: 0 0 6px rgba(110, 231, 183, 0.45), 0 1px 2px #000;
+  font-size: 8px;
+  text-shadow: 0 0 4px rgba(110, 231, 183, 0.40), 0 1px 2px #000;
   white-space: nowrap;
 }
 
 .merit-label-center {
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   text-align: center;
   color: #f1f5f9;
+  font-size: 8px;
   white-space: nowrap;
-  padding: 0 6px;
+  padding: 0 2px;
 }
 
 .merit-label-center strong {
   color: #ffd700;
-  font-size: 10px;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.95), 0 1px 2px #000;
+  font-size: 8.5px;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.95), 0 1px 2px #000;
 }
 
 .merit-label-right {
-  flex: 0 0 auto;
-  text-align: right;
-  color: #fbcfe8;
-  text-shadow: 0 0 6px rgba(251, 207, 232, 0.45), 0 1px 2px #000;
-  white-space: nowrap;
+  display: none !important;
 }
 
-/* Footer: Round MVP Recognition Pill */
+/* Footer: Round MVP Recognition Pill (ย้ายขึ้นมาเรียงต่อท้ายบรรทัดสถานะบารมี) */
 .round-hud-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-top: 2px;
-  margin-top: 1px;
-  border-top: 1px dashed rgba(255, 215, 0, 0.22);
-  position: relative;
-  z-index: 2;
+  display: none !important;
 }
 
 .round-mvp-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 9px;
+  gap: 2.5px;
+  font-size: 8px;
   font-weight: 800;
   color: #f8fafc;
   text-shadow: 0 1px 2px #000;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .round-mvp-pill .mvp-crown {
-  font-size: 11px;
-  filter: drop-shadow(0 0 4px #ffd700);
+  font-size: 9px;
+  filter: drop-shadow(0 0 3px #ffd700);
 }
 
 .round-mvp-avatar {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: 1px solid #ffd700;
-  box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
+  box-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
   object-fit: cover;
   flex-shrink: 0;
   vertical-align: middle;
 }
 
 .round-mvp-pill .mvp-title {
-  color: #cbd5e1;
-  font-weight: 700;
+  display: none !important;
 }
 
 .round-mvp-pill .mvp-name {
   color: #ffd700;
   font-weight: 900;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.95), 0 1px 2px #000;
-  max-width: 140px;
+  font-size: 8px;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.95), 0 1px 2px #000;
+  max-width: 90px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -6048,10 +6067,10 @@ body {
 
 .round-mvp-pill .mvp-pts {
   color: #34d399;
-  font-size: 8.5px;
+  font-size: 7.5px;
   font-weight: 800;
-  text-shadow: 0 0 6px rgba(52, 211, 153, 0.7);
-  margin-left: 2px;
+  text-shadow: 0 0 4px rgba(52, 211, 153, 0.6);
+  margin-left: 1px;
 }
 
 /* =====================================================================
