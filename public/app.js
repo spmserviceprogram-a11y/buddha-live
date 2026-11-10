@@ -12425,6 +12425,28 @@ if (btnSimRoundCycle) {
   });
 }
 
+const btnSimSeamSiFull = document.getElementById('sim-test-seamsi-full');
+if (btnSimSeamSiFull) {
+  btnSimSeamSiFull.addEventListener('click', () => {
+    if (typeof window.testGiftEffect === 'function') {
+      window.testGiftEffect('seamsi');
+    } else if (btnSimGiftSeamSi) {
+      btnSimGiftSeamSi.click();
+    }
+  });
+}
+
+const btnSimFollowerBanner = document.getElementById('sim-test-follower-banner');
+if (btnSimFollowerBanner) {
+  btnSimFollowerBanner.addEventListener('click', () => {
+    if (typeof onFollowEvent === 'function') {
+      onFollowEvent({ nickname: 'โยมผู้มีจิตศรัทธา' });
+    } else if (typeof triggerFollowerBanner === 'function') {
+      triggerFollowerBanner('โยมผู้มีจิตศรัทธา');
+    }
+  });
+}
+
 const btnSimVideoTier1 = document.getElementById('sim-video-tier1');
 if (btnSimVideoTier1) {
   btnSimVideoTier1.addEventListener('click', () => {
@@ -12464,8 +12486,34 @@ document.getElementById('btn-reset-scene').addEventListener('click', () => {
   const textEl = document.getElementById('sadhu-ticker-text');
   if (textEl) textEl.textContent = 'อนุโมทนาบุญบารมีสะสม ✨';
   updateViewerCount(0);
-  showToast('รีเซ็ตสำเร็จ', 'ล้างข้อมูลผู้ร่วมบุญเรียบร้อยแล้ว');
+  const resetBtn = document.getElementById('btn-reset-scene');
+  if (resetBtn) {
+    const orig = resetBtn.textContent;
+    resetBtn.textContent = '✅ รีเซ็ตเรียบร้อยแล้ว';
+    setTimeout(() => { resetBtn.textContent = orig; }, 2000);
+  }
 });
+
+// Copy ?voice=0 Link for TikTok LIVE Studio
+const btnCopyVoiceZero = document.getElementById('btn-copy-voice-zero');
+if (btnCopyVoiceZero) {
+  btnCopyVoiceZero.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const url = window.location.origin + window.location.pathname + '?voice=0';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        btnCopyVoiceZero.textContent = '✅ คัดลอกสำเร็จแล้ว!';
+        setTimeout(() => {
+          btnCopyVoiceZero.textContent = '📋 คัดลอกลิงก์ ?voice=0 สำหรับ TikTok LIVE Studio';
+        }, 2500);
+      }).catch(() => {
+        prompt('คัดลอกลิงก์นี้ไปใส่ใน TikTok LIVE Studio:', url);
+      });
+    } else {
+      prompt('คัดลอกลิงก์นี้ไปใส่ใน TikTok LIVE Studio:', url);
+    }
+  });
+}
 
 // ---------------------------------------------------------------------
 // 6. Socket.IO Real-Time Engine (Real TikTok Live Stream Events)
