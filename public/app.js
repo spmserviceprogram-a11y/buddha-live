@@ -16289,3 +16289,26 @@ window.testGiftEffect = function (tier) {
     console.warn(`[TestGiftEffect] Unknown tier: ${tier}`);
   }
 };
+
+// Test Helper for 10-Second Miracle Blessing Videos
+window.testMiracleVideo = function (tier = 'tier1') {
+  if (!window.videoBlessingController) {
+    console.warn('[testMiracleVideo] videoBlessingController not found');
+    return;
+  }
+  console.log(`[testMiracleVideo] Testing 10s miracle video tier: ${tier}`);
+  window.videoBlessingController.playMiracle(tier, () => {
+    console.log(`[testMiracleVideo] Completed playback for tier: ${tier}`);
+  });
+  if (typeof roundManager !== 'undefined' && roundManager && roundManager.speakHost) {
+    const speeches = {
+      tier1: 'สาธุ บารมีขั้นแรกสว่างไสว ขอพระแม่กวนอิมประทานพรให้ร่มเย็นเป็นสุขนะคะ',
+      tier2: 'สาธุ บารมีขั้นที่สองเปิดทางสวรรค์ ขอให้ทุกท่านพบเจอแต่โชคลาภเงินทองนะคะ',
+      climax_a: 'สาธุ ปาฏิหาริย์บารมีสำเร็จเต็มร้อย ขอพระแม่กวนอิมหลั่งน้ำทิพย์ประทานพรให้สมปรารถนานะคะ',
+      climax_b: 'สาธุ ปาฏิหาริย์ดอกบัวแก้วเบ่งบาน ขออำนาจบารมีคุ้มครองให้เจริญรุ่งเรืองมหาศาลนะคะ'
+    };
+    if (speeches[tier]) {
+      roundManager.speakHost(speeches[tier]);
+    }
+  }
+};
