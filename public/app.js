@@ -14384,11 +14384,24 @@ class RoundManager {
     }
     if (this.dom.phaseText) this.dom.phaseText.textContent = 'เขย่าเซียมซีสวรรค์';
 
+    let hasRevealed = false;
+    const doReveal = () => {
+      if (hasRevealed) return;
+      hasRevealed = true;
+      if (this.climaxTimer) {
+        clearTimeout(this.climaxTimer);
+        this.climaxTimer = null;
+      }
+      this.revealFortuneAndMVP();
+    };
+
     // Play Climax Miracle Video (Odd rounds -> climax_a [หลั่งน้ำทิพย์], Even rounds -> climax_b [บัวแก้วบาน])
     try {
       const climaxTier = (this.roundNum % 2 === 1) ? 'climax_a' : 'climax_b';
       if (window.videoBlessingController) {
-        window.videoBlessingController.playMiracle(climaxTier);
+        window.videoBlessingController.playMiracle(climaxTier, () => {
+          doReveal();
+        });
       }
     } catch (_) { }
 
@@ -14416,12 +14429,11 @@ class RoundManager {
       }
     } catch (_) { }
 
-    // Wait 5 seconds for climax shake -> then Reveal
+    // Fallback timer in case video isn't available or fails: 6.5 seconds
     if (this.climaxTimer) clearTimeout(this.climaxTimer);
     this.climaxTimer = setTimeout(() => {
-      this.climaxTimer = null;
-      this.revealFortuneAndMVP();
-    }, 5000);
+      doReveal();
+    }, 6500);
   }
 
   revealFortuneAndMVP() {
