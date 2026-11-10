@@ -12015,9 +12015,56 @@ chkAmbient.addEventListener('change', e => {
   }
 });
 
-volumeSlider.addEventListener('input', e => {
-  templeAudio.setVolume(parseFloat(e.target.value) / 100);
-});
+const volValEl = document.getElementById('volume-val');
+if (volumeSlider) {
+  if (volValEl) {
+    volValEl.textContent = `${volumeSlider.value}%`;
+  }
+  volumeSlider.addEventListener('input', e => {
+    if (volValEl) volValEl.textContent = `${e.target.value}%`;
+    templeAudio.setVolume(parseFloat(e.target.value) / 100);
+  });
+}
+
+// Direct Instant AI Voice Test Button
+const btnTestAiVoice = document.getElementById('btn-test-ai-voice');
+if (btnTestAiVoice) {
+  btnTestAiVoice.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+      guanYinVoice.enabled = true;
+      if (chkVoice) chkVoice.checked = true;
+      guanYinVoice.speak('เจริญพรคุณโยม ระบบเสียง AI พระแม่กวนอิมพร้อมทำงานในไลฟ์สดแล้วนะคะ', 1);
+    }
+  });
+}
+
+// Channel Preset Pill (@suphat.060841)
+const btnPresetSuphat = document.getElementById('btn-preset-suphat');
+if (btnPresetSuphat) {
+  btnPresetSuphat.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const inp = document.getElementById('tiktok-user-input');
+    if (inp) {
+      inp.value = 'suphat.060841';
+      inp.focus();
+    }
+  });
+}
+
+// Audio Re-Sync Button
+const btnUnlockAudioResync = document.getElementById('btn-unlock-audio-resync');
+if (btnUnlockAudioResync) {
+  btnUnlockAudioResync.addEventListener('click', (e) => {
+    e.stopPropagation();
+    templeAudio.userMuted = false;
+    unlockAndStartAudio(true);
+    btnUnlockAudioResync.textContent = '✅ ปลดล็อกเสียงแล้ว';
+    setTimeout(() => {
+      btnUnlockAudioResync.textContent = '🎵 ปลดล็อก & รีเฟรชเสียงเพลงสมาธิ';
+    }, 2200);
+  });
+}
 
 // Auto-start and unlock audio automatically (Supports Headless OBS / TikTok LIVE Studio Browser Sources)
 const unlockAndStartAudio = (withFeedback = false) => {
