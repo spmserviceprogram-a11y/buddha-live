@@ -14443,18 +14443,29 @@ class RoundManager {
       this.revealFortuneAndMVP();
     };
 
-    // Play Climax Miracle Video ONLY when participants actively joined this round!
-    // (Odd rounds -> climax_a [หลั่งน้ำทิพย์], Even rounds -> climax_b [บัวแก้วบาน])
-    try {
-      const climaxTier = (this.roundNum % 2 === 1) ? 'climax_a' : 'climax_b';
-      if (window.videoBlessingController && this.meritPoints > 0) {
+    // Play Climax Miracle Video ONLY when 100% goal is achieved (Option 2: >= targetMeritPoints)!
+    // If not 100%, 3D sanctuary stays 100% visible, shakes cylinder on altar for 3.5s, then reveals fortune & MVP
+    const isGoalAchieved = (this.meritPoints >= this.targetMeritPoints);
+    if (isGoalAchieved && window.videoBlessingController) {
+      try {
+        const climaxTier = (this.roundNum % 2 === 1) ? 'climax_a' : 'climax_b';
         window.videoBlessingController.playMiracle(climaxTier, () => {
           doReveal();
         });
-      } else {
+      } catch (_) {
         doReveal();
       }
-    } catch (_) { }
+      if (this.climaxTimer) clearTimeout(this.climaxTimer);
+      this.climaxTimer = setTimeout(() => {
+        doReveal();
+      }, 6500);
+    } else {
+      // Goal not 100% reached -> Keep 3D sanctuary peaceful & visible without full-screen video
+      if (this.climaxTimer) clearTimeout(this.climaxTimer);
+      this.climaxTimer = setTimeout(() => {
+        doReveal();
+      }, 3500);
+    }
 
     // Sound effect
     try {
@@ -14479,12 +14490,6 @@ class RoundManager {
         triggerSeamSiEffect(mvpName, this.activeFortune, false);
       }
     } catch (_) { }
-
-    // Fallback timer in case video isn't available or fails: 6.5 seconds
-    if (this.climaxTimer) clearTimeout(this.climaxTimer);
-    this.climaxTimer = setTimeout(() => {
-      doReveal();
-    }, 6500);
   }
 
   revealFortuneAndMVP() {
