@@ -8,7 +8,28 @@
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ห้องสวดมนต์ บารมีพระแม่กวนอิม - TikTok Live</title>
-  <link rel="stylesheet" href="style.css?v=deck_v34">
+  <link rel="stylesheet" href="style.css?v=deck_v35">
+  <!-- High-DPI & OBS Auto-Scale Pre-paint Engine (Zero Layout Shift) -->
+  <script>
+    (function () {
+      function applyScale() {
+        var c = document.getElementById('stream-container');
+        var w = c ? c.clientWidth : (window.innerWidth || document.documentElement.clientWidth);
+        if (w >= 500) {
+          var s = (w / 440).toFixed(3);
+          document.documentElement.style.setProperty('--ui-scale', s);
+          if (c) c.style.setProperty('--ui-scale', s);
+        } else {
+          document.documentElement.style.setProperty('--ui-scale', '1');
+          if (c) c.style.setProperty('--ui-scale', '1');
+        }
+      }
+      applyScale();
+      window.addEventListener('resize', applyScale);
+      window.addEventListener('orientationchange', applyScale);
+      document.addEventListener('DOMContentLoaded', applyScale);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
