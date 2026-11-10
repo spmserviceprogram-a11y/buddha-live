@@ -14586,7 +14586,7 @@ class RoundManager {
     if (this.dom.pts) this.dom.pts.textContent = `${this.meritPoints}`;
     if (this.dom.participants) this.dom.participants.textContent = `👥 ${this.contributors.size} ท่าน`;
 
-    // Tier 1 Milestone (>=33% - โบกกิ่งหลิว)
+    // Tier 1 Milestone (>=33% - โบกกิ่งหลิว 10 วินาที)
     if (pct >= 33 && this.activeTier < 1) {
       this.activeTier = 1;
       const pin1 = document.querySelector('.pin-silver');
@@ -14594,10 +14594,11 @@ class RoundManager {
       try {
         if (typeof triggerLotusRainEffect === 'function') triggerLotusRainEffect();
         if (window.videoBlessingController) window.videoBlessingController.playMiracle('tier1');
+        this.speakHost('สาธุ บารมีขั้นแรกสว่างไสว ขอพระแม่กวนอิมประทานพรให้ร่มเย็นเป็นสุขนะคะ');
       } catch (_) { }
     }
 
-    // Tier 2 Milestone (>=66% - ละอองทิพย์พุ่ง)
+    // Tier 2 Milestone (>=66% - ละอองทิพย์พุ่ง 10 วินาที)
     if (pct >= 66 && this.activeTier < 2) {
       this.activeTier = 2;
       const pin2 = document.querySelector('.pin-gold');
@@ -14606,6 +14607,7 @@ class RoundManager {
         if (typeof templeAudio !== 'undefined' && templeAudio.playLotusChime) templeAudio.playLotusChime();
         if (typeof triggerGoldenBellEffect === 'function') triggerGoldenBellEffect();
         if (window.videoBlessingController) window.videoBlessingController.playMiracle('tier2');
+        this.speakHost('สาธุ บารมีขั้นที่สองเปิดทางสวรรค์ ขอให้ทุกท่านพบเจอแต่โชคลาภเงินทองนะคะ');
       } catch (_) { }
     }
 
