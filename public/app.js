@@ -14510,7 +14510,7 @@ class RoundManager {
 
   transitionToNextRound() {
     this.state = 'TRANSITION';
-    this.gatheringDuration = 45; // Restore standard 45s gathering duration for live broadcast
+    this.gatheringDuration = 120; // Restore standard 120s gathering duration for live broadcast
     if (this.revealStepTimer) {
       clearTimeout(this.revealStepTimer);
       this.revealStepTimer = null;
@@ -14560,8 +14560,8 @@ window.testRoundCycle = function (fast = true) {
     window.roundManager.gatheringDuration = 8;
     window.roundManager.timeRemaining = 8;
   } else {
-    window.roundManager.gatheringDuration = 45;
-    window.roundManager.timeRemaining = 45;
+    window.roundManager.gatheringDuration = 120;
+    window.roundManager.timeRemaining = 120;
   }
   window.roundManager.startRound(window.roundManager.roundNum);
   _testCycleTimers.push(setTimeout(() => {
