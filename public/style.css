@@ -493,13 +493,31 @@ body {
   transition: opacity 0.35s ease;
 }
 
-/* Live Overlay Layer */
+/* =====================================================================
+   AUTONOMOUS RESPONSIVE SCALING (OBS 1080x1920 & HIGH-DPI BROADCAST)
+   ===================================================================== */
+:root {
+  --ui-scale: 1;
+}
+
+/* Fallback: High-resolution portrait canvases (OBS Studio 1080x1920 CEF source) */
+@media screen and (min-width: 800px) and (orientation: portrait),
+       screen and (min-height: 1400px) and (orientation: portrait) {
+  :root,
+  #stream-container {
+    --ui-scale: 2.45;
+  }
+}
+
+/* Live Overlay Layer (Autonomously Scales with Mathematical Precision) */
 #live-overlay {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: calc(100% / var(--ui-scale, 1));
+  height: calc(100% / var(--ui-scale, 1));
+  transform: scale(var(--ui-scale, 1));
+  transform-origin: top left;
   z-index: 10;
   pointer-events: none;
   display: flex;
@@ -511,6 +529,11 @@ body {
 
 #live-overlay * {
   pointer-events: auto;
+}
+
+.center-stage-spacer {
+  flex: 1;
+  pointer-events: none !important;
 }
 
 /* Top Header Bar */
