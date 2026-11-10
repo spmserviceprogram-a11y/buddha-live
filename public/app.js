@@ -14264,10 +14264,14 @@ class RoundManager {
         this.speakHost(`อีก 7 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญรอบนี้กันนะคะ`);
       }
 
-      // End of Gathering Phase -> Climax!
+      // End of Gathering Phase
       if (this.timeRemaining <= 0) {
         clearInterval(this.timerInterval);
-        this.triggerClimax();
+        if (this.meritPoints <= 0 || this.contributors.size === 0 || !this.currentMVP) {
+          this.handleEmptyRound();
+        } else {
+          this.triggerClimax();
+        }
       }
     }, 1000);
 
