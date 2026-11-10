@@ -13985,10 +13985,10 @@ class VideoBlessingController {
   constructor() {
     this.videoEl = document.getElementById('bg-video');
     this.videos = {
-      tier1: '/videos/blessing_tier1.mp4',
-      tier2: '/videos/blessing_tier2.mp4',
-      climax_a: '/videos/blessing_climax_a.mp4',
-      climax_b: '/videos/blessing_climax_b.mp4'
+      tier1: '/videos/blessing_tier1.mp4?v=bless10s_1',
+      tier2: '/videos/blessing_tier2.mp4?v=bless10s_1',
+      climax_a: '/videos/blessing_climax_a.mp4?v=bless10s_1',
+      climax_b: '/videos/blessing_climax_b.mp4?v=bless10s_1'
     };
     this.isPlaying = false;
     this.activeKey = null;
