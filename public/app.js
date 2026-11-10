@@ -14086,12 +14086,12 @@ class VideoBlessingController {
       onPlaySuccess();
     }
 
-    // Safety watchdog: Cap video display at 12s
+    // Safety watchdog: Cap video display at 11s (optimized for 10-second miracle videos)
     this.fadeTimeout = setTimeout(() => {
       if (this.isPlaying) {
         this.stopMiracle();
       }
-    }, 12000);
+    }, 11000);
   }
 
   stopMiracle() {
