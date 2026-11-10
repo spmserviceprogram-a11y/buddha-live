@@ -14708,13 +14708,18 @@ class RoundManager {
         window.videoBlessingController.playMiracle(climaxTier, () => {
           doReveal();
         });
+        if (climaxTier === 'climax_a') {
+          this.speakHost('สาธุ ปาฏิหาริย์บารมีสำเร็จเต็มร้อย ขอพระแม่กวนอิมหลั่งน้ำทิพย์ประทานพรให้สมปรารถนานะคะ');
+        } else {
+          this.speakHost('สาธุ ปาฏิหาริย์ดอกบัวแก้วเบ่งบาน ขออำนาจบารมีคุ้มครองให้เจริญรุ่งเรืองมหาศาลนะคะ');
+        }
       } catch (_) {
         doReveal();
       }
       if (this.climaxTimer) clearTimeout(this.climaxTimer);
       this.climaxTimer = setTimeout(() => {
         doReveal();
-      }, 6500);
+      }, 10500);
     } else {
       // Goal not 100% reached -> Keep 3D sanctuary peaceful & visible without full-screen video
       if (this.climaxTimer) clearTimeout(this.climaxTimer);
