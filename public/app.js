@@ -6000,7 +6000,7 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
 }
 
 // ── Phase 1 Modal: Royal Seam-Si Fortune Scroll (ตรงตามแบบรูปที่ 2 — ผู้เล่นอ่านกลอนคำทำนายด้วยตัวเอง) ──
-function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรัทธา', fortune = null, autoShowLucky = false) {
+function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรัทธา', fortune = null, autoShowLucky = true) {
   // CRITICAL: Immediately hide all other ceremony modals (Lucky card, MVP modal)
   // This guarantees #seamsi-lucky-card is 100% CLOSED and CANNOT block the fortune card!
   hideCeremonyModals({ except: 'fortune' });
@@ -6053,10 +6053,15 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
   card.classList.add('active');
   spawnSeamSiCardSparkles();
 
-  // Auspicious temple chime & bell when fortune scroll unfolds (no duplicate AI voice reading)
+  // Auspicious temple chime & bell when fortune scroll unfolds
   if (typeof templeAudio !== 'undefined') {
     if (templeAudio.playBell) templeAudio.playBell(513.6, 3.2);
     if (templeAudio.playLotusChime) templeAudio.playLotusChime();
+  }
+
+  // AI Divine Voice: Speak viewer name + stick title + wealth blessing in sync with the unfurling scroll
+  if (typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.enabled) {
+    guanYinVoice.speakSeamSiFortune(cleanDonor, f);
   }
 
   // Auto-dismiss safety: In unattended live streams, ensure fortune scroll does not stay stuck indefinitely!
@@ -6066,7 +6071,7 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
   }
   if (autoShowLucky) {
     ++seamSiScrollToken;
-    seamSiScrollHideTimer = setTimeout(transitionToLucky, 6500);
+    seamSiScrollHideTimer = setTimeout(transitionToLucky, 5500);
   } else {
     // Unattended fallback: Smoothly hide after 8.5 seconds so it never collides with next round
     seamSiScrollHideTimer = setTimeout(() => {
@@ -6511,6 +6516,9 @@ function triggerSeamSiEffect(donorName = 'ผู้มีจิตศรัท�
 
       if (!burstTriggered) {
         burstTriggered = true;
+        if (typeof templeAudio !== 'undefined' && templeAudio.playBell) {
+          templeAudio.playBell(513.6, 3.5);
+        }
         createCarpetRipple(0, 0.05, 2.35, 0xffd700);
         spawnBlessingSparks(0, 1.65, 2.35, 36, 0xfff088);
       }
@@ -6525,16 +6533,16 @@ function triggerSeamSiEffect(donorName = 'ผู้มีจิตศรัท�
       heroHalo.material.opacity = Math.min(0.88, riseProgress * 0.9);
       heroHalo.rotation.z += 0.08;
 
-      if (!scrollShown && elapsed >= 1.18) {
+      if (!scrollShown && elapsed >= 1.70) {
         scrollShown = true;
         if (showScrollImmediately) {
-          showSeamSiFortuneScroll(donorName, f);
+          showSeamSiFortuneScroll(donorName, f, true);
         }
       }
     }
 
     // Phase 3: Cleanly clear 3D shaker right after fortune paper modal opens so no dark 3D shadow lingers behind the card
-    if (elapsed > 1.38) {
+    if (elapsed > 2.35) {
       clearInterval(sInterval);
       if (activeSeamSiGroup === rootGroup) {
         scene.remove(rootGroup);
@@ -11767,12 +11775,12 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
     const seamFortune = activeGiftInfo.seamsiFortune || drawSeamSiFortune();
     activeGiftInfo.seamsiFortune = seamFortune;
     actor.smoothPoseTransition('kneel', 260, () => {
-      triggerSeamSiEffect(name, seamFortune, false);
+      triggerSeamSiEffect(name, seamFortune, true);
       triggerCharacterGoldenAura(actor.root);
       createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
       createLotusBloomDecal(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
       actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 2600 : 3700);
+      actor.addRitualTimeout(onComplete, qLen > 1 ? 4000 : 5500);
     });
 
   } else if (type === 'incense') {
@@ -16266,7 +16274,7 @@ window.testGiftEffect = function (tier) {
   if (target === 'kowtow') {
     triggerKowtowEffect();
   } else if (target === 'seamsi') {
-    triggerSeamSiEffect('ผู้มีจิตศรัทธา');
+    triggerSeamSiEffect('ผู้มีจิตศรัทธา', null, true);
   } else if (target === 'incense') {
     triggerIncenseEffect();
   } else if (target === 'lotus') {

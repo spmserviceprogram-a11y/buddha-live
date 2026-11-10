@@ -622,17 +622,17 @@ body {
   line-height: 1;
 }
 
-/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - 50% Translucent & Crisp Gold/White) */
+/* Live Clock Badge (Real-Time Anti-Static Broadcast Clock - Translucent Crystal & Sacred Gold) */
 .live-clock-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   height: 26px;
-  background: linear-gradient(180deg, rgba(20, 10, 6, 0.22) 0%, rgba(35, 16, 10, 0.22) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1.2px solid rgba(255, 215, 0, 0.55);
-  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(20, 8, 28, 0.16) 0%, rgba(35, 12, 22, 0.14) 100%);
+  backdrop-filter: blur(12px) saturate(1.3);
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  border: 1.2px solid rgba(255, 215, 0, 0.65);
+  border-radius: 8px;
   padding: 0 8px;
   font-size: 9.5px;
   font-weight: 700;
@@ -641,7 +641,7 @@ body {
   letter-spacing: 0.1px;
   box-sizing: border-box;
   white-space: nowrap;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), 0 0 10px rgba(255, 215, 0, 0.20);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.20), 0 0 12px rgba(255, 215, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s ease;
@@ -649,7 +649,7 @@ body {
 }
 
 .live-clock-pill:hover {
-  border-color: #f59e0b;
+  border-color: #ffd700;
   box-shadow: 0 4px 22px rgba(255, 215, 0, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
@@ -5221,7 +5221,7 @@ body {
 }
 
 /* =====================================================================
-   ROUND CONTROLLER & COLLECTIVE MERIT HUD (ระบบจำลองรอบเกมอินเทอร์แอคทีฟ)
+   ROUND CONTROLLER & COLLECTIVE MERIT HUD (ระบบจำลองรอบเกมอินเทอร์แอคทีฟ - ทรานสลูเซนต์หรูหรา ธีมสวรรค์)
    ===================================================================== */
 .round-hud {
   position: absolute;
@@ -5230,13 +5230,22 @@ body {
   transform: translateX(-50%);
   width: calc(100% - 16px);
   max-width: 430px;
-  background: linear-gradient(135deg, rgba(16, 9, 24, 0.52) 0%, rgba(28, 14, 36, 0.46) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 215, 0, 0.38);
-  border-radius: 12px;
-  padding: 4px 8px 3px 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg,
+    rgba(25, 10, 32, 0.22) 0%,
+    rgba(45, 12, 28, 0.16) 48%,
+    rgba(18, 6, 22, 0.22) 100%
+  );
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  border: 1.5px solid rgba(255, 215, 0, 0.65);
+  border-radius: 14px;
+  padding: 4.5px 9px 3.5px 9px;
+  box-shadow:
+    0 4px 22px rgba(0, 0, 0, 0.25),
+    0 0 18px rgba(255, 215, 0, 0.25),
+    0 0 35px rgba(236, 72, 153, 0.12),
+    inset 0 0 12px rgba(255, 215, 0, 0.14),
+    inset 0 1px 1px rgba(255, 255, 255, 0.50);
   z-index: 110;
   display: flex;
   flex-direction: column;
@@ -5244,11 +5253,67 @@ body {
   pointer-events: auto;
   user-select: none;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: visible;
+}
+
+/* รัศมีแสงสีสวรรค์พลิ้วไหวรอบขอบป้าย (ทอง · ชมพูบัว · หยกเขียว · ฟ้าคราม) */
+.round-hud::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: 15px;
+  padding: 1.2px;
+  background: linear-gradient(90deg,
+    rgba(255, 215, 0, 0.75) 0%,
+    rgba(244, 63, 94, 0.60) 25%,
+    rgba(52, 211, 153, 0.70) 50%,
+    rgba(96, 165, 250, 0.65) 75%,
+    rgba(255, 215, 0, 0.75) 100%
+  );
+  background-size: 250% 100%;
+  animation: hudAuraSheen 7s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* รัศมีออร่าละมุนด้านหลังป้าย ช่วยขับให้ข้อความและเกจเด่นชัดแม้อยู่บนวีดีโอสว่าง */
+.round-hud::after {
+  content: '';
+  position: absolute;
+  inset: -8px -14px;
+  border-radius: 22px;
+  background: radial-gradient(ellipse at center,
+    rgba(255, 215, 0, 0.18) 0%,
+    rgba(236, 72, 153, 0.08) 45%,
+    transparent 72%
+  );
+  filter: blur(8px);
+  z-index: -1;
+  pointer-events: none;
+  animation: hudBackdropGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes hudAuraSheen {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes hudBackdropGlow {
+  0% { opacity: 0.6; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1.02); }
 }
 
 .round-hud:hover {
-  border-color: rgba(255, 215, 0, 0.65);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 0 16px rgba(255, 215, 0, 0.25);
+  border-color: rgba(255, 215, 0, 0.85);
+  box-shadow:
+    0 6px 26px rgba(0, 0, 0, 0.35),
+    0 0 24px rgba(255, 215, 0, 0.40),
+    0 0 45px rgba(236, 72, 153, 0.20),
+    inset 0 0 16px rgba(255, 215, 0, 0.22);
 }
 
 .round-hud-top {
@@ -5256,40 +5321,53 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 4px;
+  position: relative;
+  z-index: 2;
 }
 
 .round-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.32), rgba(180, 83, 9, 0.32));
-  border: 1px solid rgba(255, 215, 0, 0.55);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.24) 0%, rgba(180, 83, 9, 0.16) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 215, 0, 0.70);
   border-radius: 14px;
-  padding: 1.5px 7px;
+  padding: 1.5px 7.5px;
   font-size: 10px;
   font-weight: 800;
   color: #fff9db;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: all 0.3s ease;
+}
+
+.round-badge .round-icon {
+  filter: drop-shadow(0 0 4px #ffd700);
 }
 
 .round-badge .round-title strong {
   color: #ffd700;
   font-size: 11px;
-  text-shadow: 0 0 6px rgba(255, 215, 0, 0.85);
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.95);
 }
 
 .round-phase-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: rgba(16, 185, 129, 0.22);
-  border: 1px solid rgba(16, 185, 129, 0.6);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(5, 150, 105, 0.14) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(52, 211, 153, 0.75);
   border-radius: 14px;
-  padding: 1.5px 6px;
+  padding: 1.5px 7px;
   font-size: 9.5px;
   font-weight: 700;
   color: #a7f3d0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.40);
   transition: all 0.3s ease;
 }
 
@@ -5297,31 +5375,33 @@ body {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 6px #10b981;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
   animation: phaseDotPulse 1.4s ease-in-out infinite;
 }
 
 .round-phase-pill.phase-climax {
-  background: rgba(236, 72, 153, 0.25);
-  border-color: rgba(236, 72, 153, 0.8);
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.28) 0%, rgba(190, 24, 93, 0.18) 100%);
+  border-color: rgba(244, 114, 182, 0.85);
   color: #fbcfe8;
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .round-phase-pill.phase-climax .phase-dot {
   background: #ec4899;
-  box-shadow: 0 0 8px #ec4899;
+  box-shadow: 0 0 10px #ec4899;
 }
 
 .round-phase-pill.phase-reveal {
-  background: rgba(245, 158, 11, 0.28);
-  border-color: rgba(255, 215, 0, 0.85);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.30) 0%, rgba(217, 119, 6, 0.20) 100%);
+  border-color: rgba(253, 224, 71, 0.92);
   color: #fef08a;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.50), inset 0 1px 0 rgba(255, 255, 255, 0.50);
 }
 
 .round-phase-pill.phase-reveal .phase-dot {
   background: #fbbf24;
-  box-shadow: 0 0 10px #fbbf24;
+  box-shadow: 0 0 12px #fbbf24;
 }
 
 @keyframes phaseDotPulse {
@@ -5333,8 +5413,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, rgba(24, 12, 32, 0.25) 0%, rgba(0, 0, 0, 0.20) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 215, 0, 0.55);
   border-radius: 14px;
   padding: 1.5px 7px;
   font-size: 10.5px;
@@ -5342,6 +5424,7 @@ body {
   color: #ffffff;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.30);
 }
 
 .round-timer-pill.timer-urgent {
@@ -5369,27 +5452,30 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.28), rgba(30, 64, 175, 0.28));
-  border: 1px solid rgba(147, 197, 253, 0.65);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.22) 0%, rgba(37, 99, 235, 0.14) 100%);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(147, 197, 253, 0.70);
   border-radius: 14px;
-  padding: 1.5px 6px;
+  padding: 1.5px 7px;
   font-size: 9.5px;
   font-weight: 800;
   color: #dbeafe;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   transition: all 0.3s ease;
 }
 
 .share-counter-pill strong {
-  color: #60a5fa;
+  color: #93c5fd;
   font-size: 10.5px;
-  text-shadow: 0 0 6px rgba(96, 165, 250, 0.85);
+  text-shadow: 0 0 8px rgba(96, 165, 250, 0.95);
 }
 
 .share-counter-pill.pulse-boost {
   transform: scale(1.08);
   border-color: #ffd700;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
 }
 
 /* Floating Golden Share Toast Notification */
@@ -5488,24 +5574,29 @@ body {
 .merit-bar-track {
   position: relative;
   width: 100%;
-  height: 8px;
-  background: rgba(0, 0, 0, 0.60);
-  border: 1px solid rgba(255, 215, 0, 0.40);
-  border-radius: 4px;
+  height: 9px;
+  background: rgba(12, 6, 18, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 215, 0, 0.48);
+  border-radius: 5px;
   overflow: hidden;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.85);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.70), 0 0 10px rgba(255, 215, 0, 0.15);
   margin-top: 5px;
   margin-bottom: 2px;
 }
 
 .merit-bar-fill {
   height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, #10b981 0%, #f59e0b 55%, #ec4899 85%, #8b5cf6 100%);
+  border-radius: 4px;
+  background: linear-gradient(90deg, #10b981 0%, #06b6d4 25%, #f59e0b 55%, #ec4899 82%, #8b5cf6 100%);
   background-size: 200% 100%;
-  box-shadow: 0 0 8px rgba(245, 158, 11, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 0 12px rgba(245, 158, 11, 0.75),
+    0 0 20px rgba(236, 72, 153, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.75);
   transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  animation: meritGradientFlow 3s linear infinite;
+  animation: meritGradientFlow 3.5s linear infinite;
 }
 
 @keyframes meritGradientFlow {
@@ -5562,16 +5653,19 @@ body {
   justify-content: space-between;
   font-size: 8.5px;
   font-weight: 700;
-  color: #cbd5e1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.95);
+  color: #e2e8f0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 2px #000;
   padding: 2px 4px 0;
   line-height: 1.2;
+  position: relative;
+  z-index: 2;
 }
 
 .merit-label-left {
   flex: 0 0 auto;
   text-align: left;
   color: #6ee7b7;
+  text-shadow: 0 0 6px rgba(110, 231, 183, 0.45), 0 1px 2px #000;
   white-space: nowrap;
 }
 
@@ -5585,13 +5679,15 @@ body {
 
 .merit-label-center strong {
   color: #ffd700;
-  font-size: 9.5px;
+  font-size: 10px;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.95), 0 1px 2px #000;
 }
 
 .merit-label-right {
   flex: 0 0 auto;
   text-align: right;
   color: #fbcfe8;
+  text-shadow: 0 0 6px rgba(251, 207, 232, 0.45), 0 1px 2px #000;
   white-space: nowrap;
 }
 
@@ -5600,8 +5696,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 1px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 2px;
+  margin-top: 1px;
+  border-top: 1px dashed rgba(255, 215, 0, 0.22);
+  position: relative;
+  z-index: 2;
 }
 
 .round-mvp-pill {
@@ -5610,13 +5709,13 @@ body {
   gap: 4px;
   font-size: 9px;
   font-weight: 800;
-  color: #f1f5f9;
+  color: #f8fafc;
   text-shadow: 0 1px 2px #000;
 }
 
 .round-mvp-pill .mvp-crown {
-  font-size: 10px;
-  filter: drop-shadow(0 0 3px #ffd700);
+  font-size: 11px;
+  filter: drop-shadow(0 0 4px #ffd700);
 }
 
 .round-mvp-avatar {
@@ -5631,13 +5730,14 @@ body {
 }
 
 .round-mvp-pill .mvp-title {
-  color: #94a3b8;
-  font-weight: 600;
+  color: #cbd5e1;
+  font-weight: 700;
 }
 
 .round-mvp-pill .mvp-name {
   color: #ffd700;
   font-weight: 900;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.95), 0 1px 2px #000;
   max-width: 140px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -5647,6 +5747,8 @@ body {
 .round-mvp-pill .mvp-pts {
   color: #34d399;
   font-size: 8.5px;
+  font-weight: 800;
+  text-shadow: 0 0 6px rgba(52, 211, 153, 0.7);
   margin-left: 2px;
 }
 
