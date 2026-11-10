@@ -14102,16 +14102,16 @@ window.videoBlessingController = videoBlessingController;
 
 // =====================================================================
 // UNIFIED INTERACTIVE ROUND GAME ENGINE (RoundManager)
-// Structured 60s Game Cycle: Open -> Gathering (45s) -> Climax (7s) -> Reveal (6s) -> Reset (2s)
-// Resolves TikTok 120s Unoriginal Content flags by establishing real-time comment gameplay
+// Structured 145s Game Cycle: Open (3s) -> Gathering (120s) -> Climax (7s) -> Reveal (11s) -> Reset (3s)
+// Resolves TikTok Unoriginal Content flags by establishing real-time comment gameplay
 // =====================================================================
 class RoundManager {
   constructor() {
     this.roundNum = 1;
     this.state = 'IDLE'; // 'ROUND_START', 'GATHERING', 'CLIMAX', 'REVEAL', 'TRANSITION'
-    this.duration = 60;
-    this.gatheringDuration = 45;
-    this.timeRemaining = 45;
+    this.duration = 145;
+    this.gatheringDuration = 120;
+    this.timeRemaining = 120;
     this.meritPoints = 0;
     this.targetMeritPoints = 88; // 88 merit points for 100% milestone
     this.contributors = new Map(); // key: uniqueId/nickname -> { nickname, avatar, points, count, lastAt }
