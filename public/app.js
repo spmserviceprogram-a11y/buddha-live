@@ -2528,6 +2528,32 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.2;
 container.appendChild(renderer.domElement);
 
+// Dynamic Responsive Viewport & Three.js Resizer for OBS Studio & High-DPI Canvases
+function handleSanctuaryResize() {
+  const streamCont = document.getElementById('stream-container');
+  if (streamCont) {
+    const w = streamCont.clientWidth;
+    if (w >= 500) {
+      const s = (w / 440).toFixed(3);
+      document.documentElement.style.setProperty('--ui-scale', s);
+      streamCont.style.setProperty('--ui-scale', s);
+    } else {
+      document.documentElement.style.setProperty('--ui-scale', '1');
+      streamCont.style.setProperty('--ui-scale', '1');
+    }
+  }
+  if (container && renderer && camera) {
+    const cw = container.clientWidth || 1080;
+    const ch = container.clientHeight || 1920;
+    camera.aspect = cw / ch;
+    camera.updateProjectionMatrix();
+    renderer.setSize(cw, ch);
+  }
+}
+window.addEventListener('resize', handleSanctuaryResize);
+window.addEventListener('orientationchange', handleSanctuaryResize);
+handleSanctuaryResize();
+
 // Lighting: Celestial Daylight & Heavenly Garden Warmth
 const ambientLight = new THREE.AmbientLight(0xfff8ee, 1.45);
 scene.add(ambientLight);
