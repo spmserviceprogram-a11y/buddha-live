@@ -13112,7 +13112,12 @@ const onGiftEvent = (gift) => {
 
   // Credit round merit boost from live gifts
   if (window.roundManager) {
-    window.roundManager.addMerit(gift, gift.meritDelta || Math.max(10, Math.floor(coins * 10)), giftName);
+    window.roundManager.addMerit({
+      uniqueId: gift.uniqueId,
+      userId: gift.userId,
+      nickname: donor,
+      avatar: gift.avatar
+    }, gift.meritDelta || Math.max(10, Math.floor(coins * 10)), giftName);
   }
 
   const streakTag = gift.isStreakable ? `_s${giftCount}_c${coins}` : `_c${coins}`;
@@ -14141,6 +14146,7 @@ class RoundManager {
       target: document.getElementById('merit-target'),
       participants: document.getElementById('round-participants-count'),
       shareCount: document.getElementById('share-count-val'),
+      mvpAvatar: document.getElementById('round-mvp-avatar'),
       mvpName: document.getElementById('round-mvp-name'),
       mvpPts: document.getElementById('round-mvp-pts'),
       mvpModal: document.getElementById('round-mvp-modal'),
@@ -14155,10 +14161,142 @@ class RoundManager {
 
   init() {
     console.log('[RoundManager] Initialized Interactive Game Loop Engine');
+    this.preloadCountdownAudio();
     // Start after graceful boot settle so scene and audio systems are primed
     setTimeout(() => {
       this.startRound(1);
     }, 2800);
+  }
+
+  preloadCountdownAudio() {
+    this.countdownAudioCache = {};
+    const items = {
+      5: 'ห้า',
+      4: 'สี่',
+      3: 'สาม',
+      2: 'สอง',
+      1: 'หนึ่ง',
+      0: 'หมดเวลาแล้วนะคะ',
+      10: '10 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญกันนะคะ'
+    };
+    Object.entries(items).forEach(([key, text]) => {
+      fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      })
+        .then(r => r.json())
+        .then(res => {
+          if (res && res.success && res.url) {
+            const a = new Audio(res.url);
+            a.preload = 'auto';
+            this.countdownAudioCache[key] = a;
+          }
+        })
+        .catch(() => {});
+    });
+  }
+
+  speakCountdownWarning() {
+    const text = '10 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญกันนะคะ';
+    const preloaded = this.countdownAudioCache ? this.countdownAudioCache[10] : null;
+    if (preloaded && preloaded.readyState >= 2) {
+      try {
+        preloaded.currentTime = 0;
+        preloaded.playbackRate = 1.15;
+        preloaded.volume = 1.0;
+        preloaded.play().catch(() => {
+          this.speakHost(text);
+        });
+        return;
+      } catch (_) {
+        this.speakHost(text);
+        return;
+      }
+    }
+    this.speakHost(text);
+  }
+
+  playCountdownStep(sec) {
+    // 1. Procedural Audio Feedback (0ms latency via Web Audio API)
+    if (typeof templeAudio !== 'undefined' && templeAudio) {
+      if (sec >= 1 && sec <= 5) {
+        const bellFreqs = { 5: 513.6, 4: 576.0, 3: 648.0, 2: 729.0, 1: 864.0 };
+        const f = bellFreqs[sec] || 648;
+        try {
+          if (templeAudio.playWoodblock) templeAudio.playWoodblock();
+          if (templeAudio.playBell) templeAudio.playBell(f, 0.85);
+        } catch (_) {}
+      } else if (sec === 0) {
+        try {
+          if (templeAudio.playWoodblock) templeAudio.playWoodblock();
+          if (templeAudio.playBell) templeAudio.playBell(432, 3.2);
+        } catch (_) {}
+      }
+    }
+
+    // 2. Punchy visual beat on the timer badge
+    if (this.dom.timerPill) {
+      this.dom.timerPill.classList.remove('countdown-pulse');
+      void this.dom.timerPill.offsetWidth;
+      this.dom.timerPill.classList.add('countdown-pulse');
+    }
+
+    // 3. At 5s: Abort any in-flight casual or low-priority speech to clear the channel
+    if (sec === 5 && typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+      if (guanYinVoice.currentTask && (guanYinVoice.currentTask.priority || 3) > 1) {
+        guanYinVoice.abortCurrentTask();
+      }
+      guanYinVoice.queue = guanYinVoice.queue.filter(q => (q.priority || 3) <= 1);
+    }
+
+    // 4. Voice Number Playback (0ms latency: preloaded audio OR instant browser speech synthesis)
+    const textMap = {
+      5: 'ห้า',
+      4: 'สี่',
+      3: 'สาม',
+      2: 'สอง',
+      1: 'หนึ่ง',
+      0: 'หมดเวลาแล้วนะคะ'
+    };
+    const text = textMap[sec];
+    if (!text) return;
+
+    const preloaded = this.countdownAudioCache ? this.countdownAudioCache[sec] : null;
+    if (preloaded && preloaded.readyState >= 2) {
+      try {
+        preloaded.currentTime = 0;
+        preloaded.playbackRate = 1.18;
+        preloaded.volume = 1.0;
+        preloaded.play().catch(() => {
+          this.fallbackSpeechSynthesis(text);
+        });
+        return;
+      } catch (_) {
+        this.fallbackSpeechSynthesis(text);
+        return;
+      }
+    }
+
+    // Zero-latency native Web Speech API fallback
+    this.fallbackSpeechSynthesis(text);
+  }
+
+  fallbackSpeechSynthesis(text) {
+    try {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        if (typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.thaiVoice) {
+          utter.voice = guanYinVoice.thaiVoice;
+        }
+        utter.lang = 'th-TH';
+        utter.rate = 1.25; // Brisk & responsive pace for individual countdown digits
+        utter.pitch = 1.05;
+        utter.volume = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    } catch (_) {}
   }
 
   startRound(roundNumber) {
@@ -14199,6 +14337,10 @@ class RoundManager {
     if (this.dom.participants) this.dom.participants.textContent = '👥 0 ท่าน';
     if (this.dom.mvpName) this.dom.mvpName.textContent = 'รอเปิดรอบ';
     if (this.dom.mvpPts) this.dom.mvpPts.textContent = '';
+    if (this.dom.mvpAvatar) {
+      this.dom.mvpAvatar.style.display = 'none';
+      this.dom.mvpAvatar.src = '/rose.png';
+    }
     if (this.dom.mvpModal) {
       this.dom.mvpModal.classList.remove('active');
       this.dom.mvpModal.style.display = 'none';
@@ -14258,15 +14400,21 @@ class RoundManager {
         }
       }
 
-      // Final 7-second countdown warning
-      if (this.timeRemaining === 7 && !this.hasSpokenCountdown) {
+      // Early 10-second warning announcement (spoken briskly before the final 5s countdown)
+      if (this.timeRemaining === 10 && !this.hasSpokenCountdown) {
         this.hasSpokenCountdown = true;
-        this.speakHost(`อีก 7 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญรอบนี้กันนะคะ`);
+        this.speakCountdownWarning();
       }
 
-      // End of Gathering Phase
+      // Real-time Per-Second Countdown (5, 4, 3, 2, 1)
+      if (this.timeRemaining <= 5 && this.timeRemaining >= 1) {
+        this.playCountdownStep(this.timeRemaining);
+      }
+
+      // End of Gathering Phase (0s: bell chime + "หมดเวลาแล้วนะคะ")
       if (this.timeRemaining <= 0) {
         clearInterval(this.timerInterval);
+        this.playCountdownStep(0);
         if (this.meritPoints <= 0 || this.contributors.size === 0 || !this.currentMVP) {
           this.handleEmptyRound();
         } else {
@@ -14299,6 +14447,65 @@ class RoundManager {
     }, 5000);
   }
 
+  resolveUserAvatar(user) {
+    if (!user) return '';
+    // 1. Direct avatar attribute (clean out default empty TikTok silhouette if needed)
+    if (user.avatar && typeof user.avatar === 'string' && user.avatar.trim() !== '' && !user.avatar.includes('tos-maliva-avt-0068/7311181283626287110')) {
+      return user.avatar;
+    }
+
+    const targetUid = user.uniqueId || user.userId || '';
+    const targetNick = user.nickname || '';
+
+    // 2. Look up in disciplesMap (seated devotees)
+    if (typeof disciplesMap !== 'undefined' && disciplesMap) {
+      for (const d of disciplesMap.values()) {
+        if (d && d.userData) {
+          const matchUid = targetUid && (d.userData.uniqueId === targetUid || d.userData.userId === targetUid);
+          const matchNick = targetNick && targetNick !== 'ผู้มีจิตศรัทธา' && targetNick !== 'ผู้เจริญสติ' && d.userData.nickname === targetNick;
+          if ((matchUid || matchNick) && d.userData.avatar && !d.userData.avatar.includes('tos-maliva-avt-0068/7311181283626287110')) {
+            return d.userData.avatar;
+          }
+        }
+      }
+    }
+
+    // 3. Look up in clientSadhuScores
+    if (typeof clientSadhuScores !== 'undefined' && Array.isArray(clientSadhuScores)) {
+      const found = clientSadhuScores.find(s =>
+        (targetUid && s.uniqueId === targetUid) ||
+        (targetNick && targetNick !== 'ผู้มีจิตศรัทธา' && s.nickname === targetNick)
+      );
+      if (found && found.avatar && !found.avatar.includes('tos-maliva-avt-0068/7311181283626287110')) {
+        return found.avatar;
+      }
+    }
+
+    // 4. Look up in clientMeritList (TOP Donors)
+    if (typeof clientMeritList !== 'undefined' && Array.isArray(clientMeritList)) {
+      const found = clientMeritList.find(d =>
+        (targetUid && d.uniqueId === targetUid) ||
+        (targetNick && targetNick !== 'ผู้มีจิตศรัทธา' && d.nickname === targetNick)
+      );
+      if (found && found.avatar && !found.avatar.includes('tos-maliva-avt-0068/7311181283626287110')) {
+        return found.avatar;
+      }
+    }
+
+    // 5. Look up in clientTributeQueue
+    if (typeof clientTributeQueue !== 'undefined' && Array.isArray(clientTributeQueue)) {
+      const found = clientTributeQueue.find(q =>
+        (targetUid && q.uniqueId === targetUid) ||
+        (targetNick && targetNick !== 'ผู้มีจิตศรัทธา' && q.nickname === targetNick)
+      );
+      if (found && found.avatar && !found.avatar.includes('tos-maliva-avt-0068/7311181283626287110')) {
+        return found.avatar;
+      }
+    }
+
+    return '';
+  }
+
   addMerit(user, points, text = '') {
     if (this.state !== 'GATHERING' && this.state !== 'ROUND_START') return;
     this.lastCommentTime = Date.now();
@@ -14306,27 +14513,44 @@ class RoundManager {
     this.meritPoints = Math.round((this.meritPoints + points) * 10) / 10;
     const key = user.uniqueId || user.nickname || 'anonymous';
     const cleanNick = (user.nickname || user.uniqueId || 'ผู้มีจิตศรัทธา').slice(0, 24);
+    const resolvedAvatar = this.resolveUserAvatar(user);
 
     let contrib = this.contributors.get(key);
     if (!contrib) {
       contrib = {
         uniqueId: user.uniqueId || key,
         nickname: cleanNick,
-        avatar: user.avatar || '',
+        avatar: resolvedAvatar || user.avatar || '',
         points: 0,
         count: 0
       };
       this.contributors.set(key, contrib);
+    } else {
+      if (cleanNick !== 'ผู้มีจิตศรัทธา' && contrib.nickname === 'ผู้มีจิตศรัทธา') {
+        contrib.nickname = cleanNick;
+      }
+      if ((!contrib.avatar || contrib.avatar === '/rose.png') && resolvedAvatar) {
+        contrib.avatar = resolvedAvatar;
+      }
     }
     contrib.points = Math.round((contrib.points + points) * 10) / 10;
     contrib.count++;
     contrib.lastAt = Date.now();
 
-    // Check if new Round MVP
-    if (!this.currentMVP || contrib.points > this.currentMVP.points) {
+    // Check if new Round MVP or current MVP adding more points
+    if (!this.currentMVP || contrib === this.currentMVP || contrib.points >= this.currentMVP.points) {
       this.currentMVP = contrib;
-      if (this.dom.mvpName) this.dom.mvpName.textContent = cleanNick;
+      if (this.dom.mvpName) this.dom.mvpName.textContent = contrib.nickname;
       if (this.dom.mvpPts) this.dom.mvpPts.textContent = `(${contrib.points} แต้ม)`;
+      if (this.dom.mvpAvatar) {
+        const finalAvatar = contrib.avatar || this.resolveUserAvatar(contrib) || '/rose.png';
+        this.dom.mvpAvatar.src = finalAvatar;
+        this.dom.mvpAvatar.style.display = 'inline-block';
+        this.dom.mvpAvatar.onerror = function () {
+          this.onerror = null;
+          this.src = '/rose.png';
+        };
+      }
     }
 
     // Update Progress Gauge
@@ -14402,6 +14626,10 @@ class RoundManager {
     if (this.dom.pts) this.dom.pts.textContent = '0';
     if (this.dom.mvpName) this.dom.mvpName.textContent = 'รอเปิดรอบ';
     if (this.dom.mvpPts) this.dom.mvpPts.textContent = '';
+    if (this.dom.mvpAvatar) {
+      this.dom.mvpAvatar.style.display = 'none';
+      this.dom.mvpAvatar.src = '/rose.png';
+    }
     if (this.dom.timerPill) this.dom.timerPill.classList.remove('timer-urgent');
 
     // Polite, peaceful prompt to participate in next round (Rule 10: 8-10 words, ends with "นะคะ", contains "ฉากจำลอง")
@@ -14511,13 +14739,20 @@ class RoundManager {
       avatar: '/rose.png',
       points: this.meritPoints
     };
+    const finalAvatar = mvp.avatar || this.resolveUserAvatar(mvp) || '/rose.png';
 
     // 1. Act 1: Show Round MVP Celebration Modal FIRST (0s to 3.8s)
     if (this.dom.mvpModal) {
       if (this.dom.mvpModalName) this.dom.mvpModalName.textContent = mvp.nickname;
       if (this.dom.mvpModalRoundTag) this.dom.mvpModalRoundTag.textContent = `รอบที่ ${this.roundNum} สำเร็จบารมี (${this.meritPoints} แต้ม)`;
       if (this.dom.mvpModalBadge) this.dom.mvpModalBadge.textContent = `ยอดสะสม: ${mvp.points} แต้ม`;
-      if (this.dom.mvpModalAvatar && mvp.avatar) this.dom.mvpModalAvatar.src = mvp.avatar;
+      if (this.dom.mvpModalAvatar) {
+        this.dom.mvpModalAvatar.src = finalAvatar;
+        this.dom.mvpModalAvatar.onerror = function () {
+          this.onerror = null;
+          this.src = '/rose.png';
+        };
+      }
 
       this.dom.mvpModal.style.display = 'flex';
       this.dom.mvpModal.classList.remove('hidden');
@@ -14537,7 +14772,7 @@ class RoundManager {
         const mvpGiftInfo = {
           name: 'ผู้นำบุญ',
           icon: '👑',
-          image: mvp.avatar || '/rose.png',
+          image: finalAvatar,
           coins: mvp.points || 1
         };
         mvpDevotee.walkToAltarAndKowtow('kowtow', () => { }, 'ผู้นำบุญ', mvpGiftInfo, 1.0, mvp.nickname);
@@ -14625,18 +14860,18 @@ window.testRoundCycle = function (fast = true) {
   _testCycleTimers.forEach(t => clearTimeout(t));
   _testCycleTimers = [];
   if (fast) {
-    window.roundManager.gatheringDuration = 8;
-    window.roundManager.timeRemaining = 8;
+    window.roundManager.gatheringDuration = 14;
+    window.roundManager.timeRemaining = 14;
   } else {
     window.roundManager.gatheringDuration = 120;
     window.roundManager.timeRemaining = 120;
   }
   window.roundManager.startRound(window.roundManager.roundNum);
   _testCycleTimers.push(setTimeout(() => {
-    window.roundManager.addMerit({ uniqueId: 'test_user_1', nickname: 'ผู้ร่วมบุญใจดี' }, 35, 'สาธุ');
+    window.roundManager.addMerit({ uniqueId: 'test_user_1', nickname: 'ผู้ร่วมบุญใจดี', avatar: '/rose.png' }, 35, 'สาธุ');
   }, 2000));
   _testCycleTimers.push(setTimeout(() => {
-    window.roundManager.addMerit({ uniqueId: 'test_user_2', nickname: 'มหาเศรษฐีใจบุญ' }, 55, 'สาธุ รวยๆ');
+    window.roundManager.addMerit({ uniqueId: 'test_user_2', nickname: 'มหาเศรษฐีใจบุญ', avatar: '/lucky_9.png' }, 55, 'สาธุ รวยๆ');
   }, 4500));
 };
 

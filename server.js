@@ -1623,8 +1623,9 @@ async function connectToTikTok(username, sessionId, apiKey) {
   // Event: Like (Tap screen to pray & like)
   tiktokConnection.on('like', data => {
     const user = extractTikTokUser(data);
+    let disciple = null;
     if (user.uniqueId && user.nickname && user.nickname !== 'ผู้เจริญสติ') {
-      getOrCreateDisciple(user, false, true);
+      disciple = getOrCreateDisciple(user, false, true);
     }
     const totalLikes = Number(data.totalLikeCount ?? data.total ?? data.count ?? 0);
     io.emit('action_like', {
@@ -1634,6 +1635,7 @@ async function connectToTikTok(username, sessionId, apiKey) {
     io.emit('round_action_like', {
       uniqueId: user.uniqueId,
       nickname: user.nickname,
+      avatar: user.avatar || (disciple ? disciple.avatar : ''),
       meritDelta: 0.2
     });
   });
