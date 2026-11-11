@@ -1569,15 +1569,36 @@ async function connectToTikTok(username, sessionId, apiKey) {
   state.tiktokUsername = username;
   state.userExplicitlyDisconnected = false;
 
-  // Configure EulerStream API Key to unlock rate limit
-  const activeApiKey = (apiKey || process.env.SIGN_API_KEY || '').trim();
+  // Configure EulerStream API Key (Auto-clears bad/empty keys)
+  let activeApiKey = '';
+  if (apiKey !== undefined && apiKey !== null) {
+    activeApiKey = String(apiKey).trim();
+    if (!activeApiKey) {
+      // User explicitly cleared the key or passed empty string -> purge from memory
+      delete process.env.SIGN_API_KEY;
+      if (ttlModule && ttlModule.SignConfig) {
+        ttlModule.SignConfig.apiKey = undefined;
+        ttlModule.SignConfig.cachedInstance = undefined;
+      }
+      console.log('[TikTok] EulerStream API Key explicitly cleared. Using default sign route.');
+    }
+  } else {
+    activeApiKey = (process.env.SIGN_API_KEY || '').trim();
+  }
+
   if (activeApiKey) {
     process.env.SIGN_API_KEY = activeApiKey;
     if (ttlModule && ttlModule.SignConfig) {
       ttlModule.SignConfig.apiKey = activeApiKey;
-      ttlModule.SignConfig.cachedInstance = void 0; // invalidate cached client to use new key
+      ttlModule.SignConfig.cachedInstance = undefined; // invalidate cached client to use new key
     }
     console.log('[TikTok] Using EulerStream Sign API Key for authentication.');
+  } else {
+    delete process.env.SIGN_API_KEY;
+    if (ttlModule && ttlModule.SignConfig) {
+      ttlModule.SignConfig.apiKey = undefined;
+      ttlModule.SignConfig.cachedInstance = undefined;
+    }
   }
 
   const options = {
@@ -1881,6 +1902,14 @@ async function connectToTikTok(username, sessionId, apiKey) {
   let repeatCount = 0;
   tiktokConnection.on('error', err => {
     const msg = err?.info || err?.message || JSON.stringify(err);
+    if (msg.includes('401') || msg.includes('The provided API Key is invalid')) {
+      console.warn('[TikTok Error Event] Detected invalid EulerStream API Key (401). Purging key from memory.');
+      delete process.env.SIGN_API_KEY;
+      if (ttlModule && ttlModule.SignConfig) {
+        ttlModule.SignConfig.apiKey = undefined;
+        ttlModule.SignConfig.cachedInstance = undefined;
+      }
+    }
     if (msg === lastErrorMsg) {
       repeatCount++;
       if (repeatCount === 1) {
@@ -1940,6 +1969,37 @@ async function connectToTikTok(username, sessionId, apiKey) {
         tiktokConnection = null;
       }
       let friendlyError = err.message;
+      const isEuler401 = err.message.includes('401') || 
+                         err.message.includes('The provided API Key is invalid') ||
+                         (err.message.includes('Sign Error') && err.message.includes('status 401'));
+
+      if (isEuler401) {
+        console.warn(`[TikTok] EulerStream Sign Key rejected with 401 ("The provided API Key is invalid"). Auto-clearing bad key...`);
+        delete process.env.SIGN_API_KEY;
+        if (ttlModule && ttlModule.SignConfig) {
+          ttlModule.SignConfig.apiKey = undefined;
+          ttlModule.SignConfig.cachedInstance = undefined;
+        }
+        friendlyError = `[EulerStream API Key ไม่ถูกต้อง (401)] ระบบปลดคีย์ออกแล้ว และกำลังเชื่อมต่อผ่านช่องทางฟรีอัตโนมัติ...`;
+        state.lastError = friendlyError;
+        console.error(`[TikTok] Failed to connect to ${username}:`, friendlyError);
+        io.emit('status_change', { isConnected: false, username, error: friendlyError, clearEulerKey: true });
+
+        // Auto-retry connection without the bad key immediately in 1.5s
+        if (!state.userExplicitlyDisconnected && state.tiktokUsername === username) {
+          console.log(`[TikTok] Auto-retrying connection to @${username} without invalid Euler key in 1.5s...`);
+          setTimeout(() => {
+            if (!state.userExplicitlyDisconnected && !state.isConnected && state.tiktokUsername === username) {
+              connectToTikTok(username, sessionId, '').catch(fallbackErr => {
+                console.warn(`[TikTok Fallback Error]:`, fallbackErr.message);
+              });
+            }
+          }, 1500);
+        }
+        reject(new Error(friendlyError));
+        return;
+      }
+
       if (err.message.includes('rate_limit') || err.message.includes('Rate Limited') || err.message.includes('rate limit') || err.message.includes('SIGN SERVER MESSAGE')) {
         friendlyError = `[Rate Limited] ติดขีดจำกัดเชื่อมต่อฟรีของ EulerStream แนะนำให้นำ Free API Key จาก https://www.eulerstream.com/pricing มากรอกในช่อง 🔑 API Key เพื่อปลดล็อกทันที`;
       } else if (err.message.includes("isn't online") || err.message.includes('LIVE has ended')) {
@@ -2701,7 +2761,9 @@ io.on('connection', socket => {
     const username = data?.uniqueId || data?.username;
     if (username) {
       console.log(`[Socket] Received connect-tiktok for @${username}`);
-      connectToTikTok(username, data.sessionId);
+      connectToTikTok(username, data.sessionId, data.apiKey).catch(err => {
+        console.warn(`[Socket connect-tiktok catch]: ${err.message}`);
+      });
     }
   });
 

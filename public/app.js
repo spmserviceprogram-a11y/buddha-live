@@ -12590,7 +12590,11 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
   }
   user = user.replace(/^@+/, '');
   const enteredKey = document.getElementById('euler-api-key-input') ? document.getElementById('euler-api-key-input').value.trim() : '';
-  if (enteredKey) localStorage.setItem('buddha_euler_key', enteredKey);
+  if (enteredKey) {
+    localStorage.setItem('buddha_euler_key', enteredKey);
+  } else {
+    localStorage.removeItem('buddha_euler_key');
+  }
 
   connStatus.className = 'conn-status status-offline';
   connStatus.textContent = `กำลังค้นหาและเชื่อมต่อกับ TikTok @${user}...`;
@@ -12601,7 +12605,7 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: user,
-        apiKey: document.getElementById('euler-api-key-input') ? document.getElementById('euler-api-key-input').value.trim() : ''
+        apiKey: enteredKey
       })
     });
     const result = await res.json();
@@ -12615,8 +12619,8 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
     connStatus.textContent = `เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ${err.message}`;
   }
 
-  // Backup socket emit
-  socket.emit('connect-tiktok', { uniqueId: user });
+  // Backup socket emit with apiKey included
+  socket.emit('connect-tiktok', { uniqueId: user, apiKey: enteredKey });
 });
 
 document.getElementById('btn-disconnect').addEventListener('click', async () => {
@@ -12677,6 +12681,12 @@ socket.on('state', handleInitialState);
 // Status change listener from server.js
 socket.on('status_change', (data) => {
   console.log('[Socket] status_change:', data);
+  if (data && data.clearEulerKey) {
+    console.warn('[Socket] Server notified that EulerStream key is invalid (401). Clearing local key...');
+    localStorage.removeItem('buddha_euler_key');
+    const eulerInput = document.getElementById('euler-api-key-input');
+    if (eulerInput) eulerInput.value = '';
+  }
   if (data && data.isConnected) {
     connStatus.className = 'conn-status status-online';
     const roomTxt = data.roomId ? ` (ห้อง ${data.roomId})` : '';
