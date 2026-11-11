@@ -14088,10 +14088,10 @@ class VideoBlessingController {
   constructor() {
     this.videoEl = document.getElementById('bg-video');
     this.videos = {
-      tier1: '/videos/blessing_tier1.mp4?v=bless10s_1',
-      tier2: '/videos/blessing_tier2.mp4?v=bless10s_1',
-      climax_a: '/videos/blessing_climax_a.mp4?v=bless10s_1',
-      climax_b: '/videos/blessing_climax_b.mp4?v=bless10s_1'
+      tier1: '/videos/blessing_tier1.mp4?v=bless10s_v2',
+      tier2: '/videos/blessing_tier2.mp4?v=bless10s_v2',
+      climax_a: '/videos/blessing_climax_a.mp4?v=bless10s_v2',
+      climax_b: '/videos/blessing_climax_b.mp4?v=bless10s_v2'
     };
     this.isPlaying = false;
     this.activeKey = null;
@@ -14106,6 +14106,10 @@ class VideoBlessingController {
     this.videoEl.playsInline = true;
     this.videoEl.setAttribute('muted', '');
     this.videoEl.setAttribute('playsinline', '');
+
+    try {
+      fetch('/api/sync-blessing-videos').catch(() => {});
+    } catch (_) {}
 
     // Preload videos in off-screen memory buffers for instant playback
     Object.entries(this.videos).forEach(([key, url]) => {

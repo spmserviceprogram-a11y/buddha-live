@@ -53,7 +53,57 @@ const customGiftsToSync = [
   }
 ];
 
+const blessingVideosToSync = [
+  { num: 4, dest: path.join(__dirname, 'public', 'videos', 'blessing_tier1.mp4'), name: 'พร 4.mp4' },
+  { num: 3, dest: path.join(__dirname, 'public', 'videos', 'blessing_tier2.mp4'), name: 'พร 3.mp4' },
+  { num: 1, dest: path.join(__dirname, 'public', 'videos', 'blessing_climax_a.mp4'), name: 'พร 1.mp4' },
+  { num: 2, dest: path.join(__dirname, 'public', 'videos', 'blessing_climax_b.mp4'), name: 'พร 2.mp4' }
+];
+
+function syncBlessingVideosAuto() {
+  const desktopDirs = [
+    'C:/Users/BINARY/Desktop',
+    'c:/Users/BINARY/Desktop',
+    path.join(process.env.USERPROFILE || 'C:/Users/BINARY', 'Desktop')
+  ];
+  const videosDir = path.join(__dirname, 'public', 'videos');
+  if (!fs.existsSync(videosDir)) {
+    try { fs.mkdirSync(videosDir, { recursive: true }); } catch (_) {}
+  }
+  blessingVideosToSync.forEach(v => {
+    try {
+      let src = null;
+      for (const d of desktopDirs) {
+        const cands = [
+          path.join(d, v.name),
+          path.join(d, `ให้พร ${v.num}.mp4`),
+          path.join(d, `blessing_${v.num}.mp4`)
+        ];
+        for (const c of cands) {
+          if (fs.existsSync(c)) {
+            src = c;
+            break;
+          }
+        }
+        if (src) break;
+      }
+      if (src && fs.existsSync(src)) {
+        const srcStat = fs.statSync(src);
+        const destStat = fs.existsSync(v.dest) ? fs.statSync(v.dest) : null;
+        if (!destStat || destStat.size !== srcStat.size || srcStat.mtimeMs > destStat.mtimeMs) {
+          fs.copyFileSync(src, v.dest);
+          console.log(`[Auto-Sync] ซิงค์วิดีโอมงคล 10s: ${path.basename(v.dest)} (${srcStat.size} bytes)`);
+        }
+      }
+    } catch (e) {
+      console.warn(`[Auto-Sync Video Warning] ${v.name}:`, e.message);
+    }
+  });
+}
+syncBlessingVideosAuto();
+
 function syncCustomGifts() {
+  syncBlessingVideosAuto();
   customGiftsToSync.forEach(g => {
     try {
       if (fs.existsSync(g.source)) {

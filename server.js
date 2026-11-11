@@ -302,36 +302,55 @@ if (!fs.existsSync(VIDEOS_DIR)) {
 }
 
 const BLESSING_VIDEOS_MAP = [
-  { num: 4, destName: 'blessing_tier1.mp4', fallbackPattern: /(?:ให้พร|blessing).*4.*\.mp4$/i },
-  { num: 3, destName: 'blessing_tier2.mp4', fallbackPattern: /(?:ให้พร|blessing).*3.*\.mp4$/i },
-  { num: 1, destName: 'blessing_climax_a.mp4', fallbackPattern: /(?:ให้พร|blessing).*1.*\.mp4$/i },
-  { num: 2, destName: 'blessing_climax_b.mp4', fallbackPattern: /(?:ให้พร|blessing).*2.*\.mp4$/i }
+  { num: 4, destName: 'blessing_tier1.mp4', desktopName: 'พร 4.mp4', fallbackPattern: /(?:ให้พร|พร|blessing).*?4.*\.mp4$/i },
+  { num: 3, destName: 'blessing_tier2.mp4', desktopName: 'พร 3.mp4', fallbackPattern: /(?:ให้พร|พร|blessing).*?3.*\.mp4$/i },
+  { num: 1, destName: 'blessing_climax_a.mp4', desktopName: 'พร 1.mp4', fallbackPattern: /(?:ให้พร|พร|blessing).*?1.*\.mp4$/i },
+  { num: 2, destName: 'blessing_climax_b.mp4', desktopName: 'พร 2.mp4', fallbackPattern: /(?:ให้พร|พร|blessing).*?2.*\.mp4$/i }
 ];
 
 const SEARCH_CANDIDATE_DIRS = [
-  path.join(process.env.USERPROFILE || 'C:/Users/BINARY', 'Desktop'),
   'C:/Users/BINARY/Desktop',
   'c:/Users/BINARY/Desktop',
+  path.join(process.env.USERPROFILE || 'C:/Users/BINARY', 'Desktop'),
   __dirname,
-  path.join(__dirname, 'videos'),
-  path.join(__dirname, 'public', 'videos')
+  path.join(__dirname, 'videos')
 ];
 
-function findBlessingSource(num, pattern) {
+function findBlessingSource(item) {
+  const num = typeof item === 'object' ? item.num : item;
+  const pattern = (typeof item === 'object' && item.fallbackPattern) ? item.fallbackPattern : new RegExp(`(?:ให้พร|พร|blessing).*?${num}.*\\.mp4$`, 'i');
+  const desktopName = typeof item === 'object' ? item.desktopName : `พร ${num}.mp4`;
+  const destName = typeof item === 'object' ? item.destName : '';
+
   for (const dir of SEARCH_CANDIDATE_DIRS) {
     try {
       if (!fs.existsSync(dir)) continue;
-      // Direct candidate checks
-      const directCandidate = path.join(dir, `ให้พร ${num}.mp4`);
-      if (fs.existsSync(directCandidate)) return directCandidate;
+      // Direct explicit candidates
+      const directCandidates = [
+        path.join(dir, desktopName),
+        path.join(dir, `พร ${num}.mp4`),
+        path.join(dir, `ให้พร ${num}.mp4`),
+        path.join(dir, `blessing_${num}.mp4`),
+        path.join(dir, `blessing${num}.mp4`),
+        destName ? path.join(dir, destName) : null
+      ];
+      for (const cand of directCandidates) {
+        if (cand && fs.existsSync(cand) && cand !== path.join(VIDEOS_DIR, destName)) {
+          return cand;
+        }
+      }
 
       // Scan directory entries for robust Unicode (NFC/NFD) matching
       const entries = fs.readdirSync(dir);
       for (const file of entries) {
+        if (destName && file === destName && dir === VIDEOS_DIR) continue;
         const normNFC = file.normalize('NFC');
         const normNFD = file.normalize('NFD');
         if (pattern.test(normNFC) || pattern.test(normNFD) || pattern.test(file)) {
-          return path.join(dir, file);
+          const matched = path.join(dir, file);
+          if (matched !== path.join(VIDEOS_DIR, destName)) {
+            return matched;
+          }
         }
       }
     } catch (_) {}
@@ -343,10 +362,12 @@ function syncBlessingVideos() {
   BLESSING_VIDEOS_MAP.forEach(item => {
     try {
       const dest = path.join(VIDEOS_DIR, item.destName);
-      const src = findBlessingSource(item.num, item.fallbackPattern);
+      const src = findBlessingSource(item);
       if (src && fs.existsSync(src)) {
         const srcStat = fs.statSync(src);
-        if (!fs.existsSync(dest) || fs.statSync(dest).size !== srcStat.size) {
+        const destExists = fs.existsSync(dest);
+        const destStat = destExists ? fs.statSync(dest) : null;
+        if (!destExists || destStat.size !== srcStat.size || srcStat.mtimeMs > destStat.mtimeMs) {
           fs.copyFileSync(src, dest);
           console.log(`[Blessing Video] Synced ${src} -> ${item.destName} (${srcStat.size} bytes)`);
         }
@@ -383,15 +404,16 @@ app.get(['/videos/:name', '/:name(blessing_tier1\\.mp4|blessing_tier2\\.mp4|bles
     return res.status(403).send('Forbidden');
   }
 
-  if (!fs.existsSync(videoPath)) {
+  // Always verify sync on request so desktop video updates take effect immediately
+  try {
     syncBlessingVideos();
-  }
+  } catch (_) {}
 
   let finalPath = fs.existsSync(videoPath) ? videoPath : null;
   if (!finalPath) {
     const matchedItem = BLESSING_VIDEOS_MAP.find(m => m.destName === fileName);
     if (matchedItem) {
-      finalPath = findBlessingSource(matchedItem.num, matchedItem.fallbackPattern);
+      finalPath = findBlessingSource(matchedItem);
     }
   }
 
@@ -414,7 +436,10 @@ app.get(['/videos/:name', '/:name(blessing_tier1\\.mp4|blessing_tier2\\.mp4|bles
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
         'Content-Length': chunksize,
-        'Content-Type': 'video/mp4'
+        'Content-Type': 'video/mp4',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       };
       res.writeHead(206, head);
       file.pipe(res);
@@ -423,7 +448,9 @@ app.get(['/videos/:name', '/:name(blessing_tier1\\.mp4|blessing_tier2\\.mp4|bles
         'Content-Length': fileSize,
         'Content-Type': 'video/mp4',
         'Accept-Ranges': 'bytes',
-        'Cache-Control': 'public, max-age=86400'
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       };
       res.writeHead(200, head);
       fs.createReadStream(finalPath).pipe(res);
