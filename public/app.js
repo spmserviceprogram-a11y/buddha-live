@@ -12575,11 +12575,25 @@ socket.on('mic_router_test', () => {
   }
 });
 
-// Restore EulerStream API Key
-const savedEulerKey = localStorage.getItem('buddha_euler_key');
+// Restore EulerStream API Key (Auto-purge invalid Gemini keys or stale passwords)
+let savedEulerKey = localStorage.getItem('buddha_euler_key') || '';
+if (savedEulerKey && (savedEulerKey.startsWith('AQ.') || savedEulerKey.startsWith('AIzaSy') || savedEulerKey.includes(' '))) {
+  console.warn('[TikTok] Cleared incompatible Euler API key from localStorage');
+  localStorage.removeItem('buddha_euler_key');
+  savedEulerKey = '';
+}
 const eulerInputEl = document.getElementById('euler-api-key-input');
 if (savedEulerKey && eulerInputEl) {
   eulerInputEl.value = savedEulerKey;
+}
+
+const clearEulerBtn = document.getElementById('btn-clear-euler-key');
+if (clearEulerBtn) {
+  clearEulerBtn.addEventListener('click', () => {
+    localStorage.removeItem('buddha_euler_key');
+    if (eulerInputEl) eulerInputEl.value = '';
+    showToast('ล้างคีย์สำเร็จ', 'ปลดคีย์ EulerStream ออกแล้ว ระบบจะเชื่อมต่อผ่านโหมดฟรีอัตโนมัติ');
+  });
 }
 
 document.getElementById('btn-connect').addEventListener('click', async () => {
@@ -12591,7 +12605,14 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
   user = user.replace(/^@+/, '');
   const enteredKey = document.getElementById('euler-api-key-input') ? document.getElementById('euler-api-key-input').value.trim() : '';
   if (enteredKey) {
-    localStorage.setItem('buddha_euler_key', enteredKey);
+    // If user mistakenly pasted Google Gemini key into Euler box, warn & skip saving it
+    if (enteredKey.startsWith('AQ.') || enteredKey.startsWith('AIzaSy')) {
+      alert('คีย์ที่คุณกรอกขึ้นต้นด้วย AQ./AIzaSy เป็น Google Gemini API Key ไม่ใช่ EulerStream Key ระบบจะเชื่อมต่อผ่านช่องทางฟรีอัตโนมัติ');
+      localStorage.removeItem('buddha_euler_key');
+      if (eulerInputEl) eulerInputEl.value = '';
+    } else {
+      localStorage.setItem('buddha_euler_key', enteredKey);
+    }
   } else {
     localStorage.removeItem('buddha_euler_key');
   }
@@ -12605,7 +12626,7 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: user,
-        apiKey: enteredKey
+        apiKey: (enteredKey && !enteredKey.startsWith('AQ.') && !enteredKey.startsWith('AIzaSy')) ? enteredKey : ''
       })
     });
     const result = await res.json();
@@ -12618,9 +12639,6 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
     connStatus.className = 'conn-status status-offline';
     connStatus.textContent = `เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: ${err.message}`;
   }
-
-  // Backup socket emit with apiKey included
-  socket.emit('connect-tiktok', { uniqueId: user, apiKey: enteredKey });
 });
 
 document.getElementById('btn-disconnect').addEventListener('click', async () => {
