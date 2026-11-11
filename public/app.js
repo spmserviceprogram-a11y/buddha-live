@@ -1438,13 +1438,14 @@ class GuanYinDivineVoice {
   speakSeamSiFortune(name, f, { onStart, onDone } = {}) {
     if (!this.enabled || !f) return 0;
     const clean = this.cleanViewerName(name, 'ผู้มีจิตศรัทธา');
-    const spokenText = `คุณ ${clean} เสี่ยงเซียมซีในฉากจำลองนี้ได้${f.stickTitle} ${f.voiceBlessing || f.wealth} ขอให้ร่ำรวยสมหวังนะคะ`.slice(0, 160);
-    const estMs = Math.min(10000, Math.max(4500, Math.round(spokenText.length * 70) + 1200));
+    const rawBlessing = (f.voiceBlessing || f.wealth || '').replace(/(นะคะ|นะค่ะ)$/i, '').trim();
+    const spokenText = `คุณ ${clean} เสี่ยงเซียมซีในฉากจำลองนี้ได้${f.stickTitle} ${rawBlessing} ขอให้ร่ำรวยสมหวังนะคะ`.slice(0, 160);
+    const estMs = Math.min(15000, Math.max(5500, Math.round(spokenText.length * 85) + 1600));
     this.enqueue({
       type: 'tts',
       priority: 1,
       text: spokenText,
-      maxMs: estMs + 2000,
+      maxMs: estMs + 3500,
       onStart,
       onDone,
       payload: { name: clean, effectType: 'seamsi', isGift: true }
@@ -5995,8 +5996,8 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
   luckyRollIntervals[1] = revealDigit(d2El, digits[1], 760, false);
   luckyRollIntervals[2] = revealDigit(d3El, digits[2], 1140, true);
 
-  // Auto-hide after 5.5s
-  luckyNumbersHideTimer = setTimeout(hideLucky, 5500);
+  // Auto-hide after 7.5s (gives viewers ample time to read & write down their 3 lucky numbers)
+  luckyNumbersHideTimer = setTimeout(hideLucky, 7500);
 }
 
 // ── Phase 1 Modal: Royal Seam-Si Fortune Scroll (ตรงตามแบบรูปที่ 2 — ผู้เล่นอ่านกลอนคำทำนายด้วยตัวเอง) ──
@@ -6018,8 +6019,19 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
 
   // Transition to Phase 2 (Lucky 3-digit number card)
   let transitioned = false;
-  const transitionToLucky = () => {
+  const transitionToLucky = (force = false) => {
     if (transitioned) return;
+
+    // Guard: If GuanYin is still speaking or generating the fortune voice, DO NOT cut her off!
+    if (!force && typeof guanYinVoice !== 'undefined' && guanYinVoice && (guanYinVoice.isSpeaking || guanYinVoice.isGenerating)) {
+      if (guanYinVoice.currentTask?.payload?.effectType === 'seamsi') {
+        console.log('[SeamSi] GuanYin is still speaking fortune. Postponing lucky card transition...');
+        if (seamSiScrollHideTimer) clearTimeout(seamSiScrollHideTimer);
+        seamSiScrollHideTimer = setTimeout(() => transitionToLucky(false), 1200);
+        return;
+      }
+    }
+
     transitioned = true;
     if (seamSiScrollHideTimer) {
       clearTimeout(seamSiScrollHideTimer);
@@ -6041,7 +6053,7 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
   if (closeBtn) {
     closeBtn.onclick = (e) => {
       e.stopPropagation();
-      transitionToLucky();
+      transitionToLucky(true);
     };
   }
 
@@ -6060,21 +6072,51 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
   }
 
   // AI Divine Voice: Speak viewer name + stick title + wealth blessing in sync with the unfurling scroll
+  // The scroll stays OPEN until the AI finishes reading, then transitions smoothly!
+  let voiceTriggered = false;
   if (typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.enabled) {
-    guanYinVoice.speakSeamSiFortune(cleanDonor, f);
+    voiceTriggered = true;
+    guanYinVoice.speakSeamSiFortune(cleanDonor, f, {
+      onStart: () => {
+        console.log('[SeamSi] GuanYin began reading fortune poem & blessing.');
+      },
+      onDone: () => {
+        console.log('[SeamSi] GuanYin completed reading fortune. Preparing lucky card transition.');
+        if (autoShowLucky && !transitioned) {
+          if (seamSiScrollHideTimer) clearTimeout(seamSiScrollHideTimer);
+          // Wait 2.5 seconds after speech finishes so viewers can appreciate the verse before lucky card pops up
+          seamSiScrollHideTimer = setTimeout(() => transitionToLucky(false), 2500);
+        } else if (!autoShowLucky && !transitioned) {
+          if (seamSiScrollHideTimer) clearTimeout(seamSiScrollHideTimer);
+          seamSiScrollHideTimer = setTimeout(() => {
+            if (transitioned) return;
+            card.classList.remove('active');
+            card.classList.add('hidden');
+            setTimeout(() => {
+              if (card.classList.contains('hidden')) {
+                card.style.display = 'none';
+              }
+            }, 300);
+          }, 3500);
+        }
+      }
+    });
   }
 
   // Auto-dismiss safety: In unattended live streams, ensure fortune scroll does not stay stuck indefinitely!
+  // If voice is active, generous safety timeout (18s) in case network delays speech.
+  // If voice is disabled/unsupported, give 10s default reading time.
   if (seamSiScrollHideTimer) {
     clearTimeout(seamSiScrollHideTimer);
     seamSiScrollHideTimer = null;
   }
+  const fallbackTimeoutMs = voiceTriggered ? 18000 : 10000;
   if (autoShowLucky) {
     ++seamSiScrollToken;
-    seamSiScrollHideTimer = setTimeout(transitionToLucky, 5500);
+    seamSiScrollHideTimer = setTimeout(() => transitionToLucky(false), fallbackTimeoutMs);
   } else {
-    // Unattended fallback: Smoothly hide after 8.5 seconds so it never collides with next round
     seamSiScrollHideTimer = setTimeout(() => {
+      if (transitioned) return;
       card.classList.remove('active');
       card.classList.add('hidden');
       setTimeout(() => {
@@ -6082,7 +6124,7 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
           card.style.display = 'none';
         }
       }, 300);
-    }, 8500);
+    }, fallbackTimeoutMs);
   }
 }
 
@@ -10851,6 +10893,7 @@ function triggerGiftAnnouncementBanner(donor, giftInfo = null) {
   banner.classList.add('active');
   spawnBannerSparkleBurst(tierInfo.tierClass);
 
+  const bannerDur = (tierInfo.tierClass === 'tier-seamsi' || tierInfo.tierClass === 'tier-dragon') ? 10500 : 5200;
   giftBannerTimer = setTimeout(() => {
     banner.classList.remove('active');
     banner.classList.add('hidden');
@@ -10858,7 +10901,7 @@ function triggerGiftAnnouncementBanner(donor, giftInfo = null) {
       banner.style.display = 'none';
       if (_activeBottomBanner === 'gift') _activeBottomBanner = null;
     }, 450);
-  }, 5200);
+  }, bannerDur);
 }
 
 function showBigEffectBanner(icon, title, subtitle, giftInfo = null) {
@@ -10923,6 +10966,7 @@ function showBigEffectBanner(icon, title, subtitle, giftInfo = null) {
   banner.classList.add('active');
   spawnBannerSparkleBurst(tierInfo.tierClass);
 
+  const bannerDur = (tierInfo.tierClass === 'tier-seamsi' || tierInfo.tierClass === 'tier-dragon') ? 10500 : 5200;
   giftBannerTimer = setTimeout(() => {
     banner.classList.remove('active');
     banner.classList.add('hidden');
@@ -10930,7 +10974,7 @@ function showBigEffectBanner(icon, title, subtitle, giftInfo = null) {
       banner.style.display = 'none';
       if (_activeBottomBanner === 'gift') _activeBottomBanner = null;
     }, 450);
-  }, 5200);
+  }, bannerDur);
 }
 
 window.triggerGiftAnnouncementBanner = triggerGiftAnnouncementBanner;
