@@ -15144,17 +15144,6 @@ window.testShareEvent = function (name = 'ผู้เปิดสะพาน�
   }
 };
 
-window.testMiracleVideo = function (tier = 'tier1') {
-  if (window.videoBlessingController) {
-    console.log('[TestMiracleVideo] Triggering miracle video:', tier);
-    window.videoBlessingController.playMiracle(tier, () => {
-      console.log('[TestMiracleVideo] Video completed:', tier);
-    });
-  } else {
-    console.warn('[TestMiracleVideo] VideoBlessingController not initialized');
-  }
-};
-
 // ── Organic Ambient Devotion & Performance Auto-Tuning Engine ────────
 // Dynamically balances bot behavior, stage pacing, and render load based on real-time audience size:
 // - 0-3 Viewers:  Lively mode (frequent natural bot actions & peaceful prayer bubbles to keep stream alive)
