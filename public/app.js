@@ -1325,6 +1325,7 @@ class GuanYinDivineVoice {
       audio.onerror = (err) => {
         if (audio._aborted || hasEnded || this.currentAudio !== audio) return;
         console.warn('[GuanYin Voice] Audio file load error:', err, url);
+        clearTimeout(timeout);
         if (fallbackText && this.synth && !audio._aborted && !hasEnded) {
           this.playBrowserTTS(fallbackText, maxMs).then(endPlayback).catch(endPlayback);
           return;
@@ -1340,6 +1341,7 @@ class GuanYinDivineVoice {
         audio.play().catch(err => {
           if (audio._aborted || hasEnded || this.currentAudio !== audio) return;
           console.warn('[GuanYin Voice] Audio autoplay waiting or blocked:', err?.message);
+          clearTimeout(timeout);
           if (fallbackText && this.synth && !audio._aborted && !hasEnded) {
             this.playBrowserTTS(fallbackText, maxMs).then(endPlayback).catch(endPlayback);
             return;
@@ -1372,6 +1374,7 @@ class GuanYinDivineVoice {
       utter.rate = 1.08; // Calm, clear, natural Thai speech synthesis pace (พูดช้าลง นุ่มนวล ชัดถ้อยชัดคำ)
       utter.pitch = 1.0; // Natural warm pitch
       utter.volume = this.volume;
+      this._activeUtterance = utter; // Prevent V8 garbage collection mid-speech
 
       if (typeof templeAudio !== 'undefined' && templeAudio.playBell) {
         templeAudio.playBell(513.6, 2.8);
@@ -1388,6 +1391,7 @@ class GuanYinDivineVoice {
       const endTTS = () => {
         if (done) return;
         done = true;
+        this._activeUtterance = null;
         this._currentPlaybackResolver = null;
         clearTimeout(timeout);
         this.isSpeaking = false;
@@ -1407,7 +1411,16 @@ class GuanYinDivineVoice {
       utter.onend = endTTS;
       utter.onerror = endTTS;
 
-      this.synth.speak(utter);
+      // 30ms async boundary after cancel() to defeat Chromium cancellation race condition
+      setTimeout(() => {
+        if (done || !this.synth) return;
+        try {
+          this.synth.speak(utter);
+        } catch (e) {
+          console.warn('[GuanYin Voice] synth.speak error:', e);
+          endTTS();
+        }
+      }, 30);
     });
   }
 
