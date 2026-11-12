@@ -12125,6 +12125,8 @@ if (btnTestAiVoice) {
     if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
       guanYinVoice.enabled = true;
       if (chkVoice) chkVoice.checked = true;
+      guanYinVoice.abortCurrentTask();
+      guanYinVoice.queue = [];
       guanYinVoice.speak('เจริญพรคุณโยม ระบบเสียง AI พระแม่กวนอิมพร้อมทำงานในไลฟ์สดแล้วนะคะ', 1);
     }
   });
