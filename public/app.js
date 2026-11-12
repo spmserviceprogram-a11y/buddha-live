@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 // ---------------------------------------------------------------------
-// 1. Audio Synthesizer (High-Fidelity Zen & Tibetan Temple Soundscape)
+// 1. Audio Synthesizer (High-Fidelity Zen & Tibetan Temple Soundscape)s
 // ---------------------------------------------------------------------
 class TempleAudio {
   constructor() {
@@ -356,11 +356,11 @@ class TempleAudio {
         try {
           resp = await fetch('/bgm.m4a');
           if (!resp.ok) resp = null;
-        } catch (_) {}
+        } catch (_) { }
         if (!resp) {
           try {
             resp = await fetch('/bgm.mp3');
-          } catch (_) {}
+          } catch (_) { }
         }
         if (resp && resp.ok) {
           const arr = await resp.arrayBuffer();
@@ -11744,242 +11744,242 @@ function executeStageRitual(actor, type, name, giftInfo, onComplete) {
   }
   try {
     const isAmbient = giftInfo?.isAmbient === true;
-  const giftIcon = giftInfo?.icon || (type === 'flowers' ? '🌸' : type === 'lotus' ? '🪷' : type === 'incense' ? '🪔' : '🌹');
-  const giftName = giftInfo?.name || (type === 'flowers' ? 'บุปผามงคล' : type === 'lotus' ? 'ดอกบัวทิพย์' : type === 'incense' ? 'ประทีปธูปหอม' : 'ดอกกุหลาบ');
-  const giftImg = giftInfo?.image || giftInfo?.giftImage || getGiftImageUrl(giftName, giftInfo?.coins, type);
-  const activeGiftInfo = { ...(giftInfo || {}), icon: giftIcon, name: giftName, image: giftImg };
-  const qLen = stageActionQueue.length;
+    const giftIcon = giftInfo?.icon || (type === 'flowers' ? '🌸' : type === 'lotus' ? '🪷' : type === 'incense' ? '🪔' : '🌹');
+    const giftName = giftInfo?.name || (type === 'flowers' ? 'บุปผามงคล' : type === 'lotus' ? 'ดอกบัวทิพย์' : type === 'incense' ? 'ประทีปธูปหอม' : 'ดอกกุหลาบ');
+    const giftImg = giftInfo?.image || giftInfo?.giftImage || getGiftImageUrl(giftName, giftInfo?.coins, type);
+    const activeGiftInfo = { ...(giftInfo || {}), icon: giftIcon, name: giftName, image: giftImg };
+    const qLen = stageActionQueue.length;
 
-  // Trigger Celestial Heavenly FX Screen & Particle Layer
-  try {
-    if (window.heavenlyFX && typeof window.heavenlyFX.play === 'function') {
-      window.heavenlyFX.play(type);
-    }
-  } catch (hfxErr) {
-    console.warn('[HeavenlyFX Trigger]', type, hfxErr);
-  }
-
-  if (type === 'kowtow') {
-    // Authentic 3-Phase Benjangkhapradit Prostrations in 2D Chibi with dynamic queue pacing
-    if (!isAmbient) {
-      templeAudio.playBell(432, 4.0);
-    } else {
-      templeAudio.playBell(432, 3.0);
-    }
-    triggerKowtowEffect();
-
-    let bowCycle = 0;
-    function doOneBenjangkhapradit() {
-      const liveQ = stageActionQueue.length;
-      const maxBows = liveQ > 3 ? 2 : 3;
-      const bowDownMs = liveQ > 1 ? 240 : 340;
-      const bowUpMs = liveQ > 1 ? 250 : 350;
-      const bowHoldMs = liveQ > 1 ? 280 : 480;
-      const bowCycleDelay = liveQ > 1 ? 180 : 340;
-
-      // Phase 1: Wanthana (ยกมือพนมขึ้นจรดหน้าผาก ยืดตัวนอบน้อมเล็กน้อยก่อนหมอบกราบ)
-      if (actor.charSprite) {
-        actor.charSprite.scale.set(actor.baseW * 0.985, actor.baseH * 1.03, 1);
-      }
-      actor.addRitualTimeout(() => {
-        // Phase 2: Aphitsawat (ค่อยๆ หมอบกราบเบญจางคประดิษฐ์ลงแตะอาสนะอย่างนุ่มนวล)
-        actor.smoothPoseTransition('kowtow', bowDownMs, () => {
-          createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-          createLotusBloomDecal(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-          spawnBlessingSparks(actor.root.position.x, 0.05, actor.root.position.z, 14, 0xffea70);
-          triggerCharacterGoldenAura(actor.root);
-          templeAudio.playWoodblock();
-
-          actor.addRitualTimeout(() => {
-            // Phase 3: Rise back to Anjali Kneel (ค่อยๆ เงยขึ้นนั่งพนมมือนิ่งสงบ นอบน้อม)
-            actor.smoothPoseTransition('kneel', bowUpMs, () => {
-              actor.triggerBow();
-              bowCycle++;
-              const targetBows = stageActionQueue.length > 3 ? 2 : maxBows;
-              if (bowCycle < targetBows) {
-                actor.addRitualTimeout(doOneBenjangkhapradit, bowCycleDelay);
-              } else {
-                actor.addRitualTimeout(onComplete, stageActionQueue.length > 1 ? 280 : 500);
-              }
-            });
-          }, bowHoldMs);
-        });
-      }, liveQ > 1 ? 75 : 120);
-    }
-    doOneBenjangkhapradit();
-
-  } else if (type === 'seamsi') {
-    if (isAmbient) {
-      actor.smoothPoseTransition('kneel', 260, () => {
-        actor.triggerBow();
-        actor.addRitualTimeout(onComplete, 1200);
-      });
-      return;
-    }
-    const seamFortune = activeGiftInfo.seamsiFortune || drawSeamSiFortune();
-    activeGiftInfo.seamsiFortune = seamFortune;
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerSeamSiEffect(name, seamFortune, true);
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-      createLotusBloomDecal(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 4000 : 5500);
-    });
-
-  } else if (type === 'incense') {
-    if (!isAmbient) {
-      templeAudio.playBell(432, 3.5);
-    } else {
-      templeAudio.playBell(432, 3.0);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerIncenseEffect();
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffaa00);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 2200 : 3200);
-    });
-
-  } else if (type === 'lotus') {
-    if (!isAmbient) {
-      templeAudio.playBell(513.6, 4.0);
-    } else {
-      templeAudio.playBell(513.6, 3.0);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerLotusBloomEffect();
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xff69b4);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 2500 : 3600);
-    });
-
-  } else if (type === 'flowers') {
-    if (!isAmbient) {
-      templeAudio.playBell(513.6, 4.5);
-    } else {
-      templeAudio.playBell(513.6, 3.0);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerLotusRainEffect();
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-
-      if (actor.auraSprite) actor.auraSprite.material.opacity = 0.70;
-      actor.triggerBow();
-      actor.addRitualTimeout(() => {
-        if (actor.auraSprite) {
-          actor.addRitualInterval((iid) => {
-            actor.auraSprite.material.opacity -= 0.05;
-            if (actor.auraSprite.material.opacity <= 0) {
-              actor.auraSprite.material.opacity = 0;
-              clearInterval(iid);
-            }
-          }, 50);
-        }
-        actor.addRitualTimeout(onComplete, qLen > 1 ? 700 : 1000);
-      }, qLen > 1 ? 2000 : 2800);
-    });
-
-  } else if (type === 'golden_bell') {
-    if (!isAmbient) {
-      templeAudio.playBell(108, 6.0);
-    } else {
-      templeAudio.playBell(108, 4.5);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerGoldenBellEffect();
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 2800 : 3800);
-    });
-
-  } else if (type === 'crystal_fountain') {
-    if (!isAmbient) {
-      templeAudio.playLotusChime();
-    } else {
-      templeAudio.playLotusChime();
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerCrystalFountainEffect();
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0x00f5d4);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 2800 : 3800);
-    });
-
-  } else if (type === 'royal_carriage') {
-    if (!isAmbient) {
-      templeAudio.playBell(432, 6.0);
-    } else {
-      templeAudio.playBell(432, 4.5);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerRoyalCarriageEffect();
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 3000 : 4200);
-    });
-
-  } else if (type === 'fireworks') {
-    if (!isAmbient) {
-      templeAudio.playBell(639, 6.0);
-    } else {
-      templeAudio.playBell(639, 4.5);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerFireworksEffect();
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffa500);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 3200 : 4500);
-    });
-
-  } else if (type === 'castle') {
-    if (!isAmbient) {
-      templeAudio.playBell(741, 7.0);
-    } else {
-      templeAudio.playBell(741, 5.0);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerHeavenlyPortalEffect();
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 3200 : 4500);
-    });
-
-  } else if (type === 'dragon') {
-    if (!isAmbient) {
-      templeAudio.playBell(852, 8.0);
-    } else {
-      templeAudio.playBell(852, 6.0);
-    }
-    actor.smoothPoseTransition('kneel', 260, () => {
-      triggerDragonDescentEffect();
-      triggerCharacterGoldenAura(actor.root);
-      createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
-      actor.triggerBow();
-      actor.addRitualTimeout(onComplete, qLen > 1 ? 3500 : 4800);
-    });
-
-  } else {
-    // Graceful fallback for any unknown ritual type so queue NEVER freezes
-    if (typeof onComplete === 'function') {
-      actor.addRitualTimeout(onComplete, 800);
-    }
-  }
-} catch (err) {
-  console.error('[executeStageRitual] Unexpected error during stage ritual:', err);
-  if (typeof onComplete === 'function') {
+    // Trigger Celestial Heavenly FX Screen & Particle Layer
     try {
-      onComplete();
-    } catch (cbErr) {
-      console.error('[executeStageRitual] onComplete fallback failed:', cbErr);
+      if (window.heavenlyFX && typeof window.heavenlyFX.play === 'function') {
+        window.heavenlyFX.play(type);
+      }
+    } catch (hfxErr) {
+      console.warn('[HeavenlyFX Trigger]', type, hfxErr);
+    }
+
+    if (type === 'kowtow') {
+      // Authentic 3-Phase Benjangkhapradit Prostrations in 2D Chibi with dynamic queue pacing
+      if (!isAmbient) {
+        templeAudio.playBell(432, 4.0);
+      } else {
+        templeAudio.playBell(432, 3.0);
+      }
+      triggerKowtowEffect();
+
+      let bowCycle = 0;
+      function doOneBenjangkhapradit() {
+        const liveQ = stageActionQueue.length;
+        const maxBows = liveQ > 3 ? 2 : 3;
+        const bowDownMs = liveQ > 1 ? 240 : 340;
+        const bowUpMs = liveQ > 1 ? 250 : 350;
+        const bowHoldMs = liveQ > 1 ? 280 : 480;
+        const bowCycleDelay = liveQ > 1 ? 180 : 340;
+
+        // Phase 1: Wanthana (ยกมือพนมขึ้นจรดหน้าผาก ยืดตัวนอบน้อมเล็กน้อยก่อนหมอบกราบ)
+        if (actor.charSprite) {
+          actor.charSprite.scale.set(actor.baseW * 0.985, actor.baseH * 1.03, 1);
+        }
+        actor.addRitualTimeout(() => {
+          // Phase 2: Aphitsawat (ค่อยๆ หมอบกราบเบญจางคประดิษฐ์ลงแตะอาสนะอย่างนุ่มนวล)
+          actor.smoothPoseTransition('kowtow', bowDownMs, () => {
+            createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+            createLotusBloomDecal(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+            spawnBlessingSparks(actor.root.position.x, 0.05, actor.root.position.z, 14, 0xffea70);
+            triggerCharacterGoldenAura(actor.root);
+            templeAudio.playWoodblock();
+
+            actor.addRitualTimeout(() => {
+              // Phase 3: Rise back to Anjali Kneel (ค่อยๆ เงยขึ้นนั่งพนมมือนิ่งสงบ นอบน้อม)
+              actor.smoothPoseTransition('kneel', bowUpMs, () => {
+                actor.triggerBow();
+                bowCycle++;
+                const targetBows = stageActionQueue.length > 3 ? 2 : maxBows;
+                if (bowCycle < targetBows) {
+                  actor.addRitualTimeout(doOneBenjangkhapradit, bowCycleDelay);
+                } else {
+                  actor.addRitualTimeout(onComplete, stageActionQueue.length > 1 ? 280 : 500);
+                }
+              });
+            }, bowHoldMs);
+          });
+        }, liveQ > 1 ? 75 : 120);
+      }
+      doOneBenjangkhapradit();
+
+    } else if (type === 'seamsi') {
+      if (isAmbient) {
+        actor.smoothPoseTransition('kneel', 260, () => {
+          actor.triggerBow();
+          actor.addRitualTimeout(onComplete, 1200);
+        });
+        return;
+      }
+      const seamFortune = activeGiftInfo.seamsiFortune || drawSeamSiFortune();
+      activeGiftInfo.seamsiFortune = seamFortune;
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerSeamSiEffect(name, seamFortune, true);
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+        createLotusBloomDecal(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 4000 : 5500);
+      });
+
+    } else if (type === 'incense') {
+      if (!isAmbient) {
+        templeAudio.playBell(432, 3.5);
+      } else {
+        templeAudio.playBell(432, 3.0);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerIncenseEffect();
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffaa00);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 2200 : 3200);
+      });
+
+    } else if (type === 'lotus') {
+      if (!isAmbient) {
+        templeAudio.playBell(513.6, 4.0);
+      } else {
+        templeAudio.playBell(513.6, 3.0);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerLotusBloomEffect();
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xff69b4);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 2500 : 3600);
+      });
+
+    } else if (type === 'flowers') {
+      if (!isAmbient) {
+        templeAudio.playBell(513.6, 4.5);
+      } else {
+        templeAudio.playBell(513.6, 3.0);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerLotusRainEffect();
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+
+        if (actor.auraSprite) actor.auraSprite.material.opacity = 0.70;
+        actor.triggerBow();
+        actor.addRitualTimeout(() => {
+          if (actor.auraSprite) {
+            actor.addRitualInterval((iid) => {
+              actor.auraSprite.material.opacity -= 0.05;
+              if (actor.auraSprite.material.opacity <= 0) {
+                actor.auraSprite.material.opacity = 0;
+                clearInterval(iid);
+              }
+            }, 50);
+          }
+          actor.addRitualTimeout(onComplete, qLen > 1 ? 700 : 1000);
+        }, qLen > 1 ? 2000 : 2800);
+      });
+
+    } else if (type === 'golden_bell') {
+      if (!isAmbient) {
+        templeAudio.playBell(108, 6.0);
+      } else {
+        templeAudio.playBell(108, 4.5);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerGoldenBellEffect();
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 2800 : 3800);
+      });
+
+    } else if (type === 'crystal_fountain') {
+      if (!isAmbient) {
+        templeAudio.playLotusChime();
+      } else {
+        templeAudio.playLotusChime();
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerCrystalFountainEffect();
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0x00f5d4);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 2800 : 3800);
+      });
+
+    } else if (type === 'royal_carriage') {
+      if (!isAmbient) {
+        templeAudio.playBell(432, 6.0);
+      } else {
+        templeAudio.playBell(432, 4.5);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerRoyalCarriageEffect();
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 3000 : 4200);
+      });
+
+    } else if (type === 'fireworks') {
+      if (!isAmbient) {
+        templeAudio.playBell(639, 6.0);
+      } else {
+        templeAudio.playBell(639, 4.5);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerFireworksEffect();
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffa500);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 3200 : 4500);
+      });
+
+    } else if (type === 'castle') {
+      if (!isAmbient) {
+        templeAudio.playBell(741, 7.0);
+      } else {
+        templeAudio.playBell(741, 5.0);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerHeavenlyPortalEffect();
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 3200 : 4500);
+      });
+
+    } else if (type === 'dragon') {
+      if (!isAmbient) {
+        templeAudio.playBell(852, 8.0);
+      } else {
+        templeAudio.playBell(852, 6.0);
+      }
+      actor.smoothPoseTransition('kneel', 260, () => {
+        triggerDragonDescentEffect();
+        triggerCharacterGoldenAura(actor.root);
+        createCarpetRipple(actor.root.position.x, 0.05, actor.root.position.z, 0xffd700);
+        actor.triggerBow();
+        actor.addRitualTimeout(onComplete, qLen > 1 ? 3500 : 4800);
+      });
+
+    } else {
+      // Graceful fallback for any unknown ritual type so queue NEVER freezes
+      if (typeof onComplete === 'function') {
+        actor.addRitualTimeout(onComplete, 800);
+      }
+    }
+  } catch (err) {
+    console.error('[executeStageRitual] Unexpected error during stage ritual:', err);
+    if (typeof onComplete === 'function') {
+      try {
+        onComplete();
+      } catch (cbErr) {
+        console.error('[executeStageRitual] onComplete fallback failed:', cbErr);
+      }
     }
   }
-}
 }
 
 // Quick Merit Buttons at Bottom Dock
@@ -14180,8 +14180,8 @@ class VideoBlessingController {
     this.videoEl.setAttribute('playsinline', '');
 
     try {
-      fetch('/api/sync-blessing-videos').catch(() => {});
-    } catch (_) {}
+      fetch('/api/sync-blessing-videos').catch(() => { });
+    } catch (_) { }
 
     // Preload videos in off-screen memory buffers for instant playback
     Object.entries(this.videos).forEach(([key, url]) => {
@@ -14398,7 +14398,7 @@ class RoundManager {
             this.countdownAudioCache[key] = a;
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     });
   }
 
@@ -14431,12 +14431,12 @@ class RoundManager {
         try {
           if (templeAudio.playWoodblock) templeAudio.playWoodblock();
           if (templeAudio.playBell) templeAudio.playBell(f, 0.85);
-        } catch (_) {}
+        } catch (_) { }
       } else if (sec === 0) {
         try {
           if (templeAudio.playWoodblock) templeAudio.playWoodblock();
           if (templeAudio.playBell) templeAudio.playBell(432, 3.2);
-        } catch (_) {}
+        } catch (_) { }
       }
     }
 
@@ -14501,7 +14501,7 @@ class RoundManager {
         utter.volume = 1.0;
         window.speechSynthesis.speak(utter);
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   startRound(roundNumber) {
