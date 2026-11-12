@@ -15119,9 +15119,13 @@ window.testRoundCycle = function (fast = true) {
   console.log('[TestRoundCycle] Triggering test round simulation...');
   _testCycleTimers.forEach(t => clearTimeout(t));
   _testCycleTimers = [];
+  if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+    guanYinVoice.abortCurrentTask();
+    guanYinVoice.queue = [];
+  }
   if (fast) {
-    window.roundManager.gatheringDuration = 14;
-    window.roundManager.timeRemaining = 14;
+    window.roundManager.gatheringDuration = 24;
+    window.roundManager.timeRemaining = 24;
   } else {
     window.roundManager.gatheringDuration = 120;
     window.roundManager.timeRemaining = 120;
@@ -15129,10 +15133,10 @@ window.testRoundCycle = function (fast = true) {
   window.roundManager.startRound(window.roundManager.roundNum);
   _testCycleTimers.push(setTimeout(() => {
     window.roundManager.addMerit({ uniqueId: 'test_user_1', nickname: 'ผู้ร่วมบุญใจดี', avatar: '/rose.png' }, 35, 'สาธุ');
-  }, 2000));
+  }, 3500));
   _testCycleTimers.push(setTimeout(() => {
     window.roundManager.addMerit({ uniqueId: 'test_user_2', nickname: 'มหาเศรษฐีใจบุญ', avatar: '/lucky_9.png' }, 55, 'สาธุ รวยๆ');
-  }, 4500));
+  }, 9000));
 };
 
 window.testShareEvent = function (name = 'ผู้เปิดสะพานบุญ') {
