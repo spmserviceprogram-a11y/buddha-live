@@ -14430,7 +14430,6 @@ class RoundManager {
       3: 'สาม',
       2: 'สอง',
       1: 'หนึ่ง',
-      0: 'หมดเวลาแล้วนะคะ',
       10: '10 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญกันนะคะ'
     };
     Object.entries(items).forEach(([key, text]) => {
@@ -14452,22 +14451,15 @@ class RoundManager {
   }
 
   speakCountdownWarning() {
-    const text = '10 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญกันนะคะ';
-    const preloaded = this.countdownAudioCache ? this.countdownAudioCache[10] : null;
-    if (preloaded && preloaded.readyState >= 2) {
-      try {
-        preloaded.currentTime = 0;
-        preloaded.playbackRate = 1.15;
-        preloaded.volume = 1.0;
-        preloaded.play().catch(() => {
-          this.speakHost(text);
-        });
-        return;
-      } catch (_) {
-        this.speakHost(text);
-        return;
+    if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+      if (guanYinVoice.currentTask && (guanYinVoice.currentTask.priority || 3) <= 1) {
+        return; // Don't interrupt gift blessing
+      }
+      if (guanYinVoice.isSpeaking || guanYinVoice.isGenerating) {
+        return; // Don't talk over active speech
       }
     }
+    const text = '10 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญกันนะคะ';
     this.speakHost(text);
   }
 
@@ -14505,13 +14497,17 @@ class RoundManager {
     }
 
     // 4. Voice Number Playback (0ms latency: preloaded audio OR instant browser speech synthesis)
+    // CRITICAL: If GuanYin is already speaking a sacred blessing or host announcement, NEVER speak voice numbers over her!
+    if (typeof guanYinVoice !== 'undefined' && guanYinVoice && (guanYinVoice.isSpeaking || guanYinVoice.isGenerating)) {
+      return;
+    }
+
     const textMap = {
       5: 'ห้า',
       4: 'สี่',
       3: 'สาม',
       2: 'สอง',
-      1: 'หนึ่ง',
-      0: 'หมดเวลาแล้วนะคะ'
+      1: 'หนึ่ง'
     };
     const text = textMap[sec];
     if (!text) return;
@@ -14537,6 +14533,9 @@ class RoundManager {
   }
 
   fallbackSpeechSynthesis(text) {
+    if (typeof guanYinVoice !== 'undefined' && guanYinVoice && (guanYinVoice.isSpeaking || guanYinVoice.isGenerating)) {
+      return; // Never talk over active GuanYin blessings
+    }
     try {
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
