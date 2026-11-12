@@ -2175,15 +2175,17 @@ class SmartLiveMicRouter {
     this.stopMonitorAudio();
 
     const useCustomSink = (this.mode === 'voice_split' || this.mode === 'all_to_mic') && this.sinkId && this.sinkId !== 'default';
+    let sinkApplied = false;
     if (useCustomSink && audioEl && typeof audioEl.setSinkId === 'function') {
       try {
         await audioEl.setSinkId(this.sinkId);
+        sinkApplied = true;
       } catch (err) {
         console.warn('[SmartMicRouter] HTMLAudioElement.setSinkId fallback:', err?.message);
       }
 
-      // Dual Monitor: play a synchronized copy on default speakers so the user also hears the voice locally
-      if (this.mode === 'voice_split' && this.dualMonitorEnabled && url) {
+      // Dual Monitor: play a synchronized copy on default speakers ONLY IF sink was successfully routed to a separate virtual device
+      if (sinkApplied && this.mode === 'voice_split' && this.dualMonitorEnabled && url) {
         try {
           const mon = new Audio(url);
           mon.playbackRate = audioEl.playbackRate || 1.0;
@@ -2200,7 +2202,9 @@ class SmartLiveMicRouter {
     if (this.monitorAudio) {
       try {
         this.monitorAudio.pause();
-        this.monitorAudio.src = '';
+        this.monitorAudio.currentTime = 0;
+        this.monitorAudio.removeAttribute('src');
+        this.monitorAudio.load();
       } catch (_) { }
       this.monitorAudio = null;
     }
