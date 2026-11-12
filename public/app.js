@@ -12340,7 +12340,7 @@ document.getElementById('sim-multi-disciples').addEventListener('click', () => {
   if (devotee) {
     triggerViewerWelcomeHighlight(devotee);
   }
-  guanYinVoice.speakWelcome(name);
+  guanYinVoice.speakWelcome(name, `sim_disciple_${seat}`);
   templeAudio.playWoodblock();
   discipleCountEl.textContent = disciplesMap.size;
 });
