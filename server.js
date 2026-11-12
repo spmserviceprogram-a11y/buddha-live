@@ -2636,7 +2636,19 @@ app.post('/api/simulate', (req, res) => {
       seatId: disciple.seatId,
       uniqueId: disciple.uniqueId,
       nickname: disciple.nickname,
+      avatar: disciple.avatar,
       comment
+    });
+
+    const meritDelta = hasSadhu ? 1 : 0;
+    io.emit('round_action_chat', {
+      seatId: disciple.seatId,
+      uniqueId: disciple.uniqueId,
+      nickname: disciple.nickname,
+      avatar: disciple.avatar,
+      comment,
+      meritDelta,
+      isKeyword: hasSadhu
     });
 
     io.emit('prayer_update', {
