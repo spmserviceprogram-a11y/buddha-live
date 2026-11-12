@@ -16522,6 +16522,10 @@ window.testMiracleVideo = function (tier = 'tier1') {
     return;
   }
   console.log(`[testMiracleVideo] Testing 10s miracle video tier: ${tier}`);
+  if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+    guanYinVoice.abortCurrentTask();
+    guanYinVoice.queue = [];
+  }
   window.videoBlessingController.playMiracle(tier, () => {
     console.log(`[testMiracleVideo] Completed playback for tier: ${tier}`);
   });
