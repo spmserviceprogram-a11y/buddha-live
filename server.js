@@ -788,7 +788,7 @@ async function ensureDefaultAudioFiles() {
   for (const item of defaults) {
     const p = path.join(CACHE_DIR, item.name);
     try {
-      if (fs.existsSync(p) && fs.statSync(p).size > 500) {
+      if (fs.existsSync(p) && fs.statSync(p).size > 300) {
         continue; // Keep valid pre-rendered file
       }
       try { if (fs.existsSync(p)) fs.unlinkSync(p); } catch (_) { }
