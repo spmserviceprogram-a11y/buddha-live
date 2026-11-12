@@ -13372,7 +13372,7 @@ const onGiftEvent = (gift) => {
 
   const streakTag = gift.isStreakable ? `_s${giftCount}_c${coins}` : `_c${coins}`;
   const giftKey = `gift_${gift.userId || gift.uniqueId || donor}_${giftName}${streakTag}`;
-  if (isDuplicateClientEvent(giftKey, 800)) return;
+  if (isDuplicateClientEvent(giftKey, gift.isStreakable ? 600 : 2500)) return;
   unlockAndStartAudio();
   const giftIcon = gift.giftIcon || (coins >= 30 ? '🌸' : (coins >= 10 ? '🪷' : (coins >= 5 ? '🪔' : '🌹')));
 
