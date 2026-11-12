@@ -2888,6 +2888,13 @@ server.on('error', err => {
 
 server.listen(PORT, () => {
   console.log(`[Server] Buddha TikTok Live Stream Server running on http://localhost:${PORT}`);
+  try {
+    const { execSync } = require('child_process');
+    execSync('node --check public/app.js', { stdio: 'pipe', cwd: __dirname });
+    console.log('[Preflight] public/app.js syntax check passed 100%!');
+  } catch (preErr) {
+    console.error('[Preflight Syntax Warning in public/app.js]:', preErr.message);
+  }
 });
 
 // Periodic Speech Master Watchdog:
