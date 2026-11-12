@@ -1668,12 +1668,17 @@ class GuanYinDivineVoice {
   }
 
   // Generic direct speech
-  speak(text, priority = 3) {
-    if (!text) return;
+  speak(text, priority = 3, { onStart, onDone } = {}) {
+    if (!text) {
+      if (typeof onDone === 'function') onDone();
+      return;
+    }
     this.enqueue({
       type: 'tts',
       priority,
-      text
+      text,
+      onStart,
+      onDone
     });
   }
 }
@@ -5956,12 +5961,15 @@ function spawnLuckySparkles() {
 }
 
 // ── Phase 2 Modal: Royal 3-Digit Lucky Numbers (ตำหนักขุมทรัพย์สวรรค์ - รหัสมงคลประจำวัน) ──
-function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัทธา', fortune = null) {
+function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัทธา', fortune = null, onComplete = null) {
   // CRITICAL: Immediately hide all other ceremony modals (Fortune card, MVP modal)
   hideCeremonyModals({ except: 'lucky' });
 
   const luckyCard = document.getElementById('seamsi-lucky-card');
-  if (!luckyCard) return;
+  if (!luckyCard) {
+    if (typeof onComplete === 'function') onComplete();
+    return;
+  }
 
   const f = fortune || drawSeamSiFortune();
   const cleanDonor = sanitizeDisplayName(donorName, 'ผู้มีจิตศรัทธา');
@@ -5990,6 +5998,15 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
   luckyCard.classList.add('active');
   spawnLuckySparkles();
 
+  let hasCompleted = false;
+  const finishComplete = () => {
+    if (hasCompleted) return;
+    hasCompleted = true;
+    if (typeof onComplete === 'function') {
+      try { onComplete(); } catch (_) { }
+    }
+  };
+
   const hideLucky = () => {
     if (luckyNumbersHideTimer) {
       clearTimeout(luckyNumbersHideTimer);
@@ -6005,6 +6022,7 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
       if (luckyCard.classList.contains('hidden')) {
         luckyCard.style.display = 'none';
       }
+      finishComplete();
     }, 350);
   };
 
@@ -6048,13 +6066,16 @@ function showLuckyNumbersModal(donorName = 'ผู้มีจิตศรัท
 }
 
 // ── Phase 1 Modal: Royal Seam-Si Fortune Scroll (ตรงตามแบบรูปที่ 2 — ผู้เล่นอ่านกลอนคำทำนายด้วยตัวเอง) ──
-function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรัทธา', fortune = null, autoShowLucky = true) {
+function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรัทธา', fortune = null, autoShowLucky = true, onComplete = null) {
   // CRITICAL: Immediately hide all other ceremony modals (Lucky card, MVP modal)
   // This guarantees #seamsi-lucky-card is 100% CLOSED and CANNOT block the fortune card!
   hideCeremonyModals({ except: 'fortune' });
 
   const card = document.getElementById('seamsi-fortune-card');
-  if (!card) return;
+  if (!card) {
+    if (typeof onComplete === 'function') onComplete();
+    return;
+  }
   const f = fortune || drawSeamSiFortune();
 
   const stickNumEl = document.getElementById('seamsi-stick-number');
@@ -6090,12 +6111,16 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
     seamSiTransitionTimer = setTimeout(() => {
       seamSiTransitionTimer = null;
       card.style.display = 'none';
-      // Pop in Phase 2: Lucky Numbers Modal!
-      showLuckyNumbersModal(cleanDonor, f);
+      if (autoShowLucky) {
+        // Pop in Phase 2: Lucky Numbers Modal!
+        showLuckyNumbersModal(cleanDonor, f, onComplete);
+      } else {
+        if (typeof onComplete === 'function') onComplete();
+      }
     }, 280);
   };
 
-  // Wire dismiss button: Only clicking the button explicitly transitions to the lucky numbers card!
+  // Wire dismiss button: Only clicking the button explicitly transitions or closes!
   const closeBtn = document.getElementById('btn-seamsi-close');
   if (closeBtn) {
     closeBtn.onclick = (e) => {
@@ -6137,12 +6162,14 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
           if (seamSiScrollHideTimer) clearTimeout(seamSiScrollHideTimer);
           seamSiScrollHideTimer = setTimeout(() => {
             if (transitioned) return;
+            transitioned = true;
             card.classList.remove('active');
             card.classList.add('hidden');
             setTimeout(() => {
               if (card.classList.contains('hidden')) {
                 card.style.display = 'none';
               }
+              if (typeof onComplete === 'function') onComplete();
             }, 300);
           }, 3500);
         }
@@ -6151,25 +6178,27 @@ function showSeamSiFortuneScroll(donorName = 'ผู้มีจิตศรั�
   }
 
   // Auto-dismiss safety: In unattended live streams, ensure fortune scroll does not stay stuck indefinitely!
-  // If voice is active, generous safety timeout (18s) in case network delays speech.
+  // If voice is active, generous safety timeout (25s) in case network delays speech.
   // If voice is disabled/unsupported, give 10s default reading time.
   if (seamSiScrollHideTimer) {
     clearTimeout(seamSiScrollHideTimer);
     seamSiScrollHideTimer = null;
   }
-  const fallbackTimeoutMs = voiceTriggered ? 18000 : 10000;
+  const fallbackTimeoutMs = voiceTriggered ? 25000 : 10000;
   if (autoShowLucky) {
     ++seamSiScrollToken;
     seamSiScrollHideTimer = setTimeout(() => transitionToLucky(false), fallbackTimeoutMs);
   } else {
     seamSiScrollHideTimer = setTimeout(() => {
       if (transitioned) return;
+      transitioned = true;
       card.classList.remove('active');
       card.classList.add('hidden');
       setTimeout(() => {
         if (card.classList.contains('hidden')) {
           card.style.display = 'none';
         }
+        if (typeof onComplete === 'function') onComplete();
       }, 300);
     }, fallbackTimeoutMs);
   }
@@ -14419,28 +14448,20 @@ class RoundManager {
   preloadCountdownAudio() {
     this.countdownAudioCache = {};
     const items = {
-      5: 'ห้า',
-      4: 'สี่',
-      3: 'สาม',
-      2: 'สอง',
-      1: 'หนึ่ง',
-      10: '10 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญกันนะคะ'
+      10: '/audio_cache/countdown_10.mp3',
+      5: '/audio_cache/countdown_5.mp3',
+      4: '/audio_cache/countdown_4.mp3',
+      3: '/audio_cache/countdown_3.mp3',
+      2: '/audio_cache/countdown_2.mp3',
+      1: '/audio_cache/countdown_1.mp3'
     };
-    Object.entries(items).forEach(([key, text]) => {
-      fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text })
-      })
-        .then(r => r.json())
-        .then(res => {
-          if (res && res.success && res.url) {
-            const a = new Audio(res.url);
-            a.preload = 'auto';
-            this.countdownAudioCache[key] = a;
-          }
-        })
-        .catch(() => { });
+    Object.entries(items).forEach(([key, url]) => {
+      try {
+        const a = new Audio(url);
+        a.preload = 'auto';
+        a.load();
+        this.countdownAudioCache[key] = a;
+      } catch (_) { }
     });
   }
 
@@ -14449,12 +14470,20 @@ class RoundManager {
       if (guanYinVoice.currentTask && (guanYinVoice.currentTask.priority || 3) <= 1) {
         return; // Don't interrupt gift blessing
       }
-      if (guanYinVoice.isSpeaking || guanYinVoice.isGenerating) {
-        return; // Don't talk over active speech
-      }
     }
-    const text = '10 วินาทีสุดท้าย พิมพ์สาธุเร่งพลังบุญกันนะคะ';
-    this.speakHost(text);
+    const preloaded = this.countdownAudioCache ? this.countdownAudioCache[10] : null;
+    if (preloaded && preloaded.readyState >= 2) {
+      try {
+        preloaded.currentTime = 0;
+        preloaded.playbackRate = 1.15;
+        preloaded.volume = 1.0;
+        preloaded.play().catch(() => {
+          this.speakHost('10 วินาทีสุดท้ายนะคะ');
+        });
+        return;
+      } catch (_) { }
+    }
+    this.speakHost('10 วินาทีสุดท้ายนะคะ');
   }
 
   playCountdownStep(sec) {
@@ -14491,9 +14520,11 @@ class RoundManager {
     }
 
     // 4. Voice Number Playback (0ms latency: preloaded audio OR instant browser speech synthesis)
-    // CRITICAL: If GuanYin is already speaking a sacred blessing or host announcement, NEVER speak voice numbers over her!
-    if (typeof guanYinVoice !== 'undefined' && guanYinVoice && (guanYinVoice.isSpeaking || guanYinVoice.isGenerating)) {
-      return;
+    // CRITICAL: If GuanYin is already speaking a sacred gift blessing (Priority 1), NEVER speak voice numbers over her!
+    if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+      if (guanYinVoice.currentTask && (guanYinVoice.currentTask.priority || 3) <= 1) {
+        return;
+      }
     }
 
     const textMap = {
@@ -14510,7 +14541,7 @@ class RoundManager {
     if (preloaded && preloaded.readyState >= 2) {
       try {
         preloaded.currentTime = 0;
-        preloaded.playbackRate = 1.18;
+        preloaded.playbackRate = 1.25;
         preloaded.volume = 1.0;
         preloaded.play().catch(() => {
           this.fallbackSpeechSynthesis(text);
@@ -14527,20 +14558,27 @@ class RoundManager {
   }
 
   fallbackSpeechSynthesis(text) {
-    if (typeof guanYinVoice !== 'undefined' && guanYinVoice && (guanYinVoice.isSpeaking || guanYinVoice.isGenerating)) {
-      return; // Never talk over active GuanYin blessings
+    if (typeof guanYinVoice !== 'undefined' && guanYinVoice) {
+      if (guanYinVoice.currentTask && (guanYinVoice.currentTask.priority || 3) <= 1) {
+        return; // Never talk over active GuanYin gift blessings
+      }
     }
     try {
       if (typeof window !== 'undefined' && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+        if (window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+        }
         const utter = new SpeechSynthesisUtterance(text);
+        this._activeCountdownUtterance = utter;
         if (typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.thaiVoice) {
           utter.voice = guanYinVoice.thaiVoice;
         }
         utter.lang = 'th-TH';
-        utter.rate = 1.25; // Brisk & responsive pace for individual countdown digits
+        utter.rate = 1.28; // Brisk & responsive pace for individual countdown digits
         utter.pitch = 1.05;
         utter.volume = 1.0;
+        utter.onend = () => { this._activeCountdownUtterance = null; };
+        utter.onerror = () => { this._activeCountdownUtterance = null; };
         window.speechSynthesis.speak(utter);
       }
     } catch (_) { }
@@ -14631,7 +14669,7 @@ class RoundManager {
 
       // Mid-round momentum announcement (halfway through the gathering phase, e.g. 60s remaining)
       const halfway = Math.floor(this.gatheringDuration / 2);
-      if (this.timeRemaining === halfway && !this.hasSpokenHalfway) {
+      if (this.gatheringDuration >= 60 && this.timeRemaining === halfway && !this.hasSpokenHalfway) {
         this.hasSpokenHalfway = true;
         let chatterNames = [];
         this.contributors.forEach(c => {
@@ -15034,35 +15072,54 @@ class RoundManager {
     } catch (_) { }
 
     // 3. MC Voice: Announce MVP and congratulate chat (Distinguish between 100% full victory vs standard round MVP)
-    if (this.meritPoints >= this.targetMeritPoints) {
-      this.speakHost(`สาธุ บารมีรอบที่ ${this.roundNum} สำเร็จเต็มร้อย ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญนะคะ`);
-    } else {
-      this.speakHost(`ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ ขออนุโมทนาบุญด้วยนะคะ`);
-    }
+    const mvpSpeech = (this.meritPoints >= this.targetMeritPoints)
+      ? `สาธุ บารมีรอบที่ ${this.roundNum} สำเร็จเต็มร้อย ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญนะคะ`
+      : `ยินดีกับคุณ ${mvp.nickname} ผู้นำบุญรอบนี้ ขออนุโมทนาบุญด้วยนะคะ`;
 
-    // 4. Act 2: After 3.8s, smoothly fade out MVP Modal and Unveil Fortune Scroll!
-    if (this.revealStepTimer) clearTimeout(this.revealStepTimer);
-    this.revealStepTimer = setTimeout(() => {
-      this.revealStepTimer = null;
+    let hasAdvancedToSeamSi = false;
+    const proceedToSeamSi = () => {
+      if (hasAdvancedToSeamSi) return;
+      hasAdvancedToSeamSi = true;
+      if (this.revealStepTimer) {
+        clearTimeout(this.revealStepTimer);
+        this.revealStepTimer = null;
+      }
       if (this.dom.mvpModal) {
         this.dom.mvpModal.classList.remove('active');
         this.dom.mvpModal.classList.add('hidden');
         this.dom.mvpModal.style.display = 'none'; // Force hide synchronously: 100% immune to overlap
       }
 
-      // Now open Fortune Scroll with zero overlapping modals (autoShowLucky = false)!
+      // Now open Fortune Scroll and let AI read the fortune until complete!
       if (this.dom.phaseText) this.dom.phaseText.textContent = 'คำทำนายเซียมซี';
       if (typeof showSeamSiFortuneScroll === 'function') {
-        showSeamSiFortuneScroll(mvp.nickname, this.activeFortune, false);
+        showSeamSiFortuneScroll(mvp.nickname, this.activeFortune, true, () => {
+          this.transitionToNextRound();
+        });
+      } else {
+        this.transitionToNextRound();
       }
-    }, 3800);
+    };
 
-    // 5. Transition to next round after 10.5 seconds total
+    // 4. Act 1 Speech: AI Speaks MVP Announcement completely before proceeding
+    this.speakHost(mvpSpeech, {
+      onDone: () => {
+        // Voice completely finished: give 1.4s respectful pause to view MVP card before unveiling fortune scroll
+        if (this.revealStepTimer) clearTimeout(this.revealStepTimer);
+        this.revealStepTimer = setTimeout(proceedToSeamSi, 1400);
+      }
+    });
+
+    // Fallback safety timer: in case audio fails or tab is in background, advance after 8.5s
+    if (this.revealStepTimer) clearTimeout(this.revealStepTimer);
+    this.revealStepTimer = setTimeout(proceedToSeamSi, 8500);
+
+    // Global safety watchdog: in case anything hangs, advance after 45s total
     if (this.transitionTimer) clearTimeout(this.transitionTimer);
     this.transitionTimer = setTimeout(() => {
       this.transitionTimer = null;
       this.transitionToNextRound();
-    }, 10500);
+    }, 45000);
   }
 
   transitionToNextRound() {
@@ -15071,6 +15128,10 @@ class RoundManager {
     if (this.revealStepTimer) {
       clearTimeout(this.revealStepTimer);
       this.revealStepTimer = null;
+    }
+    if (this.transitionTimer) {
+      clearTimeout(this.transitionTimer);
+      this.transitionTimer = null;
     }
     if (window.videoBlessingController) window.videoBlessingController.stopMiracle();
     if (typeof hideCeremonyModals === 'function') {
@@ -15088,15 +15149,21 @@ class RoundManager {
     }
   }
 
-  speakHost(text) {
+  speakHost(text, options = {}) {
     try {
       if (typeof guanYinVoice !== 'undefined' && guanYinVoice && guanYinVoice.enabled) {
         if (typeof speechCoordinator === 'undefined' || !speechCoordinator || speechCoordinator.canSpeak()) {
-          guanYinVoice.speak(text, 2);
+          guanYinVoice.speak(text, 2, options);
+          return;
         }
       }
     } catch (err) {
       console.warn('[RoundManager Speech Warning]:', err.message);
+    }
+    if (options && typeof options.onDone === 'function') {
+      setTimeout(() => {
+        try { options.onDone(); } catch (_) { }
+      }, 500);
     }
   }
 }

@@ -662,11 +662,11 @@ const CACHE_DIR = path.join(__dirname, 'public', 'audio_cache');
 if (!fs.existsSync(CACHE_DIR)) {
   fs.mkdirSync(CACHE_DIR, { recursive: true });
 } else {
-  // Purge dynamic cache files (preserving default_* files) so Edge-TTS generates fresh authentic voice
+  // Purge dynamic cache files (preserving default_* and countdown_* files) so Edge-TTS generates fresh authentic voice
   try {
     const files = fs.readdirSync(CACHE_DIR);
     for (const f of files) {
-      if (!f.startsWith('default_') && f.endsWith('.mp3')) {
+      if (!f.startsWith('default_') && !f.startsWith('countdown_') && f.endsWith('.mp3')) {
         try { fs.unlinkSync(path.join(CACHE_DIR, f)); } catch (_) { }
       }
     }
@@ -695,7 +695,7 @@ function getFallbackAudioUrl(action = '') {
 // Tier 1: Google Translate Neural Thai TTS (Ultra-fast ~200ms, zero-crash, crystal clear Thai name pronunciation)
 async function synthesizeGoogleTTS(text, filename) {
   const filePath = path.join(CACHE_DIR, filename);
-  if (fs.existsSync(filePath) && fs.statSync(filePath).size > 1000) {
+  if (fs.existsSync(filePath) && fs.statSync(filePath).size > 300) {
     return `/audio_cache/${filename}`;
   }
 
@@ -772,19 +772,26 @@ async function synthesizeGoogleTTS(text, filename) {
   return null;
 }
 
-// Guarantee default blessing MP3s exist on server boot
+// Guarantee default blessing & countdown MP3s exist on server boot
 async function ensureDefaultAudioFiles() {
   const defaults = [
     { name: 'default_blessing.mp3', text: 'ขอพระแม่กวนอิมประทานพรในฉากจำลองนี้ ให้ทุกท่านพบเจอแต่ความสุข สุขภาพแข็งแรง ร่ำรวยเงินทองนะคะ' },
     { name: 'default_welcome.mp3', text: 'ยินดีต้อนรับทุกท่านสู่ฉากจำลองวิหารสวรรค์ ขอให้จิตใจสงบร่มเย็นนะคะ' },
-    { name: 'default_follow.mp3', text: 'อนุโมทนาบุญกับกัลยาณมิตรทุกท่านที่ร่วมกดติดตามในฉากจำลองนี้นะคะ' }
+    { name: 'default_follow.mp3', text: 'อนุโมทนาบุญกับกัลยาณมิตรทุกท่านที่ร่วมกดติดตามในฉากจำลองนี้นะคะ' },
+    { name: 'countdown_10.mp3', text: '10 วินาทีสุดท้ายนะคะ' },
+    { name: 'countdown_5.mp3', text: 'ห้า' },
+    { name: 'countdown_4.mp3', text: 'สี่' },
+    { name: 'countdown_3.mp3', text: 'สาม' },
+    { name: 'countdown_2.mp3', text: 'สอง' },
+    { name: 'countdown_1.mp3', text: 'หนึ่ง' }
   ];
   for (const item of defaults) {
     const p = path.join(CACHE_DIR, item.name);
     try {
-      if (fs.existsSync(p)) {
-        try { fs.unlinkSync(p); } catch (_) { }
+      if (fs.existsSync(p) && fs.statSync(p).size > 500) {
+        continue; // Keep valid pre-rendered file
       }
+      try { if (fs.existsSync(p)) fs.unlinkSync(p); } catch (_) { }
       await synthesizeGoogleTTS(item.text, item.name);
     } catch (_) { }
   }
@@ -857,7 +864,7 @@ async function getAudioUrlForText(text, callback, action = '') {
   const filePath = path.join(CACHE_DIR, filename);
 
   // Return cached audio if already synthesized
-  if (fs.existsSync(filePath) && fs.statSync(filePath).size > 1000) {
+  if (fs.existsSync(filePath) && fs.statSync(filePath).size > 300) {
     return callback(null, `/audio_cache/${filename}`);
   }
 
@@ -877,10 +884,12 @@ async function getAudioUrlForText(text, callback, action = '') {
     console.warn('[Edge TTS Fallback Notice]:', err.message);
   }
 
-  // Tier 3: Pre-rendered fallback MP3 with gentle blessing
-  const fallbackUrl = getFallbackAudioUrl(action);
-  if (fallbackUrl) {
-    return callback(null, fallbackUrl);
+  // Tier 3: Pre-rendered fallback MP3 with gentle blessing (ONLY for broad greeting/blessing actions, NEVER for short arbitrary text or countdown numbers!)
+  if (action && (action.includes('welcome') || action.includes('follow') || action.includes('bless') || action.includes('ถวาย'))) {
+    const fallbackUrl = getFallbackAudioUrl(action);
+    if (fallbackUrl) {
+      return callback(null, fallbackUrl);
+    }
   }
 
   console.warn(`[TTS Engine] Dynamic audio unavailable for: "${clean.slice(0, 30)}...". Delegating to client speech.`);
