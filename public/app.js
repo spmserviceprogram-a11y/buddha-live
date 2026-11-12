@@ -13262,7 +13262,7 @@ const onChatMessage = (chat) => {
   const text = chat.comment || chat.message || '';
 
   const chatKey = `chat_${chat.userId || chat.uniqueId || user}_${text}`;
-  if (isDuplicateClientEvent(chatKey, 1500)) return;
+  if (isDuplicateClientEvent(chatKey, 6000)) return;
   unlockAndStartAudio();
   appendChatMessage(user, text);
   if (text && text.trim()) {
