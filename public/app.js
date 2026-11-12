@@ -965,6 +965,9 @@ class GuanYinDivineVoice {
   }
 
   _safeTeardownCurrentAudio() {
+    if (typeof smartMicRouter !== 'undefined' && smartMicRouter && typeof smartMicRouter.stopMonitorAudio === 'function') {
+      try { smartMicRouter.stopMonitorAudio(); } catch (_) { }
+    }
     if (this.currentAudio) {
       const a = this.currentAudio;
       a._aborted = true;
@@ -1007,6 +1010,33 @@ class GuanYinDivineVoice {
     if (!this.enabled) return;
     if (typeof speechCoordinator !== 'undefined' && speechCoordinator && !speechCoordinator.canSpeak()) {
       return;
+    }
+
+    // Global Text & Action Deduplication Guard:
+    // Drop duplicate speech requests (identical text or same donor action within 3.5s) to eliminate echo & double speech
+    const now = Date.now();
+    if (!this._recentSpeechMap) this._recentSpeechMap = new Map();
+
+    let dedupKey = '';
+    if (item.type === 'tts') {
+      dedupKey = 'tts_' + (item.text || '').trim();
+    } else if (item.type === 'gemini') {
+      const p = item.payload || {};
+      dedupKey = `gemini_${p.name || ''}_${p.action || ''}_${(p.wish || '').slice(0, 30)}`;
+    }
+
+    if (dedupKey) {
+      const lastEnqueued = this._recentSpeechMap.get(dedupKey) || 0;
+      if (now - lastEnqueued < 3500) {
+        console.log(`[GuanYin Voice] Dropped duplicate speech within 3.5s: "${dedupKey}"`);
+        return;
+      }
+      this._recentSpeechMap.set(dedupKey, now);
+      if (this._recentSpeechMap.size > 200) {
+        for (const [k, v] of this._recentSpeechMap.entries()) {
+          if (now - v > 15000) this._recentSpeechMap.delete(k);
+        }
+      }
     }
 
     // High Priority Preemption:
