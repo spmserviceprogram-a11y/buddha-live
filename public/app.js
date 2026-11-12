@@ -12459,13 +12459,7 @@ document.getElementById('sim-chat').addEventListener('click', () => {
   const dummyName = dummyNames[Math.floor(Math.random() * dummyNames.length)];
   const simUid = 'sim_user_' + dummyName;
 
-  onChatMessage({
-    nickname: dummyName,
-    uniqueId: simUid,
-    comment: chosenWish
-  });
-
-  // Also broadcast to server simulator so server-side sadhuScores updates in real-time
+  // Broadcast to server simulator as single authoritative source of truth
   fetch('/api/simulate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
